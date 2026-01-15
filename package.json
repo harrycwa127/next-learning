@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "contentlayer dev & next dev --webpack",
+    "build": "contentlayer build && next build --webpack",
+    "start": "contentlayer start && next start --webpack",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format:fix": "prettier --write './**/*.{css,scss,md,mdx,json}'"
   },
   "dependencies": {
+    "contentlayer": "^0.3.4",
+    "date-fns": "^4.1.0",
     "next": "16.1.2",
+    "next-contentlayer": "^0.3.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -25,6 +28,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "8.53.0",
     "@typescript-eslint/parser": "8.53.0",
+    "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "eslint-config-eason": "0.0.12",
     "eslint-config-next": "16.1.2",
