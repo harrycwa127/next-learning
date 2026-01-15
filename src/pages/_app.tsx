@@ -9,7 +9,6 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider attribute="class">
-      <Component {...pageProps} />
       <Head>
         <meta name="viewport" content="viewport-fit=cover" />
       </Head>
