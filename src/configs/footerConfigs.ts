@@ -1,11 +1,10 @@
 export const footerConfigs = {
-  credit: 'Stark Industries',
+  credit: 'Harry Tsang',
   socialLinks: {
-    email: 'stark@example.com',
-    github:
-      'https://github.com/Kamigami55/nextjs-tailwind-contentlayer-blog-starter',
-    twitter: 'https://twitter.com/EasonChang_me',
-    facebook: 'https://www.facebook.com/eason.blog',
-    linkedin: 'https://www.linkedin.com/in/easonchang101',
+    email: 'harrytchei@gmail.com',
+    github: 'https://github.com/harrycwa127',
+    // twitter: 'https://twitter.com/EasonChang_me',
+    // facebook: 'https://www.facebook.com/eason.blog',
+    linkedin: 'https://www.linkedin.com/in/chun-hei-tsang-267255181/',
   },
 };
