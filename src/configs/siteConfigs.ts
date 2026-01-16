@@ -15,4 +15,6 @@ export const siteConfigs = {
   bannerUrl: fqdn + bannerPath,
   // twitterID: '@TchHarry',
   datePublished: '2026-01-16',
+  credit: 'Harry Tsang',
+  email: 'harrytchei@gmail.com',
 }
