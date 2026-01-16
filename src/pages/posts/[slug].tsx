@@ -8,6 +8,8 @@ import PostLayout, {
 } from '@/components/PostLayout';
 import { allPosts, allPostsNewToOld } from '@/lib/contentLayerAdapter';
 
+import mdxComponents from '@/lib/mdxComponents';
+
 type PostForPostPage = PostForPostLayout & {
   title: string;
   description: string;
@@ -89,7 +91,7 @@ const PostPage: NextPage<Props> = ({ post, prevPost, nextPost }) => {
       </Head>
 
       <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
-        <MDXContent />
+        <MDXContent components={mdxComponents} />
       </PostLayout>
     </>
   );

@@ -29,6 +29,9 @@ dependencies:
   react-dom:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
+  rehype-code-titles:
+    specifier: ^1.2.1
+    version: 1.2.1
   rehype-prism-plus:
     specifier: ^2.0.1
     version: 2.0.1
@@ -2603,13 +2606,13 @@ packages:
   /@types/hast@2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
     dependencies:
-      '@types/unist': 2.0.6
+      '@types/unist': 3.0.3
     dev: false
 
   /@types/hast@3.0.4:
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
     dependencies:
-      '@types/unist': 2.0.6
+      '@types/unist': 3.0.3
     dev: false
 
   /@types/json-schema@7.0.11:
@@ -2627,7 +2630,7 @@ packages:
   /@types/mdast@3.0.10:
     resolution: {integrity: sha512-W864tg/Osz1+9f4lrGTZpCSO5/z4608eUp19tbozkq2HJK6i3z1kT0H9tlADXuYIb1YYOBByU4Jsqkk75q48qA==}
     dependencies:
-      '@types/unist': 2.0.6
+      '@types/unist': 3.0.3
     dev: false
 
   /@types/mdurl@1.0.2:
@@ -6089,6 +6092,13 @@ packages:
     dependencies:
       jsesc: 3.1.0
     dev: true
+
+  /rehype-code-titles@1.2.1:
+    resolution: {integrity: sha512-MhDkbRT4SKepZKDBGr9aSUBQyzK6N7NUzj05CzraxCxPSDkeP9ETb+X89JNYOntPC4VE7IvqSD5j1IKTJjAsEA==}
+    engines: {node: '>=16'}
+    dependencies:
+      unist-util-visit: 5.0.0
+    dev: false
 
   /rehype-parse@9.0.1:
     resolution: {integrity: sha512-ksCzCD0Fgfh7trPDxr2rSylbwq9iYDkSn8TCDmEJ49ljEUBxDVCzCHv7QNzZOfODanX4+bWQ4WZqLCRWYLfhag==}
