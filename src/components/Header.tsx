@@ -6,7 +6,7 @@ import { headerConfigs } from '@/configs/headerConfigs';
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 py-3 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
+    <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 py-3 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-800/60">
       <SectionContainer>
         <div className="flex items-baseline justify-between">
           <div>
