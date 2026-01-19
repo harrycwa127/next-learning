@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 
+import Comment from '@/components/Comment';
 import CustomLink from '@/components/CustomLink';
 import PageTitle from '@/components/PageTitle';
 import PostBody from '@/components/PostBody';
@@ -30,7 +31,11 @@ export default function PostLayout({
   prevPost,
   children,
 }: Props) {
-  const { date, title, body: { raw } } = post;
+  const {
+    date,
+    title,
+    body: { raw },
+  } = post;
 
   const { locale } = useRouter();
 
@@ -74,6 +79,8 @@ export default function PostLayout({
           className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700"
           // style={{ gridTemplateRows: 'auto 1fr' }}
         >
+          <Comment />
+
           <footer>
             <div className="flex flex-col gap-4 pt-4 text-base font-medium sm:flex-row sm:justify-between xl:gap-8 xl:pt-8">
               {prevPost ? (
