@@ -3,6 +3,7 @@ import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
 
 import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
+import imageMetadata from './src/plugins/imageMetadata';
 
 export const Post = defineDocumentType(() => ({
   name: 'Post',
@@ -44,6 +45,8 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       rehypeCodeTitles, 
-      [rehypePrism, { ignoreMissing: true }]],
+      [rehypePrism, { ignoreMissing: true }],
+      imageMetadata
+    ],
   },
 });

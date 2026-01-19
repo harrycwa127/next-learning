@@ -1,6 +1,8 @@
 import '@/styles/globals.css';
 import '@/styles/prism-dracula.css';
 import '@/styles/prism-plus.css';
+import 'nprogress/nprogress.css';
+import '@/styles/nprogress-custom.scss';
 
 import type { AppProps } from 'next/app';
 import { DefaultSeo } from 'next-seo';
@@ -9,7 +11,22 @@ import { ThemeProvider } from 'next-themes';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { siteConfigs } from '@/configs/siteConfigs';
 
+import { useRouter } from 'next/router';
+import NProgress from 'nprogress';
+import { useEffect } from 'react';
+
+NProgress.configure({ showSpinner: false });
+
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => NProgress.start());
+    router.events.on('routeChangeComplete', () => NProgress.done());
+    router.events.on('routeChangeError', () => NProgress.done());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ThemeProvider attribute="class">
       <DefaultSeo
