@@ -2,6 +2,11 @@ import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useMDXComponent } from 'next-contentlayer/hooks';
 import { ArticleJsonLd, NextSeo } from 'next-seo';
 
+import {
+  getCommandPalettePosts,
+  PostForCommandPalette,
+} from '@/components/CommandPalette/getCommandPalettePosts';
+import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 import PostLayout, {
   PostForPostLayout,
   RelatedPostForPostLayout,
@@ -26,6 +31,7 @@ type Props = {
   post: PostForPostPage;
   prevPost: RelatedPostForPostLayout;
   nextPost: RelatedPostForPostLayout;
+  commandPalettePosts: PostForCommandPalette[];
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -37,6 +43,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
+  const commandPalettePosts = getCommandPalettePosts();
   const postIndex = allPostsNewToOld.findIndex(
     (post) => post.slug === params?.slug
   );
@@ -76,11 +83,18 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
       post,
       prevPost,
       nextPost,
+      commandPalettePosts,
     },
   };
 };
 
-const PostPage: NextPage<Props> = ({ post, prevPost, nextPost }) => {
+const PostPage: NextPage<Props> = ({
+  post,
+  prevPost,
+  nextPost,
+  commandPalettePosts,
+}) => {
+  useCommandPalettePostActions(commandPalettePosts);
   const {
     description,
     title,
