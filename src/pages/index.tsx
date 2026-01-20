@@ -9,11 +9,11 @@ import {
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import LayoutPerPage from '@/components/LayoutPerPage';
 import PostList, { PostForPostList } from '@/components/PostList';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import generateRSS from '@/lib/generateRSS';
-import LayoutPerPage from '@/components/LayoutPerPage';
 
 type PostForIndexPage = PostForPostList;
 
@@ -46,6 +46,8 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 };
 
 const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
+  const { t } = useTranslation(['indexPage', 'common']);
+
   useCommandPalettePostActions(commandPalettePosts);
   return (
     <LayoutPerPage>
@@ -60,15 +62,15 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       />
 
       <div className="prose my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
-        <h1 className="text-center sm:text-left">Hello! This is Harry✌️</h1>
-        <p>我係 Harry，一個成日想自閉但係熟左好多野講嘅人</p>
-        <p>好鍾意運動同猫🐱</p>
-        <p>攀石🧗 跆拳🥋 揼code👨‍💻</p>
+        <h1 className="text-center sm:text-left">{t('intro-title')}</h1>
+        <p>{t('intro-1')}</p>
+        <p>{t('intro-2')}</p>
+        <p>{t('intro-3')}</p>
       </div>
 
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
         <div className="prose prose-lg my-8 dark:prose-dark">
-          <h2>最新文章</h2>
+          <h2>{t('latest-posts')}</h2>
         </div>
 
         <PostList posts={posts} />

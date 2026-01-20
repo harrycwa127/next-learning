@@ -18,7 +18,7 @@ export const useCommandPaletteLocaleActions = () => {
         name: 'English',
         keywords: 'locale language translation english 語言 語系 英文 英語',
         perform: () => changeLocale('en'),
-        icon: <span className="p-1">??</span>,
+        icon: <span className="p-1">EN</span>,
         parent: 'language',
         section: t('operation'),
       },
@@ -28,7 +28,7 @@ export const useCommandPaletteLocaleActions = () => {
         keywords:
           'locale language translation traditional chinese taiwanese 語言 語系 翻譯 中文 台灣 繁體',
         perform: () => changeLocale('zh-TW'),
-        icon: <span className="p-1">??</span>,
+        icon: <span className="p-1">繁</span>,
         parent: 'language',
         section: t('operation'),
       },

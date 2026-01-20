@@ -13,7 +13,7 @@ const LanguageSwitch = () => {
         aria-label="Toggle Language"
         className="rounded p-2 text-2xl leading-6 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 sm:p-3"
       >
-        {router.locale === 'en' ? '??' : '??'}
+        {router.locale === 'en' ? '繁' : 'EN'}
       </a>
     </Link>
   );

@@ -40,12 +40,12 @@ export default function CommandPalette({ children }: Props) {
     // Page section
     {
       id: 'home',
-      name: '首頁',
+      name: t('home'),
       keywords: 'home homepage index 首頁',
       perform: () => router.push('/'),
       icon: <HomeIcon className="h-6 w-6" />,
       section: {
-        name: '頁面',
+        name: t('page'),
         priority: Priority.HIGH,
       },
     },
@@ -53,38 +53,38 @@ export default function CommandPalette({ children }: Props) {
     // - Search posts
     {
       id: 'search-posts',
-      name: '文章',
+      name: t('posts'),
       keywords:
         'search find posts writing words blog articles thoughts 搜尋 尋找 文章 寫作 部落格',
       icon: <MagnifyingGlassIcon className="h-6 w-6" />,
-      section: '搜尋',
+      section: t('search'),
     },
     // Operation section
     // - Theme toggle
     {
       id: 'theme',
-      name: '切換主題',
+      name: t('toggle-theme'),
       keywords: 'change toggle theme mode color 切換 更換 顏色 主題 模式',
       icon: <LightBulbIcon className="h-6 w-6" />,
-      section: '操作',
+      section: t('operation'),
     },
     {
       id: 'theme-light',
-      name: '明亮模式',
+      name: t('light-mode'),
       keywords: 'theme light white mode color 顏色 主題 模式 明亮 白色',
       perform: () => setTheme('light'),
       icon: <SunIcon className="h-6 w-6" />,
       parent: 'theme',
-      section: '操作',
+      section: t('operation'),
     },
     {
       id: 'theme-dark',
-      name: '暗黑模式',
+      name: t('dark-mode'),
       keywords: 'theme dark black mode color 顏色 主題 模式 暗黑 黑色 深夜',
       perform: () => setTheme('dark'),
       icon: <MoonIcon className="h-6 w-6" />,
       parent: 'theme',
-      section: '操作',
+      section: t('operation'),
     },
     // - Language toggle
     {

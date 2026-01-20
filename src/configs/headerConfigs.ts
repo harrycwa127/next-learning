@@ -1,4 +1,4 @@
 export const headerConfigs = {
   title: 'Harry Tsang',
-  navLinks: [{ href: '/', title: '首頁' }],
+  navLinks: [{ href: '/', title: 'home' }],
 };
