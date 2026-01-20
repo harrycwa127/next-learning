@@ -3,6 +3,7 @@
 
 import {
   HomeIcon,
+  LanguageIcon,
   LightBulbIcon,
   MagnifyingGlassIcon,
   MoonIcon,
@@ -20,6 +21,7 @@ import {
   useMatches,
 } from 'kbar';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
 import { useTheme } from 'next-themes';
 import React, { forwardRef, useMemo } from 'react';
 
@@ -30,6 +32,7 @@ type Props = {
 };
 
 export default function CommandPalette({ children }: Props) {
+  const { t } = useTranslation(['common']);
   const router = useRouter();
   const { setTheme } = useTheme();
 
@@ -82,6 +85,15 @@ export default function CommandPalette({ children }: Props) {
       icon: <MoonIcon className="h-6 w-6" />,
       parent: 'theme',
       section: '操作',
+    },
+    // - Language toggle
+    {
+      id: 'language',
+      name: t('toggle-language'),
+      keywords:
+        'change toggle locale language translation 切換 更換 語言 語系 翻譯',
+      icon: <LanguageIcon className="h-6 w-6" />,
+      section: t('operation'),
     },
   ];
 

@@ -1,20 +1,28 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useMDXComponent } from 'next-contentlayer/hooks';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ArticleJsonLd, NextSeo } from 'next-seo';
+import { ParsedUrlQuery } from 'querystring';
 
 import {
   getCommandPalettePosts,
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import LayoutPerPage from '@/components/LayoutPerPage';
 import PostLayout, {
   PostForPostLayout,
   RelatedPostForPostLayout,
 } from '@/components/PostLayout';
+import { LOCALES } from '@/configs/i18nConfigs';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPosts, allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import { getPostOGImage } from '@/lib/getPostOGImage';
 import mdxComponents from '@/lib/mdxComponents';
+
+interface Params extends ParsedUrlQuery {
+  slug: string;
+}
 
 type PostForPostPage = PostForPostLayout & {
   title: string;
@@ -35,18 +43,23 @@ type Props = {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
-  const paths = allPosts.map((post) => post.path);
+  const paths: string[] = [];
+  LOCALES.forEach((locale) => {
+    paths.push(...allPosts.map((post) => `/${locale}${post.path}`));
+  });
   return {
     paths,
     fallback: false,
   };
 };
 
-export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
+export const getStaticProps: GetStaticProps<Props, Params> = async (
+  context
+) => {
+  const { slug } = context.params!;
+  const locale = context.locale!;
   const commandPalettePosts = getCommandPalettePosts();
-  const postIndex = allPostsNewToOld.findIndex(
-    (post) => post.slug === params?.slug
-  );
+  const postIndex = allPostsNewToOld.findIndex((post) => post.slug === slug);
   if (postIndex === -1) {
     return {
       notFound: true,
@@ -80,6 +93,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
   }
   return {
     props: {
+      ...(await serverSideTranslations(locale, ['common'])),
       post,
       prevPost,
       nextPost,
@@ -109,7 +123,7 @@ const PostPage: NextPage<Props> = ({
   const MDXContent = useMDXComponent(code);
 
   return (
-    <>
+    <LayoutPerPage>
       <NextSeo
         title={title}
         description={description}
@@ -144,7 +158,7 @@ const PostPage: NextPage<Props> = ({
       <PostLayout post={post} prevPost={prevPost} nextPost={nextPost}>
         <MDXContent components={mdxComponents} />
       </PostLayout>
-    </>
+    </LayoutPerPage>
   );
 };
 

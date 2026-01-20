@@ -1,5 +1,7 @@
 import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ArticleJsonLd } from 'next-seo';
 
 import {
@@ -11,6 +13,7 @@ import PostList, { PostForPostList } from '@/components/PostList';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import generateRSS from '@/lib/generateRSS';
+import LayoutPerPage from '@/components/LayoutPerPage';
 
 type PostForIndexPage = PostForPostList;
 
@@ -19,7 +22,8 @@ type Props = {
   commandPalettePosts: PostForCommandPalette[];
 };
 
-export const getStaticProps: GetStaticProps<Props> = () => {
+export const getStaticProps: GetStaticProps<Props> = async (context) => {
+  const locale = context.locale!;
   const commandPalettePosts = getCommandPalettePosts();
 
   const posts = allPostsNewToOld.map((post) => ({
@@ -32,13 +36,19 @@ export const getStaticProps: GetStaticProps<Props> = () => {
 
   generateRSS();
 
-  return { props: { posts, commandPalettePosts } };
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['indexPage', 'common'])),
+      posts,
+      commandPalettePosts,
+    },
+  };
 };
 
 const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
   useCommandPalettePostActions(commandPalettePosts);
   return (
-    <>
+    <LayoutPerPage>
       <ArticleJsonLd
         type="Blog"
         url={siteConfigs.fqdn}
@@ -63,7 +73,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
         <PostList posts={posts} />
       </div>
-    </>
+    </LayoutPerPage>
   );
 };
 
