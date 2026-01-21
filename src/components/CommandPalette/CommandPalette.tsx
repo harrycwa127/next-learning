@@ -51,7 +51,7 @@ export default function CommandPalette({ children }: Props) {
       },
     },
     {
-      id: 'about',
+      id: 'about-page',
       name: t('about'),
       keywords: 'about profile aboutPage 關於',
       perform: () => router.push('/posts/about'),
