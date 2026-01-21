@@ -14,6 +14,8 @@ import PostList, { PostForPostList } from '@/components/PostList';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import generateRSS from '@/lib/generateRSS';
+import CustomImage from '@/components/CustomImage';
+import selfImage from '../../public/images/self-image.png';
 
 type PostForIndexPage = PostForPostList;
 
@@ -61,11 +63,17 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         description={siteConfigs.description}
       />
 
-      <div className="prose my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
-        <h1 className="text-center sm:text-left">{t('intro-title')}</h1>
-        <p>{t('intro-1')}</p>
-        <p>{t('intro-2')}</p>
-        <p>{t('intro-3')}</p>
+      <div className="flex justify-between">
+        <div className="prose md:w-3/4 my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
+          <h1 className="text-center sm:text-left">{t('intro-title')}</h1>
+          <p>{t('intro-1')}</p>
+          <p>{t('intro-2')}</p>
+          <p>{t('intro-3')}</p>
+        </div>
+
+        <div className="w-1/3 mt-12 items-center">
+          <CustomImage src={selfImage} alt='Self Image' />
+        </div>
       </div>
 
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
