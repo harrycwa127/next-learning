@@ -1,0 +1,69 @@
+---
+title: Test Post
+description: Post for testing feature
+slug: test-post
+date: 2026-01-21
+type: Post
+socialImage: /images/anita-chong-unsplash.jpg
+---
+
+import LinksDemo from '../../src/components/LinksDemo';
+
+## Test Post With Image!!
+
+Some other posts! with coll images!
+
+![Photo by Anita Chong on Unsplash](/images/anita-chong-unsplash.jpg)
+
+> Photo by [Anita Chong](https://unsplash.com/@jacutanita) on [Unsplash](https://unsplash.com/photos/aSJAalMXCvI)
+
+## Test Post with `some inline code`
+
+```js:sample.js showLineNumbers
+    const a = 1;
+    a = 2;
+```
+
+```tsx:App.tsx showLineNumbers {5,15-17}
+    import "@/styles/globals.css";
+
+    import type { AppProps } from "next/app";
+    import Head from "next/head";
+    import { ThemeProvider } from "next-themes";
+
+    import LayoutWrapper from "@/components/LayoutWrapper";
+
+    function MyApp({ Component, pageProps }: AppProps) {
+      return (
+        <ThemeProvider attribute="class">
+          <Head>
+            <meta name="viewport" content="viewport-fit=cover" />
+          </Head>
+          <LayoutWrapper>
+            <Component {...pageProps} />
+          </LayoutWrapper>
+        </ThemeProvider>
+      );
+    }
+
+    export default MyApp;
+```
+
+```diff-js:some.js showLineNumbers {3-4}
+    const a = 1;
+    - a = 2;
+    + a = 2;
+    a = 3;
+```
+
+## Test Cutom Link
+
+Internal link [Go to homepage](/)
+
+External link [Go to Google](https://google.com)
+
+Anchor link [Go to H2 title](#h2-title)
+
+## Render MDX component (with a links inside)
+
+<LinksDemo />
