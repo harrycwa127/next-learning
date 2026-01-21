@@ -29,6 +29,10 @@ export const Post = defineDocumentType(() => ({
     socialImage: {
       type: 'string',
     },
+    redirectFrom: {
+      type: 'list',
+      of: { type: 'string' },
+    },
   },
   computedFields: {
     path: {
@@ -44,9 +48,9 @@ export default makeSource({
   mdx: {
     rehypePlugins: [
       rehypeSlug,
-      rehypeCodeTitles, 
+      rehypeCodeTitles,
       [rehypePrism, { ignoreMissing: true }],
-      imageMetadata
+      imageMetadata,
     ],
   },
 });
