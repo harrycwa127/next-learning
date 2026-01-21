@@ -77,8 +77,9 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       </div>
 
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
-        <div className="prose prose-lg my-8 dark:prose-dark">
-          <h2>{t('latest-posts')}</h2>
+        <div className="prose prose-lg mt-8 dark:prose-dark flex gap-4">
+          <h2>{t('latest-posts')} </h2> 
+          <div className='mt-1'>{t('press')} <code>Ctrl + K</code> {t('to-search')}</div>
         </div>
 
         <PostList posts={posts} />
