@@ -64,14 +64,14 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       />
 
       <div className="flex justify-between">
-        <div className="prose md:w-3/4 my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
+        <div className="prose w-2/3 my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
           <h1 className="text-center sm:text-left">{t('intro-title')}</h1>
           <p>{t('intro-1')}</p>
           <p>{t('intro-2')}</p>
           <p>{t('intro-3')}</p>
         </div>
 
-        <div className="w-1/3 mt-12 items-center">
+        <div className="w-1/3 md:w-1/4 mt-12 items-center">
           <CustomImage src={selfImage} alt='Self Image' />
         </div>
       </div>
@@ -79,7 +79,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
         <div className="prose prose-lg mt-8 dark:prose-dark flex gap-4">
           <h2>{t('latest-posts')} </h2> 
-          <div className='mt-1'>{t('press')} <code>Ctrl + K</code> {t('to-search')}</div>
+          <div className='mt-2'>{t('press')} <code>Ctrl + K</code> {t('to-search')}</div>
         </div>
 
         <PostList posts={posts} />
