@@ -1,5 +1,5 @@
 export const headerConfigs = {
-  title: 'Harry Tsang',
+  title: 'Harry\'s Blog',
   navLinks: [
     { href: '/', title: 'home' },
     { href: '/posts/about', title: 'about' },

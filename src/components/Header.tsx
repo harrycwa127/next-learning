@@ -7,18 +7,24 @@ import MobileNav from '@/components/MobileNav';
 import SectionContainer from '@/components/SectionContainer';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { headerConfigs } from '@/configs/headerConfigs';
+import CustomImage from './CustomImage';
+import logoImage from '../../public/logo.png';
 
 export default function Header() {
   const { t } = useTranslation(['common']);
 
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 py-3 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
+    <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 pt-3 pb-1 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
       <SectionContainer>
-        <div className="flex items-baseline justify-between">
-          <div>
+        <div className="flex justify-between">
+          <div className="flex items-center">
             <CustomLink href="/" aria-label={headerConfigs.title}>
-              <div className="flex items-center justify-between">
-                <div className="h-6 text-2xl font-semibold sm:block">
+              <div className="flex items-center">
+                <div className='h-12 w-12 mr-2'>
+                  <CustomImage src={logoImage} alt="Logo Image" aria-label="Logo Image"/>
+                </div>
+
+                <div className="h-12 text-2xl font-semibold flex items-center">
                   {headerConfigs.title}
                 </div>
               </div>
