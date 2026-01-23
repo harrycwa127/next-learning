@@ -83,7 +83,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
           <h2>{t('latest-posts')} </h2>
           <div className="mt-3 inline-block align-middle text-base font-normal leading-7">
             {t('press')} <code>Ctrl + K</code>
-            <div className="mx-1 mb-1 inline-block align-middle">/ </div>
+            {' / '}
             <div className="mb-1 inline-block align-middle">
               <CommandSvg />
             </div>{' '}
