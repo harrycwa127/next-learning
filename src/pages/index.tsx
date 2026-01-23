@@ -9,6 +9,7 @@ import {
   PostForCommandPalette,
 } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import CommandSvg from '@/components/CommandSvg';
 import CustomImage from '@/components/CustomImage';
 import LayoutPerPage from '@/components/LayoutPerPage';
 import PostList, { PostForPostList } from '@/components/PostList';
@@ -80,8 +81,12 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
         <div className="prose prose-lg mt-8 flex gap-4 dark:prose-dark">
           <h2>{t('latest-posts')} </h2>
-          <div className="mt-2">
-            {t('press')} <code>Ctrl + K</code> {t('to-search')}
+          <div className="mt-2 inline-block align-middle text-base font-normal leading-7">
+            {t('press')} <code>Ctrl + K</code> /{' '}
+            <div className="mb-0.5 inline-block align-middle">
+              <CommandSvg />
+            </div>{' '}
+            {t('to-search')}
           </div>
         </div>
 
