@@ -81,9 +81,10 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
         <div className="prose prose-lg mt-8 flex gap-4 dark:prose-dark">
           <h2>{t('latest-posts')} </h2>
-          <div className="mt-2 inline-block align-middle text-base font-normal leading-7">
-            {t('press')} <code>Ctrl + K</code> /{' '}
-            <div className="mb-0.5 inline-block align-middle">
+          <div className="mt-3 inline-block align-middle text-base font-normal leading-7">
+            {t('press')} <code>Ctrl + K</code>
+            <div className="mx-1 mb-1 inline-block align-middle">/ </div>
+            <div className="mb-1 inline-block align-middle">
               <CommandSvg />
             </div>{' '}
             {t('to-search')}
