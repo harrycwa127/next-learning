@@ -1,4 +1,4 @@
-import Image, { ImageProps } from "next/legacy/image";
+import Image, { ImageProps } from "next/image";
 
 type Props = ImageProps & { base64?: string };
 
