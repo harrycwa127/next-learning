@@ -8,13 +8,14 @@ const LanguageSwitch = () => {
   const nextLocale = router.locale === 'en' ? 'zh-TW' : 'en';
 
   return (
-    <Link locale={nextLocale} href={{ pathname, query }}>
-      <a
-        aria-label="Toggle Language"
-        className="rounded p-2 text-lg font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 sm:p-3"
-      >
-        {router.locale === 'en' ? '繁' : 'EN'}
-      </a>
+    <Link
+      locale={nextLocale}
+      href={{ pathname, query }}
+      aria-label="Toggle Language"
+      className="rounded p-2 text-lg font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 sm:p-3">
+
+      {router.locale === 'en' ? '繁' : 'EN'}
+
     </Link>
   );
 };
