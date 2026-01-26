@@ -19,7 +19,6 @@ export default function CustomImage({
   }
   return (
     <Image
-      layout="responsive"
       src={src}
       alt={alt}
       height={height}
