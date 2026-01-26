@@ -1,4 +1,4 @@
-const fqdn = 'https://harry-blog-next-learning.vercel.app';
+const fqdn = 'https://harry-blog-next.vercel.app';
 const logoPath = '/logo.png';
 const bannerPath = '/og-image.png';
 

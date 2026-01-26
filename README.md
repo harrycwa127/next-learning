@@ -4,7 +4,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 
 ## Demo
 
-[https://harry-blog-next-learning.vercel.app](https://harry-blog-next-learning.vercel.app)
+[https://harry-blog-next.vercel.app](https://harry-blog-next.vercel.app)
 
 ## Features
 
