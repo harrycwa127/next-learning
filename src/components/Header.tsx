@@ -21,7 +21,7 @@ export default function Header() {
           <div className="flex items-center">
             <CustomLink href="/" aria-label={headerConfigs.title}>
               <div className="flex items-center">
-                <div className="mr-2 h-12 w-12">
+                <div className="h-12 w-12">
                   <CustomImage
                     src={logoImage}
                     alt="Logo Image"
