@@ -7,7 +7,7 @@ const { i18n } = i18nConfig;
 /** @type {import('next').NextConfig} */
 const nextConfig = withContentlayer({
   reactStrictMode: true,
-  swcMinify: true,
+  // swcMinify: true,
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
@@ -15,11 +15,11 @@ const nextConfig = withContentlayer({
     });
     return config;
   },
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
-  },
+  // eslint: {
+  //   // Warning: This allows production builds to successfully complete even if
+  //   // your project has ESLint errors.
+  //   ignoreDuringBuilds: true,
+  // },
   typescript: {
     // Dangerously allow production builds to successfully complete even if
     // your project has type errors.

@@ -8,7 +8,7 @@ const LanguageSwitch = () => {
   const nextLocale = router.locale === 'en' ? 'zh-TW' : 'en';
 
   return (
-    <Link legacyBehavior locale={nextLocale} href={{ pathname, query }}>
+    <Link locale={nextLocale} href={{ pathname, query }}>
       <a
         aria-label="Toggle Language"
         className="rounded p-2 text-lg font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800 sm:p-3"
