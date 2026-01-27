@@ -92,6 +92,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
   const post: PostForPostPage = {
     title: postFull.title,
     date: postFull.date,
+    updateDate: postFull.updateDate || '',
     description: postFull.description,
     path: postFull.path,
     socialImage: postFull.socialImage || null,
@@ -128,6 +129,7 @@ const PostPage: NextPage<Props> = ({
     description,
     title,
     date,
+    updateDate,
     path,
     socialImage,
     body: { code },
@@ -155,7 +157,7 @@ const PostPage: NextPage<Props> = ({
           type: 'article',
           article: {
             publishedTime: date,
-            modifiedTime: date,
+            modifiedTime: updateDate || date,
           },
         }}
       />
@@ -165,7 +167,7 @@ const PostPage: NextPage<Props> = ({
         title={title}
         images={[ogImage]}
         datePublished={date}
-        dateModified={date}
+        dateModified={updateDate || date}
         authorName={siteConfigs.author}
         description={description}
       />

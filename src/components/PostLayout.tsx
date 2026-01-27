@@ -10,6 +10,7 @@ import formatDate from '@/lib/formatDate';
 
 export interface PostForPostLayout {
   date: string;
+  updateDate: string;
   title: string;
   body: { raw: string };
 }
@@ -34,6 +35,7 @@ export default function PostLayout({
 }: Props) {
   const {
     date,
+    updateDate,
     title,
     body: { raw },
   } = post;
@@ -50,13 +52,26 @@ export default function PostLayout({
               <PageTitle>{title}</PageTitle>
             </div>
 
-            <dl className="space-y-10">
+            <dl className="space-y-10 flex flex-row items-center justify-center space-y-0">
               <div>
                 <dt className="sr-only">{t('published-time')}</dt>
                 <dd className="text-base font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400">
                   <time dateTime={date}>{formatDate(date, locale)}</time>
                 </dd>
               </div>
+            {updateDate && updateDate !== date && (
+              <>
+                <div className="mx-1 text-base text-gray-500 transition-colors dark:text-gray-400">•</div>
+                <div>
+                  <dd className="text-base font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400">
+                    {t('updated-time') + ' '}
+                    <time dateTime={updateDate}>
+                      {formatDate(updateDate, locale)}
+                    </time>
+                  </dd>
+                </div>
+              </>
+            )}
             </dl>
           </div>
         </header>
