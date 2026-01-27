@@ -4,6 +4,7 @@ import '@/styles/prism-plus.css';
 import 'nprogress/nprogress.css';
 import '@/styles/nprogress-custom.scss';
 
+import { Analytics } from '@vercel/analytics/next';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
@@ -83,6 +84,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </LayoutWrapper>
       </CommandPalette>
+      <Analytics />
     </ThemeProvider>
   );
 }
