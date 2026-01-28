@@ -1,53 +1,33 @@
 import rehypeCodeTitles from 'rehype-code-titles';
 import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
+import { defineDatabase, makeSource } from 'contentlayer-source-notion';
+import { NotionRenderer } from '@notion-render/client';
+import { Client } from '@notionhq/client';
 
-import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
 import imageMetadata from './src/plugins/imageMetadata';
 
-export const Post = defineDocumentType(() => ({
+const Post = defineDatabase(() => ({
   name: 'Post',
-  filePathPattern: `content/posts/**/*.mdx`,
-  contentType: 'mdx',
-  fields: {
-    title: {
-      type: 'string',
-      required: true,
-    },
-    description: {
-      type: 'string',
-      required: true,
-    },
-    slug: {
-      type: 'string',
-      required: true,
-    },
-    date: {
-      type: 'date',
-      required: true,
-    },
-    updateDate: {
-      type: 'date',
-    },
-    socialImage: {
-      type: 'string',
-    },
-    redirectFrom: {
-      type: 'list',
-      of: { type: 'string' },
-    },
-  },
-  computedFields: {
-    path: {
-      type: 'string',
-      resolve: (post) => `/posts/${post.slug}`,
-    },
-  },
+  databaseId: process.env.NOTION_BLOG_DATABASE_ID || '',
+  properties: [
+    { name: 'title', isRequired: true },
+    { name: 'description', isRequired: true },
+    { name: 'slug', isRequired: true },
+    { name: 'date', isRequired: true },
+    { name: 'updateDate' },
+    { name: 'socialImage' },
+    { name: 'redirectFrom' },
+  ],
 }));
 
+const notionClient = new Client({ auth: process.env.NOTION_TOKEN });
+const renderer = new NotionRenderer({ client: notionClient });
+
 export default makeSource({
-  contentDirPath: 'content',
-  documentTypes: [Post],
+  databaseTypes: [Post],
+  client: notionClient,
+  renderer,
   mdx: {
     rehypePlugins: [
       rehypeSlug,
