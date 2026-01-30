@@ -9,7 +9,7 @@ socialImage: https://icon.icepanel.io/Technology/svg/React.svg
 
 ## Hooks
 
-> [Refernce](https://react.dev/reference/react/hooks)
+> [Reference](https://react.dev/reference/react/hooks)
 
 ### useState
 
@@ -106,4 +106,122 @@ const handleSubmit = useCallback(() => {
 
 // use callBack function
 <Button onSubmit={handleSubmit} />
+```
+
+## Lifecycle
+
+### Mounting
+
+> Set up initial state, fetch data, or prepare DOM references.\
+> Component is created and inserted into the DOM
+
+hook: `useEffect(() => { ... }, [])`
+
+### Updating
+
+> Respond to changes in data or props.\
+> Component re-renders due to state/prop changes
+
+hook: `useEffect(() => { ... }, [dependencies])`
+
+### Unmounting
+
+> Clean up resources (timers, subscriptions, event listeners).\
+> Component is removed from the DOM
+
+hook: `useEffect(() => { return () => { ... }; }, [])`
+
+## Router
+
+### Set Route
+
+Use the `BrowserRouter` component wrapped around the entire application (usually in index.js or App.js) to provide the necessary routing context to all descendant components.
+
+Use the `Routes` component to renders a single, best-matching child `<Route>` based on the current URL.
+
+Use the `Route` component to define a mapping between a specific URL path and the UI component that should be rendered when the URL matches that path.
+
+```jsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./pages/Layout";
+import Home from "./pages/Home";
+import Page1 from "./pages/Page1";
+import Page2 from "./pages/Page2";
+import NotFound from "./pages/NotFound";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+    <Routes>
+        <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="page1" element={<Page1 />} />
+            <Route path="page2" element={<Page2 />} />
+            <Route path="*" element={<NotFound />} />
+        </Route>
+    </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+```jsx:Layout.jsx
+import { Outlet } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
+
+const Layout = () => {
+  return (
+    <div>
+      <Header />
+      <Outlet />
+      <Footer />
+    </div>
+  );
+};
+
+export default Layout;
+```
+
+### Navigation
+
+Use the `Link` or `NavLink` component to allow users to navigate between pages declaratively
+
+```jsx
+import { Link, NavLink } from "react-router-dom";
+
+<Link to="page1">PAGE1</Link>
+<Link to="/page2">PAGE2</Link>
+
+<NavLink
+  to="/page1"
+  style={({ isActive }) => ({ color: isActive ? "red" : "" })}
+>
+  PAGE1
+</NavLink>
+
+<NavLink
+  to="/page2"
+  className={({ isActive }) => (isActive ? "red" : "")}
+>
+  PAGE2
+</NavLink>
+```
+
+Use `useNavigate` hook to navigate to other URLs.
+
+```jsx
+import { useNavigate } from 'react-router-dom';
+
+const Header = () => {
+  const navigate= useNavigate();
+
+  return (
+    // 前路徑 /a；    當前路徑 /a/a1
+    <div onClick={() => navigate('/b')}>跳轉到/b</div>
+    <div onClick={() => navigate('a11')}>跳轉到/a/a1/a11</div>
+    <div onClick={() => navigate('../a2')}>跳轉到/a/a2</div>
+    <div onClick={() => navigate(-1)}>跳轉到/a</div>
+  )
+}
 ```
