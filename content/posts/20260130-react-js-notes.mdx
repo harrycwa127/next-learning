@@ -1,0 +1,109 @@
+---
+title: React.js Notes
+description: React.js Notes
+slug: react-js-notes
+date: 2026-01-30
+type: Post
+socialImage: https://icon.icepanel.io/Technology/svg/React.svg
+---
+
+## Hooks
+
+> [Refernce](https://react.dev/reference/react/hooks)
+
+### useState
+
+`useState` is to provides a state variable and its updater function, enabling components to retain values between re-renders and automatically refresh the UI when the state changes.
+
+```jsx
+const [index, setIndex] = useState(initValue);
+```
+
+### createContext / useContext
+
+`createContext` is to create a create a context that components can provide or read.\
+\
+`useContext` is to read and subscribe to context.
+
+```jsx
+import { createContext, useContext } from 'react';
+
+const ThemeContext = createContext(null);
+
+export default function MyApp() {
+    // set theme with useState
+    const [theme, setTheme] = useState('dark');
+
+  return (
+    // set value to context
+    <ThemeContext value={theme}>
+      <Form />
+    </ThemeContext>
+  )
+}
+
+// another compent
+export default function Form() {
+    // get context value
+    const theme = useContext(ThemeContext);
+    // ...
+}
+```
+
+### useRef
+
+`useRef` is to creates a persistent reference object, allowing you to store values or directly access DOM elements without causing re-renders when the reference changes.
+
+```jsx
+import { useRef } from 'react';
+
+const ref = useRef(0);
+
+// exmaple for store value
+ref.current = ref.current + 1;
+
+//exmaple for ref a DOM element
+<div ref={myRef}>
+```
+
+### useEffect
+
+`useEffect` is to run side effects in function components, such as fetching data, updating the DOM, or setting up subscriptions, and it executes after the component renders.
+
+```jsx
+import { useEffect } from 'react';
+
+useEffect(() => {
+    // ...
+}, [dependencies]);
+```
+
+### useMemo
+
+`useMemo` is to memoizes the result of a computation, ensuring that expensive calculations are only re-run when their dependencies change, which helps improve performance by avoiding unnecessary recalculations.
+
+```jsx
+import { useMemo } from 'react';
+
+cosnt foo = useMemo(() => {
+    // ...
+}, [dependencies]);
+
+// use memo stored values
+<p>{foo}</p>
+```
+
+### useCallback
+
+`useCallback` is a React hook that returns a memoized version of a callback function, ensuring the function is only recreated when its dependencies change, which helps optimize performance by preventing unnecessary re-renders of child components.
+
+```jsx
+import { useCallback } from 'react';
+
+const handleSubmit = useCallback(() => {
+    // ...
+}, [dependencies]);
+
+// use callBack function
+<Button onSubmit={handleSubmit} />
+```

@@ -32,6 +32,14 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - TypeScript
 - Eslint, Prettier
 
+## Prepare
+
+install denpancy:
+
+```bash
+pnpm install
+```
+
 ## Getting Started
 
 Start local server for development:
