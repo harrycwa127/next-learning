@@ -1,0 +1,213 @@
+---
+title: Next.js Notes
+description: Next.js Notes
+slug: next-js-notes
+date: 2026-02-02
+type: Post
+socialImage: /images/next-logo.png
+---
+
+## Rendering
+
+### CSR (Client-Side Rendering)
+
+The browser downloads a mostly empty HTML shell and JavaScript bundle. React then renders the page entirely on the client.
+
+Pros:
+
+- Great for highly interactive apps.
+- Reduces server load since rendering happens in the browser.
+
+Cons:
+
+- Slower initial load (blank screen until JS executes).
+- Worse SEO because crawlers may not see full content immediately.
+
+### SSR (Server-Side Rendering)
+
+The server generates the HTML for each request, then sends it to the client. React hydrates the page afterward.
+
+SSR using `getServerSideProps` function to by fetching data on every request and passing it to page as props. It’s ideal when your page needs fresh, dynamic data that changes frequently, such as user-specific dashboards or live stock prices.
+
+Pros:
+
+- Faster first paint (HTML is ready).
+- Better SEO since crawlers see full HTML.
+
+Cons:
+
+- Higher server cost (HTML generated on every request).
+- Slower response under heavy traffic.
+
+```jsx:pages/products/[id].tsx
+import type { GetServerSideProps } from 'next'
+
+type Product = {
+  id: string
+  name: string
+  price: number
+}
+
+export const getServerSideProps: GetServerSideProps<{ product: Product }> = async (context) => {
+  const { id } = context.params as { id: string }
+
+  // Fetch product data using the URL param
+  const res = await fetch(`https://fakestoreapi.com/products/${id}`)
+  const product: Product = await res.json()
+
+  // If product not found, return 404
+  if (!product) {
+    return {
+      notFound: true,
+    }
+  }
+
+  return {
+    props: { product },
+  }
+}
+
+export default function ProductPage({ product }: { product: Product }) {
+  // ...
+}
+
+```
+
+### SSG (Static Site Generation)
+
+HTML is generated at build time and served as static files.
+
+SSR using `getStaticProps` function to fetch data at build time and pass it as props to your page component. This means the HTML is pre-rendered with the data baked in, making the page extremely fast and SEO-friendly.
+
+Pros:
+
+- Extremely fast (CDN can serve prebuilt pages).
+- Very cheap to scale.
+
+Cons:
+
+- Content is fixed until the next build.
+- Not suitable for frequently updated data.
+
+```jsx
+import type { GetServerSideProps } from 'next' 
+
+type Repo = { 
+  name: string 
+  stargazers_count: number 
+}
+
+export const getServerSideProps: GetServerSideProps<{ repo: Repo }> =   async () => { 
+  const res = await fetch('https://api.github.com/repos/vercel/next.js') const repo: Repo = await res.json() 
+  
+  return { 
+    props: { repo }, 
+    revalidate: 60, // ISR: re-generate page at most once per minute
+  } 
+}
+
+export default function Home({ repo }: { repo: Repo }) {
+  // ...
+}
+```
+
+### ISR (Incremental Static Regeneration)
+
+Builds static pages like SSG, but allows revalidation at runtime. Pages can be updated after deployment without a full rebuild.
+
+Pros:
+
+- Combines speed of SSG with freshness of SSR.
+- Flexible: you can set revalidation intervals.
+
+Cons:
+
+- Slightly more complex setup.
+- Updates aren’t instant; depend on revalidation timing.
+
+## File-System Based Routing
+
+### Page
+
+To create a page, add a `page.tsx` file inside the `app` directory and default export a React component.
+
+### Layout
+
+Layout is UI that is shared between multiple pages. On navigation, layouts preserve state, remain interactive, and do not rerender. To define a layout by default exporting a React component from a `layout` file with accept a children prop which can be a page or another layout.
+
+### Nested Route
+
+Folders are used to define the route segments that map to URL segments and create Files (like page and layout) to create UI that is shown for a segment.
+
+### Group Segment
+
+The group segment is useful when you want multiple routes to share a layout but don’t want the layout folder name to appear in the URL.
+
+To create a group segment, wrap the segment (folder) name in parentheses: `(segmentName)`.
+
+### Dynamic Segment
+
+The dynamic segment is to create routes that depend on parameters in the URL.
+
+To create a dynamic segment, wrap the segment (folder) name in square brackets: `[segmentName]`.
+
+To create a dynamic segment to matches multiple segments, wrap the segment (folder) name in double square brackets and ellipsis: `[...segmentName]`.
+
+To create a dynamic segment to matches multiple segments optional, wrap the segment (folder) name in double square brackets and ellipsis: `[[...segmentName]]`.
+
+### Example
+
+| File Path | Route |
+| :--- | :--- |
+| app/pages.tsx | `/` |
+| app/posts/pages.tsx | `/posts` |
+| app/blog/[slug]/pages.tsx | `/blog/{slug}` |
+| app/(group)/profile/[id]/pages.tsx | `/profile/{id}` |
+
+### Navigation
+
+use the `<Link>` component to navigate between routes. `<Link>` is a built-in Next.js component that extends the HTML `<a>` tag to provide prefetching and client-side navigation.
+
+```jsx
+import Link from 'next/link'
+ 
+export default async function Post({ post }) {
+  const posts = await getPosts()
+ 
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.slug}>
+          <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+Or programmatically navigate to another route using the `router.push()` method.
+
+```jsx
+import { useRouter } from 'next/router'
+
+export default function NavigateButton() {
+  const router = useRouter()
+
+  const goToAbout = () => {
+    router.push('/about') // navigates to /about
+  }
+
+  const goToProduct = () => {
+    router.push('/products/123') // navigates to /products/123
+  }
+
+  return (
+    <div>
+      <button onClick={goToAbout}>Go to About</button>
+      <button onClick={goToProduct}>Go to Product 123</button>
+    </div>
+  )
+}
+
+```
