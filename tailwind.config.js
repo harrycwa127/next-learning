@@ -94,13 +94,13 @@ module.exports = {
             th: {
               padding: theme('spacing.3'),
               'border-color': theme('colors.gray.300', '#ddd'),
-              'text-align': 'center',
+              'text-align': 'left',
               'border': `1px solid ${theme('colors.gray.300', '#ddd')}`, 
             },
             td: {
               padding: theme('spacing.3'),
               'border-color': theme('colors.gray.300', '#ddd'),
-              'text-align': 'center',
+              'text-align': 'left',
               'vertical-align': 'middle',
               'border': `1px solid ${theme('colors.gray.300', '#ddd')}`, 
             },
