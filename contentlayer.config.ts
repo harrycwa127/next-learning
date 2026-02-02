@@ -1,6 +1,7 @@
 import rehypeCodeTitles from 'rehype-code-titles';
 import rehypePrism from 'rehype-prism-plus';
 import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm'
 
 import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
 import imageMetadata from './src/plugins/imageMetadata';
@@ -54,6 +55,7 @@ export default makeSource({
       rehypeCodeTitles,
       [rehypePrism, { ignoreMissing: true }],
       imageMetadata,
+      remarkGfm
     ],
   },
 });

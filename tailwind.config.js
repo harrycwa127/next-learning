@@ -86,6 +86,27 @@ module.exports = {
               color: theme('colors.gray.900'),
               borderLeftColor: theme('colors.gray.200'),
             },
+            table: {
+              'border-collapse': 'collapse',
+              width: '100%',
+              'border-color': theme('colors.gray.300', '#ddd'),
+            },
+            th: {
+              padding: theme('spacing.3'),
+              'border-color': theme('colors.gray.300', '#ddd'),
+              'text-align': 'center',
+              'border': `1px solid ${theme('colors.gray.300', '#ddd')}`, 
+            },
+            td: {
+              padding: theme('spacing.3'),
+              'border-color': theme('colors.gray.300', '#ddd'),
+              'text-align': 'center',
+              'vertical-align': 'middle',
+              'border': `1px solid ${theme('colors.gray.300', '#ddd')}`, 
+            },
+            'tbody tr:nth-child(odd)': {
+              'background-color': theme('colors.gray.80', '#f8f8f8'),
+            },
           },
         },
         dark: {
@@ -147,6 +168,20 @@ module.exports = {
               color: theme('colors.gray.100'),
               borderLeftColor: theme('colors.gray.700'),
             },
+            table: {
+              'border-color': theme('colors.gray.600'), // 深色邊框
+            },
+            th: {
+              'border-color': theme('colors.gray.600'),
+              color: theme('colors.white'),
+            },
+            td: {
+              'border-color': theme('colors.gray.600'),
+              color: theme('colors.gray.100'),
+            },
+            'tbody tr:nth-child(odd)': {
+              'background-color': theme('colors.gray.800'), // 深色偶數行背景
+            },
           },
         },
       }),
@@ -154,6 +189,6 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/typography'),
-    require('@tailwindcss/line-clamp'),
+    // require('@tailwindcss/line-clamp'),
   ],
 };
