@@ -82,8 +82,5 @@
       "@types/react": "19.2.9",
       "@types/react-dom": "19.2.3"
     }
-  },
-  "optionalDependencies": {
-    "@img/sharp-win32-x64": "^0.34.5"
   }
 }
