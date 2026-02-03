@@ -37,7 +37,7 @@
     "rehype-prism-plus": "^1.5.0",
     "rehype-slug": "^5.0.1",
     "remark-gfm": "^3.0.1",
-    "sharp": "^0.31.0",
+    "sharp": "^0.33.5",
     "unist-util-visit": "^4.1.1"
   },
   "devDependencies": {
