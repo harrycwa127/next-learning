@@ -6,6 +6,7 @@ import formatDate from '@/lib/formatDate';
 export interface PostForPostList {
   slug: string;
   date: string;
+  updateDate: string | null;
   title: string;
   description: string;
   path: string;
@@ -22,7 +23,7 @@ export default function PostList({ posts = [] }: Props) {
     <ul className="divide-y divide-gray-200 transition-colors dark:divide-gray-700">
       {!posts.length && 'No posts found.'}
       {posts.map((post) => {
-        const { slug, date, title, description, path } = post;
+        const { slug, date, updateDate, title, description, path } = post;
         return (
           <li key={slug} className="group transition-colors">
             <CustomLink href={path}>
@@ -30,7 +31,7 @@ export default function PostList({ posts = [] }: Props) {
                 <dl>
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-sm font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400 md:text-base">
-                    <time dateTime={date}>{formatDate(date, locale)}</time>
+                    <time dateTime={updateDate || date}>{formatDate(updateDate || date, locale)}</time>
                   </dd>
                 </dl>
                 <div className="space-y-3 xl:col-span-3">

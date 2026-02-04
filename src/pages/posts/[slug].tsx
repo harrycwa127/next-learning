@@ -30,6 +30,7 @@ type PostForPostPage = PostForPostLayout & {
   title: string;
   description: string;
   date: string;
+  updateDate: string | null;
   path: string;
   socialImage: string | null;
   body: {

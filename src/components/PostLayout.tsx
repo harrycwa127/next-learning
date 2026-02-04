@@ -10,7 +10,7 @@ import formatDate from '@/lib/formatDate';
 
 export interface PostForPostLayout {
   date: string;
-  updateDate: string;
+  updateDate: string | null;
   title: string;
   body: { raw: string };
 }
