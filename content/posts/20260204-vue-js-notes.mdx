@@ -1,0 +1,316 @@
+---
+title: Vue.js Notes
+description: Vue.js Notes
+slug: vue-js-notes
+date: 2026-02-04
+type: Post
+socialImage: /images/vue-logo.png
+---
+
+## API
+
+[Reference](https://vuejs.org/api/)
+
+### Optional API
+
+The Options API organizes component logic into clearly defined options like data, methods, and computed, offering a familiar and structured approach to managing component behavior.
+
+```js
+<script>
+export default {
+  props: ['title'],
+  emits: ['update'],
+
+  data() {
+    return {
+      count: 0,
+      name: ''
+    }
+  },
+
+  computed: {
+    doubleCount() {
+      return this.count * 2
+    }
+  },
+
+  watch: {
+    count(newVal) {
+      console.log('Count changed:', newVal)
+    }
+  },
+
+  methods: {
+    increment() {
+      this.count++
+      this.$emit('update', this.count)
+    }
+  },
+
+  mounted() {
+    console.log('Component mounted')
+  }
+}
+</script>
+```
+
+### Composition API
+
+The Composition API allows developers to use a functional, reactive programming style to build components, and it offers a more flexible and expressive way of defining component behavior.
+
+```js
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+
+const props = defineProps(['title'])
+const emit = defineEmits(['update'])
+
+const count = ref(0)
+const name = ref('')
+
+const doubleCount = computed(() => count.value * 2)
+
+watch(count, (newVal) => {
+  console.log('Count changed:', newVal)
+})
+
+const increment = () => {
+  count.value++
+  emit('update', count.value)
+}
+
+onMounted(() => {
+  console.log('Component mounted')
+})
+</script>
+```
+
+## Built-in Directives
+
+[Reference](https://vuejs.org/api/built-in-directives.html)
+
+### v-text
+
+Update the element's text content.
+
+```js
+<span v-text="msg"></span>
+<!-- same as -->
+<span>{{msg}}</span>
+```
+
+### v-html
+
+Update the element's innerHTML. Contents of v-html are inserted as plain HTML - Vue template syntax will not be processed.
+
+```js
+<div v-html="html"></div>
+```
+
+### v-show
+
+Toggle the element's visibility based on the truthy-ness of the expression value.
+
+```js
+<div v-show="isDisplay"></div>
+```
+
+### v-if, v-else, v-else-if
+
+Conditionally render an element or a template fragment based on the truthy-ness of the expression value.
+
+```js
+<div v-if="type === 'A'">
+  A
+</div>
+<div v-else-if="type === 'B'">
+  B
+</div>
+<div v-else>
+  Not A/B
+</div>
+```
+
+### v-for
+
+Render the element or template block multiple times based on the source data. The default behavior of `v-for` will try to patch the elements in-place without moving them. To force it to reorder elements, you should provide an ordering hint with the `key` special attribute:
+
+```js
+<div v-for="item in items" :key="item.id">
+  {{ item.text }}
+</div>
+```
+
+### v-on
+
+Attach an event listener to the element, Shorthand: `@`, Expects: Function | Inline Statement | Object (without argument)
+
+```js
+<!-- method handler -->
+<button v-on:click="doThis"></button>
+
+<!-- dynamic event -->
+<button v-on:[event]="doThis"></button>
+
+<!-- inline statement -->
+<button v-on:click="doThat('hello', $event)"></button>
+
+<!-- shorthand -->
+<button @click="doThis"></button>
+
+<!-- shorthand dynamic event -->
+<button @[event]="doThis"></button>
+
+<!-- stop propagation -->
+<button @click.stop="doThis"></button>
+
+<!-- prevent default -->
+<button @click.prevent="doThis"></button>
+
+<!-- prevent default without expression -->
+<form @submit.prevent></form>
+
+<!-- chain modifiers -->
+<button @click.stop.prevent="doThis"></button>
+
+<!-- key modifier using keyAlias -->
+<input @keyup.enter="onEnter" />
+
+<!-- the click event will be triggered at most once -->
+<button v-on:click.once="doThis"></button>
+
+<!-- object syntax -->
+<button v-on="{ mousedown: doThis, mouseup: doThat }"></button>
+```
+
+### v-bind
+
+Dynamically bind one or more attributes, or a component prop to an expression. Shorthand: `:` or `.` (when using .prop modifier)
+
+```js
+<!-- bind an attribute -->
+<img v-bind:src="imageSrc" />
+
+<!-- dynamic attribute name -->
+<button v-bind:[key]="value"></button>
+
+<!-- shorthand -->
+<img :src="imageSrc" />
+
+<!-- same-name shorthand (3.4+), expands to :src="src" -->
+<img :src />
+
+<!-- shorthand dynamic attribute name -->
+<button :[key]="value"></button>
+
+<!-- with inline string concatenation -->
+<img :src="'/path/to/images/' + fileName" />
+
+<!-- class binding -->
+<div :class="{ red: isRed }"></div>
+<div :class="[classA, classB]"></div>
+<div :class="[classA, { classB: isB, classC: isC }]"></div>
+
+<!-- style binding -->
+<div :style="{ fontSize: size + 'px' }"></div>
+<div :style="[styleObjectA, styleObjectB]"></div>
+
+<!-- binding an object of attributes -->
+<div v-bind="{ id: someProp, 'other-attr': otherProp }"></div>
+
+<!-- prop binding. "prop" must be declared in the child component. -->
+<MyComponent :prop="someThing" />
+
+<!-- pass down parent props in common with a child component -->
+<MyComponent v-bind="$props" />
+
+<!-- XLink -->
+<svg><a :xlink:special="foo"></a></svg>
+
+<div :someProperty.prop="someObject"></div>
+
+<!-- equivalent to -->
+<div .someProperty="someObject"></div>
+```
+
+### v-model
+
+Create a two-way binding on a form input element or a component.
+
+- `.lazy` - listen to change events instead of input
+- `.number` - cast valid input string to numbers
+- `.trim` - trim input
+
+```js
+<script setup>
+  const model = defineModel()
+</script>
+
+<template>
+  <input v-model="model" />
+  <input v-model.lazy="model" />
+  <input v-model.trim="model" />
+  <input v-model.number="model" />
+</template>
+```
+
+### v-slot
+
+Denote named slots or scoped slots that expect to receive props. Shorthand: `#`
+
+```js
+// FancyButton
+<button class="fancy-btn">
+  <slot></slot> <!-- slot outlet -->
+</button>
+
+// use FancyButton
+<FancyButton>
+  Click me! <!-- slot content -->
+</FancyButton>
+```
+
+```js
+// BaseLayout
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+
+// use BaseLayout
+<BaseLayout>
+  <template v-slot:header>
+    <!-- content for the header slot -->
+  </template>
+</BaseLayout>
+```
+
+### v-pre
+
+Skip compilation for this element and all its children.
+
+```js
+<span v-pre>{{ this will not be compiled }}</span>
+```
+
+### v-once
+
+Render the element and component included its children once only, and skip future updates.
+
+```js
+<!-- single element -->
+<span v-once>This will never change: {{msg}}</span>
+
+<!-- the element have children -->
+<div v-once>
+  <h1>Comment</h1>
+  <p>{{msg}}</p>
+</div>
+```
