@@ -52,7 +52,7 @@ export default function PostLayout({
               <PageTitle>{title}</PageTitle>
             </div>
 
-            <dl className="flex flex-row items-center justify-center space-y-10 space-y-0">
+            <dl className="flex flex-row items-center justify-center space-y-0">
               <div>
                 <dt className="sr-only">{t('published-time')}</dt>
                 <dd className="text-sm font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400 sm:text-base">
