@@ -3,6 +3,7 @@ title: Next.js Notes
 description: Next.js Notes
 slug: next-js-notes
 date: 2026-02-02
+updateDate: 2026-02-04
 type: Post
 socialImage: /images/next-logo.png
 ---
@@ -163,6 +164,8 @@ To create a dynamic segment to matches multiple segments optional, wrap the segm
 | app/posts/pages.tsx | `/posts` |
 | app/blog/[slug]/pages.tsx | `/blog/{slug}` |
 | app/(group)/profile/[id]/pages.tsx | `/profile/{id}` |
+| app/posts/[...slug]/pages.tsx | `/posts/{slug1}` / `/posts/{slug1}/{slug2}/{slug3}...` |
+| app/posts/[[...slug]]/pages.tsx | `/posts` / `/posts/{slug1}` / `/posts/{slug1}/{slug2}/{slug3}...` |
 
 ### Navigation
 
