@@ -31,8 +31,8 @@ export default function PostList({ posts = [] }: Props) {
                 <dl>
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-sm font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400 md:text-base flex md:block">
-                    <time dateTime={date}>📅 {formatDate(date, locale)}</time>
-                    {updateDate && <div className='ml-2 md:ml-0'><time dateTime={updateDate}>🔄 {formatDate(updateDate, locale)}</time></div>}
+                    <time dateTime={date}>✒️ {formatDate(date, locale)}</time>
+                    {updateDate && <div className='ml-2 md:ml-0'><time dateTime={updateDate}>🛠️ {formatDate(updateDate, locale)}</time></div>}
                   </dd>
                 </dl>
                 <div className="space-y-3 xl:col-span-3">
