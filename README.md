@@ -34,7 +34,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 
 ## SEO OG-image
 
-![og-image](/public/seo-display.png)
+![og-image](/public/og-image.png)
 
 ![seo og-image](/public/images/seo-display.png)
 
