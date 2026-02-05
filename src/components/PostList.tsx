@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 
 import CustomLink from '@/components/CustomLink';
 import formatDate from '@/lib/formatDate';
+import { CalendarIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export interface PostForPostList {
   slug: string;
@@ -31,8 +32,8 @@ export default function PostList({ posts = [] }: Props) {
                 <dl>
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-sm font-medium leading-6 text-gray-500 transition-colors dark:text-gray-400 md:text-base flex md:block">
-                    <time dateTime={date}>📅 {formatDate(date, locale)}</time>
-                    {updateDate && <div className='ml-2 md:ml-0'><time dateTime={updateDate}>🔄 {formatDate(updateDate, locale)}</time></div>}
+                    <time dateTime={date} className='flex flex-row items-center'><CalendarIcon className='h-5 w-5 mr-1 text-blue-500' />{formatDate(date, locale)}</time>
+                    {updateDate && <time dateTime={updateDate} className='flex flex-row items-center'><ArrowPathIcon className='h-5 w-5 mr-1 ml-3 md:ml-0 text-red-500' /> {formatDate(updateDate, locale)}</time>}
                   </dd>
                 </dl>
                 <div className="space-y-3 xl:col-span-3">
