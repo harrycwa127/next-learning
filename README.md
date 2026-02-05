@@ -34,7 +34,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 
 ## SEO OG-image
 
-![seo og-image](https://harry-blog-next.vercel.app/images/seo-display.png)
+![seo og-image](/images/seo-display.png)
 
 ## Prepare
 
