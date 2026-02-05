@@ -32,6 +32,10 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - TypeScript
 - Eslint, Prettier
 
+## SEO OG-image
+
+![seo og-image](https://harry-blog-next.vercel.app/images/seo-display.png)
+
 ## Prepare
 
 install denpancy:
