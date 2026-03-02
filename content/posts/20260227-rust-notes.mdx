@@ -1,0 +1,99 @@
+---
+title: Rust Notes
+description: Rust Notes (Keep Updating and Learning)
+slug: rust-notes
+date: 2026-03-02
+type: Post
+socialImage: /images/rust-logo.png
+---
+
+## Reference
+
+> [https://ithelp.ithome.com.tw/users/20125652/ironman/8347](https://ithelp.ithome.com.tw/users/20125652/ironman/8347)
+
+## 所有權系統
+
+1.每個值都有一個所有者（owner）
+2.同一時間只能有一個所有者
+3.當所有者離開作用域時，值會被丟棄
+
+移動語意（Move Semantics）
+```rust
+fn main() {
+    let x = 5;
+    let y = x;    // x 被複製到 y
+    
+    println!("x = {}, y = {}", x, y);  // 都可以使用
+
+
+    let s1 = String::from("hello");
+    // s1 在 stack 上存放：
+    // - 指向 heap 記憶體的 pointer
+    // - 長度 (5)
+    // - 容量 (5)
+    //
+    // 實際的字串資料 "hello" 存放在 heap 上
+
+    let s2 = s1;  // s1 被移動到 s2
+    // 只複製 stack 上的資料（pointer、長度、容量）
+    // 但 s1 變得無效，避免雙重釋放 (double free)
+    
+    // println!("{}", s1);  // 錯誤！s1 已經無效
+}
+```
+
+所有權在函式中也會發生轉移：
+```rust
+fn main() {
+    let s = String::from("hello");
+    takes_ownership(s);  // s 的所有權轉移給函式
+    
+    // println!("{}", s);  // 錯誤！s 已經無效
+    
+    let x = 5;
+    makes_copy(x);       // x 被複製，原本的 x 仍然有效
+    
+    println!("x = {}", x);  // 沒問題
+
+
+    let s1 = gives_ownership();         // 函式回傳值的所有權轉移給 s1
+    let s2 = String::from("hello");     
+    let s3 = takes_and_gives_back(s2);  // s2 被移動進函式，回傳值移動給 s3
+    
+    // println!("{}", s2);  // 錯誤！s2 已經被移動
+    println!("{}", s1);     // 沒問題
+    println!("{}", s3);     // 沒問題
+}
+
+fn takes_ownership(some_string: String) {
+    println!("{}", some_string);
+}  // some_string 離開作用域，記憶體被釋放
+
+fn makes_copy(some_integer: i32) {
+    println!("{}", some_integer);
+}  // some_integer 離開作用域，但因為是 Copy 型別，沒有特殊處理
+
+fn gives_ownership() -> String {
+    let some_string = String::from("yours");
+    some_string  // 回傳值，所有權轉移給呼叫者
+}
+
+fn takes_and_gives_back(a_string: String) -> String {
+    a_string  // 回傳傳入的值，所有權轉移給呼叫者
+}
+```
+
+### Reference 參考
+
+```rust
+fn main(){
+  let s1 = String::from("hello");
+  let len = calculate_length(&s1);  // 傳遞 s1 的參考
+    
+  println!("'{}' 的長度是 {}", s1, len);  // s1 仍然可以使用！
+}
+
+fn calculate_length(s: &String) -> usize {  // s 是 String 的參考
+    s.len()
+}  // s 離開作用域，但因為它沒有擁有資料，所以不會釋放記憶體
+```
