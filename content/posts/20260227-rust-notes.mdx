@@ -259,7 +259,7 @@ fn main() {
 }
 ```
 
-### Enums
+### `Enums`
 
 ```rust
 #[derive(Debug)]
@@ -277,6 +277,7 @@ impl Message {
             Message::Move { x, y } => println!("移動到座標 ({}, {})", x, y),
             Message::Write(text) => println!("寫入文字：{}", text),
             Message::ChangeColor(r, g, b) => println!("改變顏色為 RGB({}, {}, {})", r, g, b),
+            _ => println!("Undefine Message"),
         }
     }
 }
@@ -292,5 +293,85 @@ fn main() {
     msg2.process();
     msg3.process();
     msg4.process();
+}
+```
+
+### `Option\<T\>`
+
+```rust
+enum Option<T> {
+    Some(T), // Contains a value of type T
+    None,    // Represents the absence of a value
+}
+
+fn main(){
+    let x: Option<i32> = Some(5);
+    let y: Option<i32> = None;
+
+    // You can't just do x + 10; you have to "unwrap" it.
+
+    let z = Some(true); // auto assign type Option<bool> to z
+
+    let val = x.unwrap();   // get val in Some, then type of val is i32
+                            // Not able to unwrap from None
+    let val_2 = x.unwrap_or(0); // unwrap with default value when None
+
+     if x.is_some() {
+        println!("有名字！");
+    }
+    
+    if y.is_none() {
+        println!("沒有年齡資訊");
+    }
+}
+```
+
+### `match` / `if let`
+
+```rust
+fn main() {
+    let some_value = Some(3);
+    
+    // 使用 match
+    match some_value {
+        Some(3) => println!("三！"),
+        _ => (),
+    }
+    
+    // 使用 if let（更簡潔）
+    if let Some(3) = some_value {
+        println!("又是三！");
+    }
+    
+    // 處理 Option
+    let config_max = Some(3u8);
+    if let Some(max) = config_max {
+        println!("最大值設定為：{}", max);
+    }
+}
+```
+
+### derive 屬性
+
+- `Debug`：讓型別可以用 `{:?}` 印出
+- `Clone`：提供 `clone()` 方法來複製值
+- `Copy`：讓型別可以被隱式複製（只適用於簡單型別）
+- `PartialEq`：提供 `==` 和 `!=` 運算子
+- `Eq`：表示完全相等性
+- `PartialOrd` 和 `Ord`：提供比較運算子
+
+```rust
+#[derive(Debug, Clone, PartialEq)]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+fn main() {
+    let p1 = Point { x: 1.0, y: 2.0 };
+    let p2 = p1.clone();  // Clone trait
+    
+    println!("{:?}", p1);  // Debug trait
+    println!("p1 == p2: {}", p1 == p2);  // PartialEq trait
 }
 ```
