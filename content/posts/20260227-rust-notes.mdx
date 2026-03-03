@@ -3,6 +3,7 @@ title: Rust Notes
 description: Rust Notes (Keep Updating and Learning)
 slug: rust-notes
 date: 2026-03-02
+updateDate: 2026-03-03
 type: Post
 socialImage: /images/rust-logo.png
 ---
@@ -18,11 +19,11 @@ socialImage: /images/rust-logo.png
 3.當所有者離開作用域時，值會被丟棄
 
 移動語意（Move Semantics）
+
 ```rust
 fn main() {
     let x = 5;
     let y = x;    // x 被複製到 y
-    
     println!("x = {}, y = {}", x, y);  // 都可以使用
 
 
@@ -37,22 +38,20 @@ fn main() {
     let s2 = s1;  // s1 被移動到 s2
     // 只複製 stack 上的資料（pointer、長度、容量）
     // 但 s1 變得無效，避免雙重釋放 (double free)
-    
     // println!("{}", s1);  // 錯誤！s1 已經無效
 }
 ```
 
 所有權在函式中也會發生轉移：
+
 ```rust
 fn main() {
     let s = String::from("hello");
     takes_ownership(s);  // s 的所有權轉移給函式
-    
     // println!("{}", s);  // 錯誤！s 已經無效
     
     let x = 5;
     makes_copy(x);       // x 被複製，原本的 x 仍然有效
-    
     println!("x = {}", x);  // 沒問題
 
 
@@ -60,8 +59,8 @@ fn main() {
     let s2 = String::from("hello");     
     let s3 = takes_and_gives_back(s2);  // s2 被移動進函式，回傳值移動給 s3
     
-    // println!("{}", s2);  // 錯誤！s2 已經被移動
     println!("{}", s1);     // 沒問題
+    // println!("{}", s2);  // 錯誤！s2 已經被移動
     println!("{}", s3);     // 沒問題
 }
 
@@ -87,13 +86,211 @@ fn takes_and_gives_back(a_string: String) -> String {
 
 ```rust
 fn main(){
-  let s1 = String::from("hello");
-  let len = calculate_length(&s1);  // 傳遞 s1 的參考
+    let s1 = String::from("hello");
+    let len = calculate_length(&s1);  // 傳遞 s1 的參考
+    println!("'{}' 的長度是 {}", s1, len);  // s1 仍然可以使用！
+
+    let reference_to_nothing = dangle();  // 這會編譯錯誤！
+
+    let mut s = String::from("hello");
+
+    let r1 = &s;      // 沒問題 - 不可變參考
+    let r2 = &s;      // 沒問題 - 可以有多個不可變參考
+    println!("{} and {}", r1, r2);  // r1 和 r2 在這裡結束使用
     
-  println!("'{}' 的長度是 {}", s1, len);  // s1 仍然可以使用！
+    let r3 = &mut s;  // 沒問題 - 可變參考
+    println!("{}", r3);
+
+    let r1 = &s;      // 不可變參考
+    let r2 = &mut s;  // 編譯錯誤！不能在不可變參考存在時建立可變參考
+    println!("{} {}", r1, r2);
+
+    change(&mut s);  // 傳遞可變參考  
+    println!("{}", s);  // 輸出：hello, world
+
+    let r1 = &mut s;
+    let r2 = &mut s;  // 編譯錯誤！
+    println!("{}, {}", r1, r2);
 }
 
 fn calculate_length(s: &String) -> usize {  // s 是 String 的參考
     s.len()
 }  // s 離開作用域，但因為它沒有擁有資料，所以不會釋放記憶體
+
+fn dangle() -> &String {  // 試圖回傳一個參考
+    let s = String::from("hello");
+    &s  // 回傳 s 的參考，但 s 即將被釋放！
+}  // s 離開作用域並被釋放，所以參考指向了無效的記憶體
+
+fn change(some_string: &mut String) {
+    some_string.push_str(", world");
+}
+```
+
+## 結構 (Structs)：組織相關資料
+
+```rust
+struct User {
+    username: String,
+    email: String,
+    age: u32,
+    active: bool,
+}
+
+fn main() {
+    let user1 = User {
+        username: String::from("alice123"),
+        email: String::from("alice@example.com"),
+        age: 25,
+        active: true,
+    };
+    
+    println!("使用者：{}", user1.username);
+    println!("信箱：{}", user1.email);
+    println!("年齡：{}", user1.age);
+    println!("狀態：{}", if user1.active { "活躍" } else { "非活躍" });
+
+    user1.age = 26;  // 修改年齡
+    user1.email = String::from("alice_new@example.com");  // 修改信箱
+    
+    println!("更新後的年齡：{}", user1.age);
+
+     // 基於 user1 建立 user2，只修改 username 和 email
+    let user2 = User {
+        username: String::from("charlie789"),
+        email: String::from("charlie@example.com"),
+        ..user1  // 其餘欄位使用 user1 的值
+    };
+    
+    println!("用戶2的年齡：{}", user2.age);  // 25（從 user1 複製）
+    
+    // 注意：user1 中包含 String 的欄位已經被移動，但 age 和 active 被複製
+    // println!("{}", user1.username);  // 錯誤！username 已被移動
+    println!("{}", user1.age);        // 沒問題，age 實現了 Copy
+}
+```
+
+注意：Rust 不允許只將結構的某些欄位標記為可變，要嘛整個實例都可變，要嘛都不可變。
+
+### 元組結構
+
+有時候我們只需要組合一些型別，但不需要為每個欄位命名
+
+```rust
+struct Color(i32, i32, i32);      // RGB 顏色
+struct Point(f64, f64, f64);      // 3D 座標
+
+fn main() {
+    let red = Color(255, 0, 0);
+    let origin = Point(0.0, 0.0, 0.0);
+    
+    println!("紅色的 R 值：{}", red.0);
+    println!("原點的 X 座標：{}", origin.0);
+}
+```
+
+### 單元結構
+
+有時候我們需要一個沒有任何欄位的結構，通常用於實現 trait
+
+```rust
+struct UnitStruct;
+
+fn main() {
+    let unit = UnitStruct;
+}
+```
+
+### 為結構新增功能
+
+```rust
+#[derive(Debug)]  // 讓結構可以用 {:?} 印出
+struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Rectangle {
+    // 關聯函式（類似靜態方法）
+    fn new(width: f64, height: f64) -> Rectangle {
+        Rectangle { width, height }
+    }
+    
+    fn square(size: f64) -> Rectangle {
+        Rectangle {
+            width: size,
+            height: size,
+        }
+    }
+    
+    // 方法（第一個參數是 &self）
+    fn area(&self) -> f64 {
+        self.width * self.height
+    }
+    
+    fn perimeter(&self) -> f64 {
+        2.0 * (self.width + self.height)
+    }
+    
+    // 可變方法
+    fn scale(&mut self, factor: f64) {
+        self.width *= factor;
+        self.height *= factor;
+    }
+}
+
+fn main() {
+    // 使用關聯函式建立實例
+    let rect1 = Rectangle::new(30.0, 50.0);
+    let square = Rectangle::square(25.0);
+    
+    println!("長方形：{:?}", rect1);
+    println!("正方形：{:?}", square);
+    
+    // 使用方法
+    println!("長方形面積：{:.2}", rect1.area());
+    println!("長方形周長：{:.2}", rect1.perimeter());
+    
+    // 可變方法
+    let mut rect2 = Rectangle::new(10.0, 20.0);
+    println!("縮放前：{:?}", rect2);
+    rect2.scale(2.0);
+    println!("縮放後：{:?}", rect2);
+}
+```
+
+### Enums
+
+```rust
+#[derive(Debug)]
+enum Message {
+    Quit,                        // 沒有資料
+    Move { x: i32, y: i32 },     // 命名欄位
+    Write(String),               // 單一字串
+    ChangeColor(i32, i32, i32),  // 三個整數
+}
+
+impl Message {
+    fn process(&self) {
+        match self {
+            Message::Quit => println!("收到退出訊息"),
+            Message::Move { x, y } => println!("移動到座標 ({}, {})", x, y),
+            Message::Write(text) => println!("寫入文字：{}", text),
+            Message::ChangeColor(r, g, b) => println!("改變顏色為 RGB({}, {}, {})", r, g, b),
+        }
+    }
+}
+
+fn main() {
+    let msg1 = Message::Quit;
+    let msg2 = Message::Move { x: 10, y: 20 };
+    let msg3 = Message::Write(String::from("Hello"));
+    let msg4 = Message::ChangeColor(255, 0, 0);
+    
+    println!("訊息：{:?}, {:?}, {:?}, {:?}", msg1, msg2, msg3, msg4);
+    msg1.process();
+    msg2.process();
+    msg3.process();
+    msg4.process();
+}
 ```
