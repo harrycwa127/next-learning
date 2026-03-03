@@ -259,7 +259,7 @@ fn main() {
 }
 ```
 
-### `Enums`
+### Enums
 
 ```rust
 #[derive(Debug)]
@@ -296,7 +296,7 @@ fn main() {
 }
 ```
 
-### `Option\<T\>`
+### Option
 
 ```rust
 enum Option<T> {
@@ -326,7 +326,7 @@ fn main(){
 }
 ```
 
-### `match` / `if let`
+### match / if let
 
 ```rust
 fn main() {
@@ -373,5 +373,139 @@ fn main() {
     
     println!("{:?}", p1);  // Debug trait
     println!("p1 == p2: {}", p1 == p2);  // PartialEq trait
+}
+```
+
+## 集合型別
+
+### Vectors
+
+```rust
+fn main() {
+    let mut v1: Vec<i32> = Vec::new();
+    
+    // 使用 vec! 巨集初始化
+    let v2 = vec![1, 2, 3, 4, 5];
+    
+    let mut v = Vec::new();
+    
+    // 新增元素
+    v.push(5);
+    v.push(6);
+    
+    println!("向量內容: {:?}", v);
+    
+    // 移除最後一個元素
+    let last = v.pop();
+    println!("移除的元素: {:?}", last);  // Some(6)
+    
+    // 插入到指定位置
+    v.insert(1, 99);  // 在索引 1 插入 99
+    println!("插入後: {:?}", v);
+    
+    // 移除指定位置的元素
+    let removed = v.remove(1);  // 移除索引 1 的元素
+    println!("移除的元素: {}", removed);  // 99
+
+    // 方法 1: 使用索引（可能 panic）
+    let third = &v[2];
+    println!("第三個元素是: {}", third);
+    
+    // 方法 2: 使用 get 方法（安全）
+    let third = v.get(2);
+    match third {
+        Some(value) => println!("第三個元素是: {}", value),
+        None => println!("沒有第三個元素"),
+    }
+
+    // 這會導致 panic！
+    // let does_not_exist = &v[100];
+
+    let v = vec![100, 32, 57];
+    
+    // 不可變參考迭代
+    for item in &v {
+        println!("值: {}", item);
+    }
+    
+    // 可變參考迭代
+    let mut v2 = vec![100, 32, 57];
+    for item in &mut v2 {
+        *item += 50;  // 解參考並修改值
+    }
+    println!("修改後: {:?}", v2);
+    
+    // 取得所有權的迭代
+    for item in v {
+        println!("擁有: {}", item);
+    }
+    // println!("{:?}", v);  // 錯誤！v 已被移動
+
+    
+}
+```
+
+Vector 與所有權
+
+```rust
+fn main(){
+    let mut v = vec![1, 2, 3, 4, 5];
+    let first = &v[0];  // 不可變借用
+
+    // v.push(6);  // 錯誤！不能在有不可變借用時進行可變操作
+
+    println!("第一個元素: {}", first);
+
+    // 現在可以修改了
+    v.push(6);
+}
+```
+
+### Hash Maps
+
+```rust
+use std::collections::HashMap;
+
+fn main() {
+    // 建立空的 HashMap
+    let mut scores = HashMap::new();
+    
+    // 插入Key跟Value
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+    
+    println!("分數: {:?}", scores);
+    
+    // 使用 collect 從 vec 中建立出HashMap
+    let teams = vec![String::from("Blue"), String::from("Yellow")];
+    let initial_scores = vec![10, 50];
+    let scores: HashMap<_, _> = teams.into_iter()
+        .zip(initial_scores.into_iter())
+        .collect();
+    
+    println!("透過 collect 建立: {:?}", scores);
+
+    // 取得值
+    let team_name = String::from("Blue");
+    let score = scores.get(&team_name);
+    match score {
+        Some(s) => println!("Blue 隊得分: {}", s),
+        None => println!("Blue 隊沒有分數"),
+    }
+    
+    // 迭代HashMap
+    for (key, value) in &scores {
+        println!("{}: {}", key, value);
+    }
+
+    // 覆蓋值
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Blue"), 25);  // 覆蓋前面的值
+    println!("覆蓋後: {:?}", scores);
+
+    // 只在Key不存在時插入
+    scores.entry(String::from("Yellow")).or_insert(50);
+    scores.entry(String::from("Blue")).or_insert(50);  // Blue 已存在，不會插入
+    println!("條件插入後: {:?}", scores);
 }
 ```
