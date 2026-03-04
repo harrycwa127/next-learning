@@ -509,3 +509,163 @@ fn main() {
     println!("條件插入後: {:?}", scores);
 }
 ```
+
+## 錯誤處理
+
+### 不可恢復的錯誤 (Unrecoverable Errors)
+
+基本 `panic!` 使用
+
+```rust
+fn main() {
+    println!("程式開始執行");
+    
+    // 手動觸發 panic
+    panic!("糟糕！出現了嚴重錯誤！");
+    
+    println!("這行永遠不會執行");
+}
+```
+
+自動觸發的 `panic!`
+
+```rust
+fn main() {
+    let v = vec![1, 2, 3];
+    
+    // 這會引發 panic，因為索引越界
+    let element = v[99];
+    
+    println!("元素：{}", element);
+}
+```
+
+`panic!` 的執行機制
+
+1. 展開堆疊：從 panic 點開始，逐層清理堆疊上的變數
+2. 釋放記憶體：確保沒有記憶體洩漏
+3. 終止程式：最終終止整個程式
+
+自訂 panic 處理器
+
+```rust
+use std::panic;
+
+fn main() {
+    // 設定自訂的 panic 處理器
+    panic::set_hook(Box::new(|panic_info| {
+        println!("🚨 程式發生 panic！");
+        if let Some(s) = panic_info.payload().downcast_ref::<&str>() {
+            println!("錯誤訊息：{}", s);
+        }
+        if let Some(location) = panic_info.location() {
+            println!("位置：{}:{}:{}", 
+                     location.file(), 
+                     location.line(), 
+                     location.column());
+        }
+    }));
+    
+    println!("準備觸發 panic...");
+    panic!("測試 panic 處理器");
+}
+```
+
+### 可恢復的錯誤 (Recoverable Errors)
+
+`Result<T, E>`：優雅的錯誤處理
+
+```rust
+use std::fs::File;
+use std::io::ErrorKind;
+
+fn main() {
+    let filename = "hello.txt";
+    
+    let file = File::open(filename);
+    // type of file is Result<T, E>
+    
+    let file = match file {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => {
+                println!("檔案不存在，嘗試建立新檔案");
+                match File::create(filename) {
+                    Ok(new_file) => {
+                        println!("檔案建立成功！");
+                        new_file
+                    },
+                    Err(create_error) => {
+                        panic!("無法建立檔案：{:?}", create_error);
+                    }
+                }
+            },
+            ErrorKind::PermissionDenied => {
+                panic!("權限不足：{:?}", error);
+            },
+            other_error => {
+                panic!("其他錯誤：{:?}", other_error);
+            }
+        }
+    };
+    
+    println!("檔案操作完成");
+}
+```
+
+當你確定 `Result` 一定是 `Ok` 時，可以使用 `unwrap` 和 `expect`
+
+> 要確定不會失敗的情況 or 程式邏輯錯誤應該導致崩潰的情況
+> 優先考慮使用 `match`、`if let` 或 `?` 運算子來優雅地處理錯誤
+
+```rust
+use std::fs::File;
+
+fn main() {
+    // unwrap：如果是 Err 就 panic
+    let file1 = File::open("definitely_exists.txt").unwrap();
+    
+    // expect：如果是 Err 就 panic，並顯示自訂訊息
+    let file2 = File::open("another_file.txt")
+        .expect("無法開啟檔案：another_file.txt");
+    
+    println!("檔案開啟成功");
+}
+```
+
+### 錯誤傳播：? 運算子的魔法
+
+```rust
+use std::fs::File;
+use std::io::{self, Read};
+
+fn read_file_contents(filename: &str) -> Result<String, io::Error> {
+    let mut file = File::open(filename)?;  // 如果失敗就提早返回錯誤
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;   // 如果失敗就提早返回錯誤
+    Ok(contents)                           // 成功就返回內容
+}
+
+fn main() {
+    match read_file_contents("test.txt") {
+        Ok(contents) => println!("檔案內容：\n{}", contents),
+        Err(error) => println!("讀取失敗：{}", error),
+    }
+}
+```
+
+更進一步的簡化
+
+```rust
+use std::fs;
+use std::io;
+
+fn read_file_contents_shortest(filename: &str) -> Result<String, io::Error> {
+    fs::read_to_string(filename)  // 標準函式庫提供的便利函式
+}
+
+// 或者使用 ? 運算子的鏈式調用
+fn read_and_process(filename: &str) -> Result<usize, io::Error> {
+    Ok(fs::read_to_string(filename)?.len())
+}
+```
