@@ -3,14 +3,12 @@ title: Rust Notes
 description: Rust Notes (Keep Updating and Learning)
 slug: rust-notes
 date: 2026-03-02
-updateDate: 2026-03-03
+updateDate: 2026-03-11
 type: Post
 socialImage: /images/rust-logo.png
 ---
 
-## Reference
-
-> [https://ithelp.ithome.com.tw/users/20125652/ironman/8347](https://ithelp.ithome.com.tw/users/20125652/ironman/8347)
+> [Reference](https://ithelp.ithome.com.tw/users/20125652/ironman/8347)
 
 ## 所有權系統
 
@@ -20,33 +18,23 @@ socialImage: /images/rust-logo.png
 
 移動語意（Move Semantics）
 
+> Basic Type has default copy
+
 ```rust
 fn main() {
     let x = 5;
     let y = x;    // x 被複製到 y
     println!("x = {}, y = {}", x, y);  // 都可以使用
 
-
     let s1 = String::from("hello");
-    // s1 在 stack 上存放：
-    // - 指向 heap 記憶體的 pointer
-    // - 長度 (5)
-    // - 容量 (5)
-    //
+    // s1 在 stack 上存放指向 heap 記憶體的 pointer
     // 實際的字串資料 "hello" 存放在 heap 上
 
-    let s2 = s1;  // s1 被移動到 s2
+    let s = s1;  // s1 被移動到 s2
     // 只複製 stack 上的資料（pointer、長度、容量）
     // 但 s1 變得無效，避免雙重釋放 (double free)
     // println!("{}", s1);  // 錯誤！s1 已經無效
-}
-```
 
-所有權在函式中也會發生轉移：
-
-```rust
-fn main() {
-    let s = String::from("hello");
     takes_ownership(s);  // s 的所有權轉移給函式
     // println!("{}", s);  // 錯誤！s 已經無效
     
@@ -129,6 +117,8 @@ fn change(some_string: &mut String) {
 
 ## 結構 (Structs)：組織相關資料
 
+> 注意：Rust 不允許只將結構的某些欄位標記為可變，要嘛整個實例都可變，要嘛都不可變。
+
 ```rust
 struct User {
     username: String,
@@ -169,8 +159,6 @@ fn main() {
     println!("{}", user1.age);        // 沒問題，age 實現了 Copy
 }
 ```
-
-注意：Rust 不允許只將結構的某些欄位標記為可變，要嘛整個實例都可變，要嘛都不可變。
 
 ### 元組結構
 
@@ -344,7 +332,8 @@ fn main() {
     }
     
     // 處理 Option
-    let config_max = Some(3u8);
+    let config_max = Some(3u8);     // type is Option
+    // if value is Some() then excute with "max" param
     if let Some(max) = config_max {
         println!("最大值設定為：{}", max);
     }
@@ -396,7 +385,7 @@ fn main() {
     println!("向量內容: {:?}", v);
     
     // 移除最後一個元素
-    let last = v.pop();
+    let last = v.pop();     // pop reuturn type is Option
     println!("移除的元素: {:?}", last);  // Some(6)
     
     // 插入到指定位置
@@ -669,3 +658,190 @@ fn read_and_process(filename: &str) -> Result<usize, io::Error> {
     Ok(fs::read_to_string(filename)?.len())
 }
 ```
+
+## 泛型
+
+常見的泛型型別參數名稱
+
+- `T`, `U`: Type (型別) - 最常用的泛型參數
+- `E`: Error (錯誤) - 通常用於 Result\<T, E\>
+- `K`: Key (鍵) - 通常用於 HashMap\<K, V\>
+- `V`: Value (值) - 通常用於 HashMap\<K, V\>
+- `R`: Result (結果) - 函式回傳型別
+- `I`: Iterator (迭代器)
+
+Rust 的`Generics (泛型)`使用`「單態化」(monomorphization)` 技術，這意味著泛型程式碼在編譯時會被展開成具體型別的版本，沒有執行時開銷！\
+After `Generics (泛型)` instance is defined, the Type is not able to change.\
+\
+`Trait Bounds` 用來約束泛型參數必須實現特定的 trait -> 使用 `where` 子句和 `:` 語法\
+
+```rust
+fn complex_function<T, U>(a: T, b: U) -> String
+where
+    T: Display + Clone,
+    U: Display + Into<String>,
+{...}
+
+// 直接在泛型參數上指定約束
+fn print_and_return<T: Display>(value: T) -> T {...}
+```
+
+### 單一型別參數/結構
+
+```rust
+// 一個可以儲存任何型別的容器
+#[derive(Debug)]
+struct Container<T> {
+    value: T,
+}
+
+impl<T> Container<T> {
+    fn new(value: T) -> Self {
+        Container { value }
+    }
+    
+    fn get(&self) -> &T {
+        &self.value
+    }
+    
+    fn set(&mut self, value: T) {
+        self.value = value;
+    }
+    
+    // 轉換成另一種型別的容器
+    fn map<U, F>(self, f: F) -> Container<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        Container::new(f(self.value))
+    }
+
+    // 方法本身也可以有泛型參數
+    fn foo<U>(&self, other: &Container<U>) -> f64
+    where
+        T: Into<f64> + Copy,    // T is Type of Container
+        U: Into<f64> + Copy,    // other type for Container param
+    {
+        // ...
+    }
+}
+
+fn main() {
+    let mut int_container = Container::new(42);
+    println!("整數容器：{:?}", int_container);
+    
+    let string_container = Container::new(String::from("Hello"));
+    println!("字串容器：{:?}", string_container);
+    
+    // 修改值
+    int_container.set(100);
+    println!("修改後：{:?}", int_container);
+    
+    // 型別轉換
+    let string_from_int = int_container.map(|x| format!("數字：{}", x));
+    println!("轉換後：{:?}", string_from_int);
+}
+```
+
+### 多個型別參數/結構
+
+```rust
+#[derive(Debug)]
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+impl<T, U> Point<T, U> {
+    fn new(x: T, y: U) -> Self {
+        Point { x, y }
+    }
+    
+    fn x(&self) -> &T {
+        &self.x
+    }
+    
+    fn y(&self) -> &U {
+        &self.y
+    }
+}
+
+// 只為特定型別組合實現方法
+impl Point<f64, f64> {
+    fn distance_from_origin(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+// 混合型別的方法
+impl<T, U> Point<T, U> {
+    fn mixup<V, W>(self, other: Point<V, W>) -> Point<T, W> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
+}
+
+fn main() {
+    let int_point = Point::new(5, 10);
+    let float_point = Point::new(1.0, 4.0);
+    let mixed_point = Point::new(5, 4.0);
+    
+    println!("整數座標：{:?}", int_point);
+    println!("浮點數座標：{:?}", float_point);
+    println!("混合座標：{:?}", mixed_point);
+    
+    // 只有 f64 座標能計算距離
+    println!("距離原點：{:.2}", float_point.distance_from_origin());
+    
+    // 混合不同的點
+    let result = int_point.mixup(float_point);
+    println!("混合結果：{:?}", result);
+}
+```
+
+## 特徵 (Traits)
+
+Traits is similar to interface in java
+
+```rust
+trait TraitName {
+    // 方法簽章（無預設實現）
+    fn required_method(&self) -> ReturnType;
+    
+    // 有預設實現的方法
+    fn default_method(&self) {
+        println!("這是預設實現");
+    }
+    
+    // 關聯函式（類似靜態方法）
+    fn associated_function() -> String {
+        String::from("關聯函式")
+    }
+    
+    // 關聯型別
+    type AssociatedType;
+    
+    // 關聯常數
+    const ASSOCIATED_CONST: u32 = 42;
+}
+
+struct MyStruct {
+    value: i32,
+}
+
+impl TraitName for MyStruct {
+    type AssociatedType = String;
+    
+    fn required_method(&self) -> String {
+        format!("值是 {}", self.value)
+    }
+    
+    // 可以選擇覆寫預設實現
+    fn default_method(&self) {
+        println!("自訂的實現，值是 {}", self.value);
+    }
+}
+```
+
