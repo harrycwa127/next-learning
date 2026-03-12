@@ -845,3 +845,467 @@ impl TraitName for MyStruct {
 }
 ```
 
+### 實用的 Trait 範例
+
+```rust
+use std::fmt;
+
+#[derive(Debug)]
+struct Student {
+    name: String,
+    grade: u32,
+    age: u32,
+}
+
+// 顯示 Trait (Display)
+impl fmt::Display for Student {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Student: {}, Grade: {}, Age: {}", self.name, self.grade, self.age)
+    }
+}
+
+// 比較 Trait (PartialEq, Eq, PartialOrd, Ord)
+// 這是最基礎的相等 Trait，允許你使用 == 和 != 運算符。
+// 不保證自反性 (Reflexive)。也就是說，a == a 不一定成立。
+impl PartialEq for Student {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.age == other.age
+    }
+}
+
+// 它繼承自 PartialEq，是一個「標記特徵」(Marker Trait)，不包含任何方法。
+// 增加了 自反性 (Reflexive)，即 a == a 永遠為真。
+impl Eq for Student {}
+
+// 允許你使用 <, >, <=, >=
+// 必須先實作 PartialEq, 不保證任意兩個值之間都有大小關係
+impl PartialOrd for Student {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+// 繼承自 PartialOrd 和 Eq
+// 用於需要確定排序的場景
+impl Ord for Student {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // 先按成績排序，再按年齡排序
+        match self.grade.cmp(&other.grade) {
+            std::cmp::Ordering::Equal => self.age.cmp(&other.age),
+            other => other,
+        }
+    }
+}
+
+// Clone
+impl Clone for Student {
+    fn clone(&self) -> Self {
+        Student {
+            name: self.name.clone(),
+            grade: self.grade,
+            age: self.age,
+        }
+    }
+}
+
+fn main() {
+    let mut students = vec![
+        Student { name: "Alice".to_string(), grade: 85, age: 20 },
+        Student { name: "Bob".to_string(), grade: 92, age: 19 },
+        Student { name: "Charlie".to_string(), grade: 85, age: 21 },
+    ];
+    
+    // 現在可以比較學生
+    println!("Alice == Bob: {}", students[0] == students[1]);
+    println!("Alice < Bob: {}", students[0] < students[1]);
+    
+    // 現在可以排序
+    students.sort();
+    println!("排序後的學生：");
+    for student in &students {
+        println!("  {:?}", student);
+    }
+
+    // Copy
+    let student = students.get(0).clone();
+    if let Some(student) = student {
+        println!("{}", student);
+    }
+}
+```
+
+### 標準函式庫中常見的 Traits
+
+Iterator Trait
+
+```rust
+struct Counter {
+    current: usize,
+    max: usize,
+}
+
+impl Counter {
+    fn new(max: usize) -> Counter {
+        Counter { current: 0, max }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = usize;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.max {
+            let current = self.current;
+            self.current += 1;
+            Some(current)
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let counter = Counter::new(5);
+    
+    // 現在可以使用所有迭代器方法
+    let doubled: Vec<usize> = counter
+        .map(|x| x * 2)
+        .filter(|&x| x > 2)
+        .collect();
+    
+    println!("雙倍過濾後：{:?}", doubled);
+    
+    // 使用 for 迴圈
+    for num in Counter::new(3) {
+        println!("計數：{}", num);
+    }
+}
+```
+
+From 和 Into Traits
+
+```rust
+#[derive(Debug)]
+struct Person {
+    name: String,
+    age: u32,
+}
+
+// 實現 From trait
+impl From<(&str, u32)> for Person {
+    fn from(data: (&str, u32)) -> Self {
+        Person {
+            name: data.0.to_string(),
+            age: data.1,
+        }
+    }
+}
+
+impl From<String> for Person {
+    fn from(name: String) -> Self {
+        Person { name, age: 0 }
+    }
+}
+
+// Into trait 會自動實現
+fn main() {
+    // 使用 From
+    let person1 = Person::from(("Alice", 25));
+    let person2 = Person::from("Bob".to_string());
+    
+    println!("Person 1: {:?}", person1);
+    println!("Person 2: {:?}", person2);
+    
+    // 使用 Into
+    let person3: Person = ("Charlie", 30).into();
+    let person4: Person = "Diana".to_string().into();
+    
+    println!("Person 3: {:?}", person3);
+    println!("Person 4: {:?}", person4);
+    
+    // 在函式參數中使用
+    create_person(("Eve", 28));
+    create_person("Frank".to_string());
+}
+
+fn create_person<T: Into<Person>>(data: T) {
+    let person = data.into();
+    println!("建立了人員：{:?}", person);
+}
+```
+
+Default Trait
+
+```rust
+#[derive(Debug)]
+struct Config {
+    host: String,
+    port: u16,
+    debug: bool,
+    max_connections: u32,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            host: "localhost".to_string(),
+            port: 8080,
+            debug: false,
+            max_connections: 100,
+        }
+    }
+}
+
+impl Config {
+    fn new() -> Self {
+        Self::default()
+    }
+    
+    fn with_host(mut self, host: String) -> Self {
+        self.host = host;
+        self
+    }
+    
+    fn with_port(mut self, port: u16) -> Self {
+        self.port = port;
+        self
+    }
+    
+    fn with_debug(mut self, debug: bool) -> Self {
+        self.debug = debug;
+        self
+    }
+}
+
+fn main() {
+    // 使用預設值
+    let default_config = Config::default();
+    println!("預設設定：{:?}", default_config);
+    
+    // 建構者模式
+    let custom_config = Config::new()
+        .with_host("example.com".to_string())
+        .with_port(3000)
+        .with_debug(true);
+    
+    println!("自訂設定：{:?}", custom_config);
+}
+```
+
+### 關聯型別 (Associated Types)
+
+```rust
+trait Container {
+    type Item;
+    
+    fn get(&self, index: usize) -> Option<&Self::Item>;
+    fn len(&self) -> usize;
+    fn push(&mut self, item: Self::Item);
+}
+
+struct IntContainer {
+    items: Vec<i32>,
+}
+
+impl Container for IntContainer {
+    type Item = i32;
+    
+    fn get(&self, index: usize) -> Option<&Self::Item> {
+        self.items.get(index)
+    }
+    
+    fn len(&self) -> usize {
+        self.items.len()
+    }
+    
+    fn push(&mut self, item: Self::Item) {
+        self.items.push(item);
+    }
+}
+
+struct StringContainer {
+    items: Vec<String>,
+}
+
+impl Container for StringContainer {
+    type Item = String;
+    
+    fn get(&self, index: usize) -> Option<&Self::Item> {
+        self.items.get(index)
+    }
+    
+    fn len(&self) -> usize {
+        self.items.len()
+    }
+    
+    fn push(&mut self, item: Self::Item) {
+        self.items.push(item);
+    }
+}
+
+// 泛型函式使用關聯型別
+fn print_container<C: Container>(container: &C) 
+where
+    C::Item: std::fmt::Display,
+{
+    println!("容器包含 {} 個項目：", container.len());
+    for i in 0..container.len() {
+        if let Some(item) = container.get(i) {
+            println!("  [{}]: {}", i, item);
+        }
+    }
+}
+
+fn main() {
+    let mut int_container = IntContainer { items: vec![] };
+    int_container.push(1);
+    int_container.push(2);
+    int_container.push(3);
+    
+    let mut string_container = StringContainer { items: vec![] };
+    string_container.push("Hello".to_string());
+    string_container.push("World".to_string());
+    
+    print_container(&int_container);
+    print_container(&string_container);
+}
+```
+
+### 父 Trait (Supertraits)
+
+```rust
+trait Animal {
+    fn name(&self) -> &str;
+}
+
+trait Dog: Animal {  // Dog 是 Animal 的子 trait
+    fn bark(&self);
+}
+
+struct Labrador {
+    name: String,
+}
+
+impl Animal for Labrador {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl Dog for Labrador {
+    fn bark(&self) {
+        println!("{} 說：汪汪！", self.name());
+    }
+}
+
+fn main() {
+    let dog = Labrador { name: "小白".to_string() };
+    dog.bark(); // 可以使用 Dog trait 的方法
+    println!("狗的名字是：{}", dog.name()); // 也可以使用 Animal trait 的方法
+}
+```
+
+### 運算子重載
+
+```rust
+use std::ops::{Add, Mul, Display};
+use std::fmt;
+
+#[derive(Debug, Clone, Copy)]
+struct Vector2D {
+    x: f64,
+    y: f64,
+}
+
+impl Vector2D {
+    fn new(x: f64, y: f64) -> Self {
+        Vector2D { x, y }
+    }
+    
+    fn magnitude(&self) -> f64 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+}
+
+impl Add for Vector2D {
+    type Output = Vector2D;
+    
+    fn add(self, other: Vector2D) -> Vector2D {
+        Vector2D {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl Mul<f64> for Vector2D {
+    type Output = Vector2D;
+    
+    fn mul(self, scalar: f64) -> Vector2D {
+        Vector2D {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
+    }
+}
+
+impl fmt::Display for Vector2D {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({:.2}, {:.2})", self.x, self.y)
+    }
+}
+
+fn main() {
+    let v1 = Vector2D::new(1.0, 2.0);
+    let v2 = Vector2D::new(3.0, 4.0);
+    
+    let v3 = v1 + v2;  // 使用 Add trait
+    let v4 = v1 * 2.0; // 使用 Mul trait
+    
+    println!("v1: {}", v1);
+    println!("v2: {}", v2);
+    println!("v1 + v2: {}", v3);
+    println!("v1 * 2: {}", v4);
+    println!("v3 的長度: {:.2}", v3.magnitude());
+}
+```
+
+### Trait 實現衝突
+
+```rust
+trait A {
+    fn method(&self);
+}
+
+trait B {
+    fn method(&self);
+}
+
+struct MyStruct;
+
+impl A for MyStruct {
+    fn method(&self) {
+        println!("來自 trait A");
+    }
+}
+
+impl B for MyStruct {
+    fn method(&self) {
+        println!("來自 trait B");
+    }
+}
+
+fn main() {
+    let obj = MyStruct;
+    
+    // obj.method();  // 編譯錯誤：模糊的方法呼叫
+    
+    // 明確指定要呼叫哪個 trait 的方法
+    A::method(&obj);
+    B::method(&obj);
+    
+    // 或使用 UFCS (Universal Function Call Syntax)
+    <MyStruct as A>::method(&obj);
+    <MyStruct as B>::method(&obj);
+}
+```
