@@ -160,7 +160,7 @@ fn main() {
 }
 ```
 
-### 元組結構
+元組結構
 
 有時候我們只需要組合一些型別，但不需要為每個欄位命名
 
@@ -177,7 +177,7 @@ fn main() {
 }
 ```
 
-### 單元結構
+單元結構
 
 有時候我們需要一個沒有任何欄位的結構，通常用於實現 trait
 
@@ -216,10 +216,6 @@ impl Rectangle {
         self.width * self.height
     }
     
-    fn perimeter(&self) -> f64 {
-        2.0 * (self.width + self.height)
-    }
-    
     // 可變方法
     fn scale(&mut self, factor: f64) {
         self.width *= factor;
@@ -237,7 +233,6 @@ fn main() {
     
     // 使用方法
     println!("長方形面積：{:.2}", rect1.area());
-    println!("長方形周長：{:.2}", rect1.perimeter());
     
     // 可變方法
     let mut rect2 = Rectangle::new(10.0, 20.0);
@@ -314,7 +309,7 @@ fn main(){
 }
 ```
 
-### match / if let
+match / if let
 
 ```rust
 fn main() {
@@ -501,7 +496,7 @@ fn main() {
 
 ## 錯誤處理
 
-### 不可恢復的錯誤 (Unrecoverable Errors)
+### Unrecoverable Errors
 
 基本 `panic!` 使用
 
@@ -560,7 +555,7 @@ fn main() {
 }
 ```
 
-### 可恢復的錯誤 (Recoverable Errors)
+### Recoverable Errors
 
 `Result<T, E>`：優雅的錯誤處理
 
@@ -622,7 +617,7 @@ fn main() {
 }
 ```
 
-### 錯誤傳播：? 運算子的魔法
+錯誤傳播：? 運算子的魔法
 
 ```rust
 use std::fs::File;
@@ -659,7 +654,7 @@ fn read_and_process(filename: &str) -> Result<usize, io::Error> {
 }
 ```
 
-## 泛型
+## 泛型 (Generics)
 
 常見的泛型型別參數名稱
 
@@ -845,7 +840,7 @@ impl TraitName for MyStruct {
 }
 ```
 
-### 實用的 Trait 範例
+實用的 Trait 範例
 
 ```rust
 use std::fmt;
@@ -934,7 +929,7 @@ fn main() {
 }
 ```
 
-### 標準函式庫中常見的 Traits
+標準函式庫中常見的 Traits
 
 Iterator Trait
 
@@ -1094,6 +1089,8 @@ fn main() {
 
 ### 關聯型別 (Associated Types)
 
+> Usage similar to Generics, but requires defining when implement the trait
+
 ```rust
 trait Container {
     type Item;
@@ -1171,7 +1168,7 @@ fn main() {
 }
 ```
 
-### 父 Trait (Supertraits)
+父 Trait (Supertraits)
 
 ```rust
 trait Animal {
@@ -1205,7 +1202,7 @@ fn main() {
 }
 ```
 
-### 運算子重載
+運算子重載
 
 ```rust
 use std::ops::{Add, Mul, Display};
@@ -1270,7 +1267,7 @@ fn main() {
 }
 ```
 
-### Trait 實現衝突
+Trait 實現衝突
 
 ```rust
 trait A {
