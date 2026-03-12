@@ -70,7 +70,7 @@ fn takes_and_gives_back(a_string: String) -> String {
 }
 ```
 
-### Reference 參考
+Reference 參考
 
 ```rust
 fn main(){
@@ -1218,10 +1218,6 @@ impl Vector2D {
     fn new(x: f64, y: f64) -> Self {
         Vector2D { x, y }
     }
-    
-    fn magnitude(&self) -> f64 {
-        (self.x * self.x + self.y * self.y).sqrt()
-    }
 }
 
 impl Add for Vector2D {
@@ -1259,11 +1255,8 @@ fn main() {
     let v3 = v1 + v2;  // 使用 Add trait
     let v4 = v1 * 2.0; // 使用 Mul trait
     
-    println!("v1: {}", v1);
-    println!("v2: {}", v2);
     println!("v1 + v2: {}", v3);
     println!("v1 * 2: {}", v4);
-    println!("v3 的長度: {:.2}", v3.magnitude());
 }
 ```
 
