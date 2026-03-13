@@ -3,7 +3,7 @@ title: Rust Notes
 description: Rust Notes (Keep Updating and Learning)
 slug: rust-notes
 date: 2026-03-02
-updateDate: 2026-03-11
+updateDate: 2026-03-13
 type: Post
 socialImage: /images/rust-logo.png
 ---
@@ -16,7 +16,7 @@ socialImage: /images/rust-logo.png
 2.同一時間只能有一個所有者
 3.當所有者離開作用域時，值會被丟棄
 
-移動語意（Move Semantics）
+**移動語意（Move Semantics）**  
 
 > Basic Type has default copy
 
@@ -70,7 +70,7 @@ fn takes_and_gives_back(a_string: String) -> String {
 }
 ```
 
-Reference 參考
+**Reference 參考**  
 
 ```rust
 fn main(){
@@ -160,7 +160,7 @@ fn main() {
 }
 ```
 
-元組結構
+**元組結構**  
 
 有時候我們只需要組合一些型別，但不需要為每個欄位命名
 
@@ -177,7 +177,7 @@ fn main() {
 }
 ```
 
-單元結構
+**單元結構**  
 
 有時候我們需要一個沒有任何欄位的結構，通常用於實現 trait
 
@@ -309,7 +309,7 @@ fn main(){
 }
 ```
 
-match / if let
+**match / if let**  
 
 ```rust
 fn main() {
@@ -429,7 +429,7 @@ fn main() {
 }
 ```
 
-Vector 與所有權
+**Vector 與所有權**  
 
 ```rust
 fn main(){
@@ -617,7 +617,7 @@ fn main() {
 }
 ```
 
-錯誤傳播：? 運算子的魔法
+**錯誤傳播：? 運算子的魔法**  
 
 ```rust
 use std::fs::File;
@@ -681,7 +681,7 @@ where
 fn print_and_return<T: Display>(value: T) -> T {...}
 ```
 
-### 單一型別參數/結構
+**單一型別參數/結構**  
 
 ```rust
 // 一個可以儲存任何型別的容器
@@ -738,7 +738,7 @@ fn main() {
 }
 ```
 
-### 多個型別參數/結構
+**多個型別參數/結構**  
 
 ```rust
 #[derive(Debug)]
@@ -840,7 +840,7 @@ impl TraitName for MyStruct {
 }
 ```
 
-實用的 Trait 範例
+**實用的 Trait 範例**  
 
 ```rust
 use std::fmt;
@@ -929,7 +929,7 @@ fn main() {
 }
 ```
 
-標準函式庫中常見的 Traits
+**標準函式庫中常見的 Traits**  
 
 Iterator Trait
 
@@ -977,7 +977,7 @@ fn main() {
 }
 ```
 
-From 和 Into Traits
+**From 和 Into Traits**  
 
 ```rust
 #[derive(Debug)]
@@ -1029,7 +1029,7 @@ fn create_person<T: Into<Person>>(data: T) {
 }
 ```
 
-Default Trait
+**Default Trait**  
 
 ```rust
 #[derive(Debug)]
@@ -1168,7 +1168,7 @@ fn main() {
 }
 ```
 
-父 Trait (Supertraits)
+**父 Trait (Supertraits)**  
 
 ```rust
 trait Animal {
@@ -1202,7 +1202,7 @@ fn main() {
 }
 ```
 
-運算子重載
+**運算子重載**  
 
 ```rust
 use std::ops::{Add, Mul, Display};
@@ -1260,7 +1260,7 @@ fn main() {
 }
 ```
 
-Trait 實現衝突
+**Trait 實現衝突**  
 
 ```rust
 trait A {
@@ -1297,5 +1297,217 @@ fn main() {
     // 或使用 UFCS (Universal Function Call Syntax)
     <MyStruct as A>::method(&obj);
     <MyStruct as B>::method(&obj);
+}
+```
+
+## 生命週期 (Lifetimes)
+
+生命週期就是參考有效的範圍。Rust 的借用檢查器（borrow checker）使用生命週期來確保所有的參考都指向有效的資料，從而防止懸置參考的產生。
+
+**基本語法**  
+
+```rust
+// 生命週期標記的基本語法
+&i32        // 一個參考
+&'a i32     // 有明確生命週期標記的參考
+&'a mut i32 // 有明確生命週期標記的可變參考
+```
+
+**函式中的生命週期標記**  
+
+```rust
+// 編譯錯誤：缺少生命週期標記
+fn longest(x: &str, y: &str) -> &str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+// 正確的版本：加上生命週期標記
+// 告訴編譯器：回傳引用的壽命，會跟 x 和 y 之中壽命較短的那個一樣長
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+fn main() {
+    let string1 = String::from("long string is long");
+    let string2 = "xyz";
+
+    let result = longest(string1.as_str(), string2);
+    println!("較長的字串是：{}", result);
+}
+```
+
+**生命週期省略規則**  
+
+Rust 編譯器很聰明，它可以在許多情況下自動推斷生命週期，這被稱為「生命週期省略」：
+
+1. 每個參考參數都有自己的生命週期
+2. 如果只有一個輸入生命週期，它會被分配給所有輸出生命週期
+
+```rust
+// 編寫的版本
+fn first_word(s: &str) -> &str {}
+
+// 編譯器實際看到的版本
+fn first_word<'a>(s: &'a str) -> &'a str {}
+```
+
+3. 如果有多個輸入生命週期，但其中一個是 `&self` 或 `&mut self`，那麼 `self` 的生命週期會被分配給所有輸出生命週期
+
+```rust
+impl<'a> ImportantExcerpt<'a> {
+    // 編寫的版本
+    fn announce_and_return_part(&self, announcement: &str) -> &str {}
+        
+    // 編譯器實際看到的版本
+    fn announce_and_return_part<'b>(&'a self, announcement: &'b str) -> &'a str {}
+}
+```
+
+**需要明確標記的情況**  
+
+當編譯器無法應用這些規則時，就需要明確標記：
+
+```rust
+// 需要明確標記：多個輸入，沒有 self
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}
+
+// 需要明確標記：不同的生命週期
+fn first_word_or_announcement<'a, 'b>(
+    text: &'a str, 
+    announcement: &'b str
+) -> &'a str {
+    text.split_whitespace().next().unwrap_or(announcement)
+}
+```
+
+**結構中的生命週期**  
+
+```rust
+// 包含參考的結構必須標記生命週期
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+impl<'a> ImportantExcerpt<'a> {
+    fn level(&self) -> i32 {
+        3
+    }
+    
+    // 根據省略規則，這個方法的生命週期會自動推斷
+    fn announce_and_return_part(&self, announcement: &str) -> &str {
+        println!("注意！{}", announcement);
+        self.part
+    }
+}
+
+fn main() {
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let first_sentence = novel.split('.').next().expect("找不到 '.'");
+    
+    let excerpt = ImportantExcerpt {
+        part: first_sentence,
+    };
+    
+    println!("重要摘錄：{}", excerpt.part);
+}
+```
+
+**靜態生命週期**  
+
+`'static` 生命週期表示整個程式執行期間都有效：
+
+```rust
+// 字串字面值有 'static 生命週期
+let s: &'static str = "我有靜態生命週期";
+
+// 靜態變數
+static GREETING: &str = "Hello, World!";
+
+fn get_greeting() -> &'static str {
+    GREETING
+}
+
+// 有時候可以將資料轉換為 'static
+fn to_static_string(s: String) -> &'static str {
+    Box::leak(s.into_boxed_str())  // 故意洩漏記憶體來獲得 'static
+}
+```
+
+**生命週期子型別 (Lifetime Subtyping)**  
+
+較長的生命週期可以被強制轉換為較短的生命週期：
+
+```rust
+fn choose_first<'a>(first: &'a str, _second: &str) -> &'a str {
+    first
+}
+
+fn main() {
+    let string1 = String::from("長期字串");
+    let result;
+    
+    {
+        let string2 = String::from("短期字串");
+        // string1 的生命週期較長，可以用於需要較短生命週期的地方
+        result = choose_first(&string1, &string2);
+    }
+    
+    println!("結果：{}", result);  // 可以使用，因為 string1 仍然有效
+}
+```
+
+**高階生命週期 (Higher-Rank Trait Bounds)**  
+
+有時候我們需要處理「對於任何生命週期都成立」的情況：
+
+```rust
+// 高階生命週期語法：for<'a>
+fn call_with_different_lifetimes<F>(f: F) 
+where
+    F: for<'a> Fn(&'a str) -> &'a str,
+{
+    let s1 = "Hello";
+    let s2 = "World";
+    
+    println!("{}", f(s1));
+    println!("{}", f(s2));
+}
+
+fn identity<'a>(s: &'a str) -> &'a str {
+    s
+}
+
+fn main() {
+    call_with_different_lifetimes(identity);
+}
+```
+
+**確保生命週期比另一個長**  
+
+```rust
+// 當生命週期關係複雜時，明確標記有助於理解
+fn complex_function<'a, 'b>(
+    x: &'a str,
+    y: &'b str,
+    use_first: bool,
+) -> &'a str
+where
+    'b: 'a,  // 'b 必須比 'a 活得久
+{
+    if use_first {
+        x
+    } else {
+        y  // 這要求 'b: 'a 約束
+    }
 }
 ```
