@@ -3,7 +3,7 @@ title: Rust Notes
 description: Rust Notes (Keep Updating and Learning)
 slug: rust-notes
 date: 2026-03-02
-updateDate: 2026-03-13
+updateDate: 2026-03-16
 type: Post
 socialImage: /images/rust-logo.png
 ---
@@ -362,7 +362,7 @@ fn main() {
 
 ## 集合型別
 
-### Vectors
+**Vectors**  
 
 ```rust
 fn main() {
@@ -445,7 +445,7 @@ fn main(){
 }
 ```
 
-### Hash Maps
+**Hash Maps**  
 
 ```rust
 use std::collections::HashMap;
@@ -496,7 +496,7 @@ fn main() {
 
 ## 錯誤處理
 
-### Unrecoverable Errors
+**Unrecoverable Errors**  
 
 基本 `panic!` 使用
 
@@ -555,7 +555,7 @@ fn main() {
 }
 ```
 
-### Recoverable Errors
+**Recoverable Errors**  
 
 `Result<T, E>`：優雅的錯誤處理
 
@@ -1509,5 +1509,352 @@ where
     } else {
         y  // 這要求 'b: 'a 約束
     }
+}
+```
+
+## 智慧指標 (Smart Pointers)
+
+- `像指標一樣`：可以解參考來存取資料
+- `比指標更聰明`：包含額外的後設資料和功能
+- `實現 RAII`：自動管理資源的生命週期
+- `型別安全`：在編譯時防止記憶體錯誤
+
+**記憶體管理**  
+
+`堆疊（Stack）`
+
+> 「自動且快速」的臨時存放區
+
+- **分配方式**： 自動分配與釋放。當函數執行時，變數進入堆疊；函數結束時，變數自動被「彈出」清除。
+
+- **速度**： 極快，處理器有專門的指令來操作堆疊指標。
+- **管理**： 由 CPU 緊密管理，不會產生碎片。
+- **限制**： 大小固定，通常很小（通常只有幾 MB），超過會導致 Stack Overflow。
+- **型別限制**： 只能存放編譯時已知大小的資料（例如：i32、常數長度陣列、原始指標）。
+
+`堆積（Heap）`
+
+> 「手動且靈活」的大型儲存庫
+
+- **分配方式**： 手動或由執行時期（Runtime）分配。你需要尋找足夠大的連續空間來存放資料。
+- **速度**： 較慢。需要透過系統呼叫（System Call）尋找空間，且必須透過指標（Pointer）來訪問（多了一層間接跳轉）。
+- **管理**： 容易產生「記憶體碎片」。在 C/C++ 中需手動 free，而在 Java/Python 中由 GC 管理，在 Rust 中則透過「所有權系統」自動釋放。
+- **限制**： 大小靈活，只要硬體記憶體夠大，幾乎沒有限制。
+- **型別限制**： 用於存放動態大小或生命週期需超過函數範圍的資料（例如：String、Vec、Box）。
+
+**Box：最簡單的智慧指標**  
+
+`Box<T>` 是最簡單的智慧指標，它將資料分配到堆積（Heap）而不是堆疊 (Stack)上：
+
+Usage:
+
+- 大型資料結構
+- Loop
+
+```rust
+struct LargeStruct {
+    data: [u8; 1024 * 1024],  // 1MB 的資料
+}
+
+fn main() {
+    // 在堆疊上
+    let stack_value = 5;
+    
+    // 在堆積上
+    let heap_value = Box::new(5);
+    
+    println!("堆疊值：{}", stack_value);
+    println!("堆積值：{}", heap_value);  // 自動解參考
+    println!("明確解參考：{}", *heap_value);
+
+     // 這會在堆疊上分配 1MB，可能造成堆疊溢位
+    // let large = LargeStruct { data: [0; 1024 * 1024] };
+    
+    // 使用 Box 將大型結構移到堆積上
+    let large = Box::new(LargeStruct { data: [0; 1024 * 1024] });
+    
+    println!("大型結構已安全分配到堆積");
+    
+    // 也可以作為函式參數傳遞
+    process_large_struct(large);
+}
+
+fn process_large_struct(data: Box<LargeStruct>) {
+    println!("處理大型結構，大小：{} 位元組", 
+             std::mem::size_of_val(&*data));
+}
+```
+
+```rust
+trait Drawable {
+    fn draw(&self);
+}
+
+struct Circle {
+    radius: f64,
+}
+
+struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Drawable for Circle {
+    fn draw(&self) {
+        println!("畫一個半徑為 {:.2} 的圓", self.radius);
+    }
+}
+
+impl Drawable for Rectangle {
+    fn draw(&self) {
+        println!("畫一個 {:.2} x {:.2} 的長方形", self.width, self.height);
+    }
+}
+
+fn main() {
+    // 使用 Box 儲存不同型別的 trait objects
+    let shapes: Vec<Box<dyn Drawable>> = vec![
+        Box::new(Circle { radius: 5.0 }),
+        Box::new(Rectangle { width: 10.0, height: 8.0 }),
+        Box::new(Circle { radius: 3.0 }),
+    ];
+    
+    // 多型呼叫
+    for shape in &shapes {
+        shape.draw();
+    }
+}
+```
+
+**Rc：參考計數智慧指標**  
+
+當你需要讓多個擁有者共享同一份資料時，`Rc<T>` (Reference Counted) 就派上用場了
+
+**限制**: 只能用於單執行緒環境，並且其中的資料是不可變的
+
+```rust
+use std::rc::Rc;
+
+fn main() {
+    let data = Rc::new(String::from("共享資料"));
+    
+    // 複製 Rc，增加參考計數
+    let data1 = Rc::clone(&data);
+    let data2 = Rc::clone(&data);
+    
+    println!("參考計數：{}", Rc::strong_count(&data));  // 3
+    
+    println!("data: {}", data);
+    println!("data1: {}", data1);
+    println!("data2: {}", data2);
+    
+    // 當變數離開作用域時，參考計數會減少
+    drop(data1);
+    println!("刪除 data1 後的參考計數：{}", Rc::strong_count(&data));  // 2
+}  // data 和 data2 離開作用域，參考計數變為 0，記憶體被釋放
+```
+
+**Arc：原子參考計數**  
+
+`Arc<T>` (Atomically Reference Counted) 是 `Rc<T>` 的執行緒安全版本
+
+> 可以結合 Mutex 實現執行緒安全的可變性
+
+```rust
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+    
+    for i in 0..10 {
+        let counter_clone = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            for _ in 0..1000 {
+                let mut num = counter_clone.lock().unwrap();
+                *num += 1;
+            }
+            println!("執行緒 {} 完成", i);
+        });
+        handles.push(handle);
+    }
+    
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    
+    println!("最終計數：{}", *counter.lock().unwrap());
+}
+```
+
+**Weak**  
+
+不具備所有權的觀察者，可以指向 Rc 或 Arc 管理的資料，但不會增加引用計數。
+
+解決「循環引用」。例如：父節點擁有子節點（使用 Rc），但子節點想指回父節點時，應使用 Weak，否則這兩個物件永遠不會被釋放。
+
+```rust
+use std::rc::{Rc, Weak};
+use std::cell::RefCell;
+
+// ✅ 好：使用 Weak 打破循環參考
+#[derive(Debug)]
+struct Parent {
+    children: RefCell<Vec<Rc<Child>>>,
+}
+
+#[derive(Debug)]
+struct Child {
+    parent: Weak<Parent>,  // 使用 Weak 而不是 Rc
+}
+
+// ❌ 不好：會造成記憶體洩漏的循環參考
+// struct BadParent {
+//     children: RefCell<Vec<Rc<BadChild>>>,
+// }
+// 
+// struct BadChild {
+//     parent: Rc<BadParent>,  // 這會造成循環參考
+// }
+```
+
+**Box vs Rc vs Arc**  
+
+| Type | Storage | Ownership | Thread-Safe? |
+| --- | --- | --- | --- |
+| `Box` | Heap | Single | Yes |
+| `Rc` | Heap | Multiple | No |
+| `Arc` | Heap | Multiple | Yes |
+
+**RefCell 與內部可變性**  
+
+`RefCell<T>` 提供「內部可變性」(interior mutability)，允許在不可變參考存在時修改資料
+
+```rust
+use std::cell::RefCell;
+
+fn main() {
+    // not mut variable
+    let data = RefCell::new(vec![1, 2, 3]);
+    
+    // 借用不可變參考
+    {
+        let borrowed = data.borrow();
+        println!("資料：{:?}", *borrowed);
+    }  // 不可變借用結束
+    
+    // 借用可變參考
+    {
+        let mut borrowed_mut = data.borrow_mut();
+        // let _borrow2 = data.borrow_mut();  // panic！同時有兩個可變借用
+        borrowed_mut.push(4);
+        borrowed_mut.push(5);
+    }  // 可變借用結束
+    
+    println!("修改後的資料：{:?}", *data.borrow());
+}
+```
+
+**RefCell vs Mutex**  
+
+| Type | Access Check | Thread-Safe? | Main Use Case |
+| --- | --- | --- | --- |
+| `RefCell` | Runtime | No | Mutating data inside an `Rc`. Panics if borrow rules are broken. |
+| `Mutex` | Runtime | Yes | Mutating data inside an `Arc`. Blocks the thread (locks) until access is granted. |
+
+**Deref 和 Drop Traits：智慧指標的魔法**  
+
+`Deref` trait 讓智慧指標能夠像普通參考一樣使用
+
+```rust
+use std::ops::Deref;
+
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+fn hello(name: &str) {
+    println!("Hello, {}!", name);
+}
+
+fn main() {
+    let m = MyBox::new(String::from("Rust"));
+    
+    // Deref 強制轉型：MyBox<String> -> &String -> &str
+    hello(&m);
+    
+    // 等價於：
+    hello(&(*m)[..]);
+    
+    // 直接解參考
+    println!("內容：{}", *m);
+}
+```
+
+`Drop` trait 定義了值離開作用域時的清理邏輯
+
+```rust
+struct CustomSmartPointer {
+    data: String,
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("正在釋放 CustomSmartPointer，資料：{}", self.data);
+    }
+}
+
+struct DatabaseConnection {
+    id: u32,
+}
+
+impl DatabaseConnection {
+    fn new(id: u32) -> Self {
+        println!("建立資料庫連線：{}", id);
+        DatabaseConnection { id }
+    }
+}
+
+impl Drop for DatabaseConnection {
+    fn drop(&mut self) {
+        println!("關閉資料庫連線：{}", self.id);
+    }
+}
+
+fn main() {
+    println!("=== Drop Trait 示範 ===");
+    
+    {
+        let _c = CustomSmartPointer {
+            data: String::from("我的資料"),
+        };
+        
+        let _db1 = DatabaseConnection::new(1);
+        let _db2 = DatabaseConnection::new(2);
+        
+        println!("CustomSmartPointer 和 DatabaseConnection 已建立");
+    }  // 在這裡，變數會以相反的順序被 drop
+    
+    println!("作用域結束");
+    
+    // 也可以手動呼叫 drop
+    let c = CustomSmartPointer {
+        data: String::from("手動釋放"),
+    };
+    drop(c);  // 明確釋放
+    println!("手動釋放完成");
 }
 ```
