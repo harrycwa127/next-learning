@@ -9,3 +9,724 @@ socialImage: /images/rust-logo.png
 ---
 
 > [Reference](https://ithelp.ithome.com.tw/users/20125652/ironman/8347)
+
+## 測試 Test
+
+**單元測試 (Unit Tests)**  
+
+測試函式使用 `#[test]` 屬性標記
+
+```rust
+pub struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Rectangle {
+    pub fn new(width: f64, height: f64) -> Result<Self, String> {
+        if width <= 0.0 || height <= 0.0 {
+            Err("寬度和高度必須大於 0".to_string())
+        } else {
+            Ok(Rectangle { width, height })
+        }
+    }
+
+    pub fn area(&self) -> f64 {
+        self.width * self.height
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+     #[test]
+    fn test_rectangle_creation() {
+        let rect = Rectangle::new(10.0, 20.0);
+        assert!(rect.is_ok());
+
+        let rect = rect.unwrap();
+        assert_eq!(rect.width, 10.0);
+        assert_eq!(rect.height, 20.0);
+    }
+
+    #[test]
+    fn test_rectangle_invalid_dimensions() {
+        let result = Rectangle::new(-5.0, 10.0);
+        assert!(result.is_err());
+
+        let result = Rectangle::new(5.0, 0.0);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_area_calculation() {
+        let rect = Rectangle::new(3.0, 4.0).unwrap();
+        assert_eq!(rect.area(), 12.0);
+
+        let square = Rectangle::new(5.0, 5.0).unwrap();
+        assert_eq!(square.area(), 25.0);
+    }
+}
+```
+
+執行測試
+
+```command
+cargo test
+```
+
+**測試失敗與 panic**  
+
+有時候需要測試程式碼在特定條件下會 panic
+
+```rust
+pub fn divide(a: f64, b: f64) -> f64 {
+    if b == 0.0 {
+        panic!("不能除以零！");
+    }
+    a / b
+}
+
+pub fn parse_positive_number(s: &str) -> Result<u32, String> {
+    match s.parse::<u32>() {
+        Ok(num) if num > 0 => Ok(num),
+        Ok(_) => Err("數字必須大於 0".to_string()),
+        Err(_) => Err("無法解析為數字".to_string()),
+    }
+}
+
+#[cfg(test)]
+mod math_tests {
+    use super::*;
+
+    #[test]
+    fn test_divide_normal() {
+        assert_eq!(divide(10.0, 2.0), 5.0);
+        assert_eq!(divide(7.0, 3.0), 7.0 / 3.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_divide_by_zero() {
+        divide(10.0, 0.0);
+    }
+
+    #[test]
+    #[should_panic(expected = "不能除以零")]
+    fn test_divide_by_zero_with_message() {
+        divide(10.0, 0.0);
+    }
+
+    #[test]
+    fn test_parse_positive_number_success() {
+        assert_eq!(parse_positive_number("42"), Ok(42));
+    }
+
+    #[test]
+    fn test_parse_positive_number_zero() {
+        assert_eq!(
+            parse_positive_number("0"),
+            Err("數字必須大於 0".to_string())
+        );
+    }
+
+    #[test]
+    fn test_parse_positive_number_negative() {
+        // 注意：parse::<u32> 本身就會拒絕負數
+        assert!(parse_positive_number("-5").is_err());
+    }
+}
+```
+
+**忽略測試**  
+
+有時候某些測試需要很長時間執行，或者需要特殊的環境設定
+
+```rust
+#[cfg(test)]
+mod expensive_tests {
+    use std::thread;
+    use std::time::Duration;
+
+    #[test]
+    fn quick_test() {
+        assert_eq!(2 + 2, 4);
+    }
+
+    #[test]
+    #[ignore]
+    fn expensive_test() {
+        // 模擬耗時操作
+        thread::sleep(Duration::from_secs(1));
+        assert_eq!(expensive_computation(), 42);
+    }
+
+    fn expensive_computation() -> i32 {
+        // 假設這是一個很耗時的計算
+        thread::sleep(Duration::from_millis(100));
+        42
+    }
+}
+```
+
+**執行被忽略的測試**  
+
+```command
+cargo test -- --ignored
+```
+
+**執行所有測試（包括被忽略的）**  
+
+```command
+cargo test -- --include-ignored
+```
+
+**運行特定測試**  
+
+```command
+# 只運行名稱包含 "rectangle" 的測試
+cargo test rectangle
+
+# 運行特定的測試函式
+cargo test test_area_calculation
+
+# 運行特定模組的測試
+cargo test math_tests
+```
+
+**控制測試輸出**  
+
+```command
+# 顯示測試中的 println! 輸出
+cargo test -- --nocapture
+
+# 單執行緒運行測試（避免並行問題）
+cargo test -- --test-threads=1
+```
+
+**整合測試 (Integration Tests)**  
+
+整合測試用於測試函式庫的公開 API，放在 `tests/` 目錄中
+
+```rust
+// Sample 檔案結構
+src/
+    lib.rs
+tests/
+    integration_test.rs
+    common/
+        mod.rs  ->  共用的測試工具函式
+```
+
+Command Same as Unit Test
+
+**文件測試 (Documentation Tests)**  
+
+Rust 可以執行文件註解中的程式碼範例，確保文件和實際程式碼保持同步：
+
+```rust
+/// 計算兩個數字的最大公約數
+/// 使用歐幾里得演算法來計算兩個正整數的最大公約數。
+/// 
+/// # 參數
+/// * `a` - 第一個正整數
+/// * `b` - 第二個正整數
+/// 
+/// # 回傳值
+/// 回傳 `a` 和 `b` 的最大公約數
+/// 
+/// # 範例
+/// ```
+/// use rust_blog::gcd;
+/// 
+/// let result = gcd(48, 18);
+/// assert_eq!(result, 6);
+/// 
+/// let result = gcd(17, 13);
+/// assert_eq!(result, 1);
+/// ```
+/// 
+/// # Panics
+/// 當任一參數為 0 時會 panic：
+/// ```should_panic
+/// use rust_blog::gcd;
+/// 
+/// gcd(0, 5); // 這會 panic
+/// ```
+pub fn gcd(mut a: u32, mut b: u32) -> u32 {
+    assert!(a != 0 && b != 0, "GCD 的參數不能為 0");
+    
+    while b != 0 {
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    a
+}
+```
+
+執行文件測試
+
+```command
+cargo test --doc
+```
+
+### 模擬與測試替身 (Mocking)
+
+對於需要外部依賴的程式碼，我們可以使用特徵來建立可測試的抽象
+
+```rust
+pub trait Database {
+    fn get_user(&self, id: u32) -> Option<String>;
+    fn save_user(&mut self, id: u32, name: String) -> Result<(), String>;
+    fn delete_user(&mut self, id: u32) -> bool;
+}
+
+// 真實的資料庫實現（簡化版）
+pub struct SqlDatabase {
+    connection_string: String,
+}
+
+impl SqlDatabase {
+    pub fn new(connection_string: String) -> Self {
+        SqlDatabase { connection_string }
+    }
+}
+
+impl Database for SqlDatabase {
+    fn get_user(&self, _id: u32) -> Option<String> {
+        // 實際會連接資料庫查詢
+        None
+    }
+
+    fn save_user(&mut self, _id: u32, _name: String) -> Result<(), String> {
+        // 實際會寫入資料庫
+        Ok(())
+    }
+
+    fn delete_user(&mut self, _id: u32) -> bool {
+        // 實際會從資料庫刪除
+        true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // 測試用的模擬資料庫
+    struct MockDatabase {
+        users: HashMap<u32, String>,
+        should_fail_save: bool,
+    }
+
+    impl MockDatabase {
+        fn new() -> Self {
+            MockDatabase {
+                users: HashMap::new(),
+                should_fail_save: false,
+            }
+        }
+
+        fn set_save_failure(&mut self, should_fail: bool) {
+            self.should_fail_save = should_fail;
+        }
+
+        // ...
+    }
+
+    impl Database for MockDatabase {
+        fn get_user(&self, id: u32) -> Option<String> {
+            self.users.get(&id).cloned()
+        }
+
+        fn save_user(&mut self, id: u32, name: String) -> Result<(), String> {
+            if self.should_fail_save {
+                Err("資料庫錯誤".to_string())
+            } else {
+                self.users.insert(id, name);
+                Ok(())
+            }
+        }
+
+        fn delete_user(&mut self, id: u32) -> bool {
+            self.users.remove(&id).is_some()
+        }
+    }
+    
+    //...
+}
+```
+
+### 自訂測試框架與巨集 (Macros)
+
+對於重複的測試模式，可以建立自訂的測試巨集
+
+- `:ident`: 僅匹配單獨的名稱（如 my_func）
+- `:path`: 函數路徑，如 crate::utils::helper
+- `ty`: 函數型別，如 `fn(u32) -> u32` 或 `Fn(i32)`
+- `:expr`: Expression（運算式），也就是任何會「回傳一個值」的程式碼片段
+- `:block`: 程式碼區塊，大括號內的代碼 `{ ... }`
+- `:vis`: 可見性，如 `pub` 或 `pub(crate)`
+- `:item`: 整段定義，將整段 `fn ... { ... }` 視為一個項目
+- `:tt`: 萬用的記號樹
+
+```rust
+// 建立一個巨集來簡化數學函式的測試
+macro_rules! test_math_function {
+    ($func_name:ident, $test_name:ident, $input:expr, $expected:expr) => {
+        #[test]
+        fn $test_name() {
+            let result = $func_name($input.0, $input.1);
+            assert_eq!(result, $expected);
+        }
+    };
+    
+    // 支援多組測試資料
+    ($func_name:ident, $test_name:ident, [$(($input:expr, $expected:expr)),+ $(,)?]) => {
+        #[test]
+        fn $test_name() {
+            $(
+                let result = $func_name($input.0, $input.1);
+                assert_eq!(result, $expected, 
+                    "Failed for input {:?}, expected {}, got {}", 
+                    $input, $expected, result);
+            )+
+        }
+    };
+}
+
+// 自訂斷言巨集
+macro_rules! assert_approximately_eq {
+    ($left:expr, $right:expr, $epsilon:expr) => {
+        assert!(
+            ($left - $right).abs() < $epsilon,
+            "assertion failed: `(left ~= right)`\n  left: `{}`,\n right: `{}`,\n epsilon: `{}`",
+            $left,
+            $right,
+            $epsilon
+        );
+    };
+    
+    ($left:expr, $right:expr) => {
+        assert_approximately_eq!($left, $right, f64::EPSILON);
+    };
+}
+
+// 使用自訂巨集進行測試
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+fn multiply(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+fn divide(a: f64, b: f64) -> f64 {
+    a / b
+}
+
+test_math_function!(add, test_add_positive, (2, 3), 5);
+test_math_function!(add, test_add_negative, (-2, -3), -5);
+test_math_function!(multiply, test_multiply_basic, (4, 5), 20);
+
+test_math_function!(add, test_add_multiple, [
+    ((1, 1), 2),
+    ((5, 7), 12),
+    ((-3, 8), 5),
+    ((0, 0), 0),
+]);
+
+#[cfg(test)]
+mod float_tests {
+    use super::*;
+
+    #[test]
+    fn test_division_with_custom_assertion() {
+        assert_approximately_eq!(divide(22.0, 7.0), 3.142857, 0.000001);
+        assert_approximately_eq!(divide(1.0, 3.0), 0.333333, 0.000001);
+    }
+
+    #[test]
+    fn test_floating_point_arithmetic() {
+        let result = 0.1 + 0.2;
+        // 不能直接用 == 比較浮點數
+        // assert_eq!(result, 0.3); // 這會失敗！
+        
+        // 使用自訂的近似相等斷言
+        assert_approximately_eq!(result, 0.3, 1e-10);
+    }
+}
+```
+
+## 閉包 (Closures) 與迭代器 (Iterators)
+
+**閉包 (Closures)**  
+
+閉包是可以捕獲其環境中變數的匿名函式。你可以把它想像成「會記住周圍環境的函式」
+
+```rust
+fn main() {
+    let x = 4;
+    
+    // 傳統函式需要明確傳入參數
+    fn add_x_traditional(num: i32, x: i32) -> i32 {
+        num + x
+    }
+    
+    // 閉包可以直接捕獲環境中的 x
+    let add_x_closure = |num: i32| -> i32 {num + x};
+    let add_x_simple = |num| num + x;
+    
+    println!("傳統函式：{}", add_x_traditional(2, x));
+    println!("省略型別標記：{}", add_x_simple(2, x));
+    println!("閉包：{}", add_x_closure(2));
+
+    // 高階函式的使用
+    let operation = create_multiplier(3);
+    let results: Vec<i32> = (1..=5)
+        .map(operation)
+        .collect();
+    // [1 * 3, 2 * 3, 3 * 3...]
+    
+    println!("乘以 3 的結果：{:?}", results);
+}
+
+// 回傳閉包的函式
+fn create_multiplier(factor: i32) -> impl Fn(i32) -> i32 {
+    move |x| x * factor
+}
+```
+
+**迭代器 (Iterators)：高效的資料處理管線**  
+
+迭代器是 Rust 中處理資料集合的主要方式，它們提供了一套豐富且高效的 API
+
+```rust
+fn main() {
+    let vec = vec![1, 2, 3, 4, 5];
+    
+    // 1. iter() - 產生不可變參考的迭代器
+    for item in vec.iter() {
+        println!("參考：{}", item); // item 的類型是 &i32
+    }
+    
+    // 2. into_iter() - 產生擁有所有權的迭代器
+    for item in vec.clone().into_iter() {
+        println!("擁有：{}", item); // item 的類型是 i32
+    }
+    
+    // 3. iter_mut() - 產生可變參考的迭代器
+    let mut vec_mut = vec![1, 2, 3, 4, 5];
+    for item in vec_mut.iter_mut() {
+        *item *= 2; // 修改原始值
+    }
+    println!("修改後：{:?}", vec_mut);
+}
+```
+
+**迭代器適配器 (Iterator Adaptors)**  
+
+迭代器適配器讓我們能夠轉換迭代器，它們是惰性的（lazy），只有在被消費時才會執行
+
+```rust
+fn main() {
+    let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    
+    // 鏈式操作：過濾 -> 映射 -> 收集
+    let result: Vec<String> = numbers
+        .iter()                           // 建立迭代器
+        .filter(|&&x| x % 2 == 0)        // 過濾偶數
+        .map(|&x| x * x)                 // 計算平方
+        .map(|x| format!("{}²", x))      // 轉換為字串
+        .collect();                      // 收集結果
+    println!("偶數的平方：{:?}", result);
+    
+    // 更複雜的範例
+    let words = vec!["hello", "world", "rust", "is", "awesome"];
+    
+    let processed: Vec<String> = words
+        .iter()
+        .enumerate()                     // 添加索引
+        .filter(|(i, _)| i % 2 == 0)    // 只要偶數索引
+        .map(|(i, &word)| format!("{}: {}", i, word.to_uppercase()))
+        .collect();
+    println!("處理後的單字：{:?}", processed);
+
+     // zip - 組合兩個迭代器
+    let letters = vec!['a', 'b', 'c'];
+    let pairs: Vec<(&i32, &char)> = numbers
+        .iter()
+        .zip(letters.iter())
+        .collect();
+    println!("配對：{:?}", pairs);
+
+    // take - 取前 n 個元素
+    let first_three: Vec<&i32> = numbers.iter().take(3).collect();
+    println!("前三個：{:?}", first_three);
+    
+    // skip - 跳過前 n 個元素
+    let skip_two: Vec<&i32> = numbers.iter().skip(2).collect();
+    println!("跳過前兩個：{:?}", skip_two);
+
+     // fold - 摺疊（類似 reduce）
+    let sum = numbers.iter().fold(0, |acc, &x| acc + x);
+    println!("總和：{}", sum);
+
+    // fold - 單次遍歷
+    let (sum, count, max) = numbers.iter().fold(
+        (0, 0, i32::MIN),
+        |(sum, count, max), &x| (sum + x, count + 1, max.max(x))
+    );
+    
+    println!("總和：{}，數量：{}，最大值：{}", sum, count, max);
+    
+    // reduce - 簡化版的 fold
+    let product = numbers.iter().reduce(|acc, &x| acc * x);
+    println!("乘積：{:?}", product);
+    
+    // for_each - 對每個元素執行動作
+    print!("迭代：");
+    numbers.iter().for_each(|x| print!("{} ", x));
+    println!();
+    
+    // find - 找到第一個符合條件的元素
+    let found = numbers.iter().find(|&x| x > 3);
+    println!("第一個大於 3 的：{:?}", found);
+    
+    // any / all - 檢查條件
+    let has_even = numbers.iter().any(|&x| x % 2 == 0);
+    let all_positive = numbers.iter().all(|&x| x > 0);
+    println!("有偶數：{}，全為正數：{}", has_even, all_positive);
+    
+    // count - 計算數量
+    let count = numbers.iter().filter(|&x| x > 2).count();
+    println!("大於 2 的數量：{}", count);
+}
+```
+
+## 併發 (Concurrency)
+
+建立執行緒： `thread::spawn`
+等待執行緒完成：`JoinHandle`
+
+```rust
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    println!("主執行緒開始");
+    
+    // spawn 會回傳一個 JoinHandle
+    let handle = thread::spawn(|| {
+        for i in 1..=5 {
+            println!("子執行緒：計數 {}", i);
+            thread::sleep(Duration::from_millis(500));
+        }
+        println!("子執行緒結束");
+    });
+    
+    // 主執行緒的工作
+    for i in 1..=3 {
+        println!("主執行緒：計數 {}", i);
+        thread::sleep(Duration::from_millis(300));
+    }
+    
+    // 等待子執行緒完成
+    handle.join().unwrap();
+    
+    println!("主執行緒結束");
+}
+```
+
+**執行緒間的資料傳遞**  
+
+> 移動所有權
+
+```rust
+use std::thread;
+
+fn main() {
+    let data = "Hello from main thread!".to_string();
+    
+    // 使用 move 關鍵字將 data 的所有權移動到執行緒中
+    let handle = thread::spawn(move || {
+        println!("子執行緒收到：{}", data);
+        data.len() // 回傳資料長度
+    });
+    
+    // data 已經被移動，這裡無法再使用
+    // println!("{}", data); // 這會編譯錯誤
+    
+    // 從執行緒取得回傳值
+    let result = handle.join().unwrap();
+    println!("字串長度：{}", result);
+}
+```
+
+**使用通道 (Channels) 通訊**  
+
+```rust
+// multiple producer, single consumer
+use std::sync::mpsc;  
+use std::thread;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+    
+    // 複製發送者來建立多個發送者
+    for id in 1..=3 {
+        let sender = tx.clone();
+        thread::spawn(move || {
+            for i in 1..=3 {
+                let message = format!("執行緒 {} 的訊息 {}", id, i);
+                sender.send(message).unwrap();
+            }
+        });
+    }
+    
+    // 關閉原始發送者
+    drop(tx);
+    
+    // 接收所有訊息
+    for received in rx {
+        println!("收到：{}", received);
+    }
+}
+```
+
+**共享狀態：Mutex 和 Arc**  
+
+```rust
+use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    // Arc：原子參考計數，允許多個執行緒擁有同一份資料
+    // Mutex：互斥鎖，確保同時只有一個執行緒能修改資料
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+    
+    for i in 0..10 {
+        let counter_clone = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            for _ in 0..1000 {
+                // 取得鎖並修改資料
+                let mut num = counter_clone.lock().unwrap();
+                *num += 1;
+            }
+            println!("執行緒 {} 完成", i);
+        });
+        handles.push(handle);
+    }
+    
+    // 等待所有執行緒完成
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    
+    println!("最終計數：{}", *counter.lock().unwrap());
+}
+
+```
