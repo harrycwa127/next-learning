@@ -608,7 +608,15 @@ fn main() {
 
 ## 併發 (Concurrency)
 
+**適合多執行緒的情況**  
+
+- CPU 密集型計算任務
+- 需要真正並行處理的算法
+- 阻塞式的第三方函式庫
+- 簡單的工作分割場景
+
 建立執行緒： `thread::spawn`
+
 等待執行緒完成：`JoinHandle`
 
 ```rust
@@ -713,6 +721,8 @@ fn main() {
         let handle = thread::spawn(move || {
             for _ in 0..1000 {
                 // 取得鎖並修改資料
+                // lock -> 保證一次只有一個執行緒可以存取資料
+                // 如果另一個執行緒正在使用，這裡會阻塞 (Block) 直到鎖被釋放
                 let mut num = counter_clone.lock().unwrap();
                 *num += 1;
             }
@@ -730,3 +740,198 @@ fn main() {
 }
 
 ```
+
+**注意:**  
+
+1. 優先使用訊息傳遞而非共享狀態
+
+```rust
+// 推薦：使用通道
+let (tx, rx) = mpsc::channel();
+
+// 較少使用：共享狀態
+let shared_data = Arc::new(Mutex::new(data));
+```
+
+2. 最小化鎖的持有時間
+
+```rust
+// 不好的例子
+let data = mutex.lock().unwrap();
+expensive_operation(); // 長時間持有鎖
+*data += 1;
+
+// 好的例子
+let value = {
+    let data = mutex.lock().unwrap();
+    *data
+}; // 鎖在這裡釋放
+
+expensive_operation();
+
+{
+    let mut data = mutex.lock().unwrap();
+    *data = value + 1;
+} // 鎖快速釋放
+```
+
+3. 避免巢狀鎖
+
+```rust
+// 可能導致死鎖
+let _lock1 = mutex1.lock().unwrap();
+let _lock2 = mutex2.lock().unwrap(); // 危險！
+
+// 更安全的方式：確保鎖的順序一致
+// 或使用更高階的併發原語
+```
+
+## 非同步程式設計 (Async/Await)
+
+`async/await` 語法是語言內建的，但需要一個**執行環境 (runtime)** 來實際執行非同步任務，不然 `async fn` 什麼都不會執行，只會回傳一個實作了 Future trait 的狀態機
+
+`Tokio` 是目前最受歡迎的 **執行環境 (runtime)** 選擇！
+
+```command
+cargo add tokio --features full
+```
+
+`async` : 宣告一個函數是「非同步」，call時不會立刻執行內容只會回傳一個實作了 `Future` trait (= `Pomise` in JS) 的狀態機
+
+`await`: 用來「等待」一個非同步任務完成，它會暫停目前函數的執行，直到該任務完成並回傳結果。
+
+**適合非同步的情況**  
+
+- I/O 密集型任務（檔案讀寫、網路請求、資料庫查詢）
+- 需要處理大量併發連線的服務器
+- 響應時間敏感的應用程式
+- 資源有限的環境
+
+**Tokio Example**  
+
+```rust
+use tokio::time::{sleep, Duration}; 
+
+// 非同步函式使用 async 關鍵字
+async fn async_fetch_data(url: &str) -> String {
+    sleep(Duration::from_secs(2)).await; // 使用 .await 等待
+    format!("來自 {} 的資料", url)
+}
+
+async fn fast_task() -> &'static str {
+    sleep(Duration::from_millis(100)).await;
+    "快速任務完成"
+}
+
+async fn slow_task() -> &'static str {
+    sleep(Duration::from_millis(500)).await;
+    "慢速任務完成"
+}
+
+#[tokio::main] // Tokio 的 main 函式標記
+async fn main() {
+    let start = std::time::Instant::now();
+    
+    // 並行執行三個請求
+    let (data1, data2, data3) = tokio::join!(
+        async_fetch_data("https://api1.example.com"),
+        async_fetch_data("https://api2.example.com"),
+        async_fetch_data("https://api3.example.com")
+    );
+
+    println!("所有資料：{}, {}, {}", data1, data2, data3);
+    println!("總耗時：{:.2}秒", start.elapsed().as_secs_f64());
+
+    // or
+
+    // 啟動三個獨立的背景任務
+    let handle1 = tokio::spawn(async_fetch_data("https://api1.example.com"));
+    let handle2 = tokio::spawn(async_fetch_data("https://api2.example.com"));
+    let handle3 = tokio::spawn(async_fetch_data("https://api3.example.com"));
+    
+    // 等待所有背景任務完成
+    let result = tokio::try_join!(handle1, handle2, handle3);
+    match result {
+        Ok((data1, data2, data3)) => {
+            println!("所有資料：{}, {}, {}", data1, data2, data3);
+        },
+        Err(e) => {
+            eprintln!("任務失敗: {:?}", e);
+        }
+    }
+            
+    println!("總耗時：{:.2}秒", start.elapsed().as_secs_f64());
+
+     let result = tokio::select! {
+        res = fast_task() => {
+            println!("快速任務先完成: {}", res);
+            res
+        }
+        res = slow_task() => {
+            println!("慢速任務先完成: {}", res);
+            res
+        }
+    };
+    
+    println!("選擇的結果: {}", result);
+}
+```
+
+### 實際應用：HTTP 客戶端
+
+Add reqwest
+
+```command
+cargo add reqwest --features json
+```
+
+```rust
+use reqwest;
+use tokio::time::{timeout, Duration};
+
+async fn fetch_url(url: String) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    println!("正在請求: {}", &url);
+    
+    // 設定 5 秒超時
+    let response = timeout(
+        Duration::from_secs(5),
+        reqwest::get(&url)
+    ).await??;  // 第一個 ? 處理超時，第二個 ? 處理 reqwest 錯誤
+    
+    let content = response.text().await?;
+    println!("完成請求: {} (長度: {})", &url, content.len());
+    
+    Ok(content)
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let urls = vec![
+        "https://httpbin.org/delay/1".to_string(),
+        "https://httpbin.org/delay/2".to_string(),
+        "https://httpbin.org/json".to_string(),
+    ];
+    
+    let start = std::time::Instant::now();
+    
+    // 並行發送所有請求
+    let mut tasks = Vec::new();
+    for url in urls {
+        tasks.push(tokio::spawn(fetch_url(url)));
+    }
+    
+    // 等待所有請求完成
+    for (i, task) in tasks.into_iter().enumerate() {
+        // task -> JoinHandle<Result<>>
+        match task.await {
+            Ok(Ok(result)) => println!("操作 {} 成功: {}", i, result),
+            Ok(Err(e)) => println!("操作 {} 失敗: {}", i, e),
+            Err(e) => println!("操作 {} 任務錯誤: {}", i, e),
+        }
+    }
+    
+    println!("總耗時: {:.2}秒", start.elapsed().as_secs_f64());
+    Ok(())
+}
+```
+
