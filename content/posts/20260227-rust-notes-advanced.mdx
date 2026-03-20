@@ -935,3 +935,252 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
+## Module System
+
+**定義模組**  
+
+```rust
+// 定義一個模組
+mod utils {
+    // 公開函式
+    pub fn format_message(msg: &str) -> String {
+        format!("[INFO] {}", msg)
+    }
+    
+    // 私有函式（預設）
+    fn internal_helper() -> String {
+        "這是內部輔助函式".to_string()
+    }
+    
+    // 巢狀模組
+    pub mod math {
+        pub fn add(a: i32, b: i32) -> i32 {
+            a + b
+        }
+    }
+}
+
+// 另一個模組
+mod config {
+    pub struct Settings {
+        pub debug_mode: bool,
+    }
+    
+    impl Settings {
+        pub fn new() -> Self {
+            Settings {
+                debug_mode: false,
+            }
+        }
+        
+        pub fn enable_debug(&mut self) {
+            self.debug_mode = true;
+        }
+    }
+}
+
+fn main() {
+    // 使用絕對路徑
+    let message = crate::utils::format_message("系統啟動");
+    println!("{}", message);
+    
+    // 使用相對路徑
+    let result = utils::math::add(5, 3);
+    println!("5 + 3 = {}", result);
+    
+    // 建立設定
+    let mut settings = config::Settings::new();
+    settings.enable_debug();
+    println!("除錯模式：{}", settings.debug_mode);
+}
+```
+
+**使用 `use` 關鍵字簡化路徑**  
+
+```rust
+mod utils {
+    pub mod math {
+        pub fn add(a: i32, b: i32) -> i32 { a + b }
+        pub fn multiply(a: i32, b: i32) -> i32 { a * b }
+        // ...
+    }
+    
+    pub mod string_utils {
+        pub fn capitalize(s: &str) -> String {
+            let mut chars = s.chars();
+            match chars.next() {
+                None => String::new(),
+                Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+            }
+        }
+        
+        pub fn reverse(s: &str) -> String {
+            s.chars().rev().collect()
+        }
+    }
+}
+
+// 引入特定函式
+use utils::math::add;
+use utils::string_utils::capitalize;
+
+// 引入整個模組
+use utils::math;
+
+// 引入多個項目
+use utils::string_utils::{capitalize as cap, reverse};
+
+// 引入所有公開項目（通常不建議使用）
+// use utils::math::*;
+
+fn main() {
+    // 直接使用引入的函式
+    let sum = add(10, 20);
+    println!("10 + 20 = {}", sum);
+    
+    let name = capitalize("rust");
+    println!("大寫：{}", name);
+    
+    // 使用引入的模組
+    let product = math::multiply(6, 7);
+    println!("6 × 7 = {}", product);
+    
+    // 使用別名
+    let capitalized = cap("programming");
+    println!("大寫：{}", capitalized);
+    
+    let reversed = reverse("hello");
+    println!("反轉：{}", reversed);
+}
+```
+
+**檔案系統模組**  
+
+專案結構：
+
+```file
+src/
+├── main.rs
+├── config.rs
+├── utils.rs
+└── models/
+    ├── mod.rs
+    ├── user.rs
+    └── post.rs
+```
+
+**src/main.rs**  
+
+```rust:main.rs
+// 宣告模組（Rust 會尋找同名的 .rs 檔案）
+mod config;
+mod utils;
+mod models;
+
+use config::Settings;
+use models::user::User;
+use models::post::Post;
+use utils::format_date;
+
+// ...
+```
+
+**src/models/mod.rs**  
+
+```rust:mod.rs
+// 宣告子模組
+pub mod user;
+pub mod post;
+
+// 重新匯出常用型別
+pub use user::User;
+pub use post::Post;
+
+// 共用的型別和常數
+pub type UserId = u32;
+pub type PostId = u32;
+
+pub const MAX_TITLE_LENGTH: usize = 255;
+pub const MAX_CONTENT_LENGTH: usize = 10000;
+```
+
+`mod my_module;` : 請在這裡宣告一個模組，而這個模組的內容，請你去尋找同名的檔案或資料夾
+
+如果你在 `src/main.rs` 寫了 mod network;，Rust 會去尋找：
+
+1. `src/network.rs` (現代推薦寫法)
+2. `src/network/mod.rs` (舊版寫法，但包含子模組時仍常用)
+
+### 可見性與存取控制
+
+**`pub` 關鍵字的各種用法**  
+
+```rust
+mod library {
+    // 完全公開
+    pub struct PublicStruct {
+        pub field: i32,
+    }
+    
+    // 結構公開，但欄位私有
+    pub struct MixedStruct {
+        pub public_field: i32,
+        private_field: String,  // 私有欄位
+    }
+    
+    impl MixedStruct {
+        pub fn new(value: i32) -> Self {
+            Self {
+                public_field: value,
+                private_field: "private".to_string(),
+            }
+        }
+        
+        // 公開方法提供對私有欄位的存取
+        pub fn get_private(&self) -> &str {
+            &self.private_field
+        }
+    }
+    
+    // 只在當前 crate 內公開
+    pub(crate) fn crate_visible_function() {
+        println!("只有同一個 crate 可以看到我");
+    }
+    
+    // 只在父模組中公開
+    pub(super) fn parent_visible_function() {
+        println!("只有父模組可以看到我");
+    }
+    
+    // 完全私有（預設）
+    fn private_function() {
+        println!("只有當前模組可以看到我");
+    }
+    
+    pub mod sub_module {
+        // 可以存取父模組的 pub(super) 項目
+        pub fn call_parent() {
+            super::parent_visible_function();
+        }
+    }
+}
+
+// 重新匯出，為使用者提供更清潔的 API
+pub use library::PublicStruct as PublicStructRename
+pub use library::MixedStruct
+
+fn main() {
+    let public = library::PublicStruct { field: 42 };
+    println!("公開欄位：{}", public.field);
+    
+    let mixed = library::MixedStruct::new(100);
+    println!("公開欄位：{}", mixed.public_field);
+    println!("私有欄位（透過方法）：{}", mixed.get_private());
+    
+    // 呼叫 crate 可見的函式
+    library::crate_visible_function();
+    
+    // 呼叫子模組的函式
+    library::sub_module::call_parent();
+}
+```
