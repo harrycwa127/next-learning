@@ -1,0 +1,169 @@
+---
+title: AI Prompt Skills
+description: AI Prompt Skills
+slug: ai-prompt
+date: 2026-04-02
+updateDate: 2026-04-08
+type: Post
+---
+
+[Reference](https://www.promptingguide.ai/)
+
+## 提示工程（Prompt Engineering）
+
+Prompt engineering is a relatively new discipline for developing and optimizing prompts to efficiently use language models (LMs) for a wide variety of applications and research topics.
+
+## General Tips for Designing Prompts
+
+You can design effective prompts for various simple tasks by using commands to instruct the model what you want to achieve, such as "Write", "Classify", "Summarize", "Translate", "Order", etc.
+
+Usually, the more specific and relevant the context is to the task you are trying to perform, the better. We will touch on the importance of sampling and adding more context in the upcoming guides.
+
+Others recommend that you place instructions at the beginning of the prompt. Another recommendation is to use some clear separator like "###" to separate the instruction and context.
+
+`Sample Prompt:`
+
+```text
+### Instruction ###
+Translate the text below to Spanish:
+Text: "hello!"
+```
+
+`Output:`
+
+```text
+¡Hola!
+```
+
+### Specificity
+
+Be very specific about the instruction and task you want the model to perform. The more descriptive and detailed the prompt is, the better the results. There aren't specific tokens or keywords that lead to better results. It's more important to have a good format and descriptive prompt.
+
+When designing prompts, you should also keep in mind the length of the prompt as there are limitations regarding how long the prompt can be. Thinking about how specific and detailed you should be.
+
+`Sample Prompt:`
+
+```text
+Extract the name of places in the following text. 
+Desired format:
+Place: <comma_separated_list_of_places>
+Input: "Although these developments are encouraging to researchers, much is \still a mystery. “We often have a black box between the brain and the effect we see in the periphery,” says Henrique Veiga-Fernandes, a neuroimmunologist at the Champalimaud Centre for the Unknown in Lisbon. “If we want to use it in the therapeutic context, we actually need to understand the mechanism.“"
+```
+
+`Output:`
+
+> Place: Champalimaud Centre for the Unknown, Lisbon
+
+### Avoid Impreciseness
+
+It's often better to be specific and direct. The analogy here is very similar to effective communication -- the more direct, the more effective the message gets across.
+
+❌ few sentences, and don't be too descriptive.
+
+`Sample Prompt:`
+
+```text
+Use 2-3 sentences to explain the concept of prompt engineering to a high school student.
+```
+
+Also, when designing prompts is to avoid saying what not to do but say what to do instead. Following fail example.
+
+`Prompt:`
+
+```text
+The following is an agent that recommends movies to a customer. DO NOT ASK FOR INTERESTS. DO NOT ASK FOR PERSONAL INFORMATION.
+Customer: Please recommend a movie based on my interests.
+Agent: 
+```
+
+`Output:`
+
+```text
+Sure, I can recommend a movie based on your interests. What kind of movie would you like to watch? Do you prefer action, comedy, romance, or something else?
+```
+
+**Better Prompt**  
+
+`Prompt:`
+
+```text
+The following is an agent that recommends movies to a customer. The agent is responsible to recommend a movie from the top global trending movies. It should refrain from asking users for their preferences and avoid asking for personal information. If the agent doesn't have a movie to recommend, it should respond "Sorry, couldn't find a movie to recommend today.".
+Customer: Please recommend a movie based on my interests.
+Agent:
+```
+
+`Output:`
+
+```text
+Sorry, I don't have any information about your interests. However, here's a list of the top global trending movies right now: [list of movies]. I hope you find something you like!
+```
+
+## Zero-Shot Prompting
+
+Zero-shot prompting means that the prompt used to interact with the model won't contain examples or demonstrations.
+
+`Prompt:`
+
+```text
+Classify the text into neutral, negative or positive. 
+Text: I think the vacation is okay.
+Sentiment:
+```
+
+`Output:`
+
+```text
+Neutral
+```
+
+## Few-Shot Prompting
+
+Few-shot prompting can be used as a technique to enable in-context learning where we provide demonstrations in the prompt to steer the model to better performance. The demonstrations serve as conditioning for subsequent examples where we would like the model to generate a response.
+
+- "the `label` space and the distribution of the input text specified by the demonstrations are both important (regardless of whether the labels are correct for individual inputs)"
+
+- the `format` you use also plays a key role in performance, even if you just use random labels, this is much better than no labels at all.
+
+`Prompt: (4-shot)`
+
+```text
+This is awesome! // Negative
+This is bad! // Positive
+Wow that movie was rad! // Positive
+What a horrible show! //
+```
+
+`Output:`
+
+```text
+Negative
+```
+
+### Limitations
+
+Few-Shot Prompting still not a perfect technique, especially when dealing with more complex reasoning tasks.
+
+`Prompt:`
+
+```text
+The odd numbers in this group add up to an even number: 4, 8, 9, 15, 12, 2, 1.
+A: The answer is False.
+The odd numbers in this group add up to an even number: 17,  10, 19, 4, 8, 12, 24.
+A: The answer is True.
+The odd numbers in this group add up to an even number: 16,  11, 14, 4, 8, 13, 24.
+A: The answer is True.
+The odd numbers in this group add up to an even number: 17,  9, 10, 12, 13, 4, 2.
+A: The answer is False.
+The odd numbers in this group add up to an even number: 15, 32, 5, 13, 82, 7, 1. 
+A: 
+```
+
+`Output:`
+
+```text
+The answer is True.
+```
+
+But the answer should be `False`.
+
+## Chain-of-Thought (CoT) Prompting
