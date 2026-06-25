@@ -22,7 +22,7 @@ const MobileNav = () => {
   };
 
   return (
-    <div className="sm:hidden">
+    <div className={`sm:hidden ${navShow ? 'hidden' : ''}`}>
       <button
         type="button"
         className="h-10 w-10 rounded p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 sm:h-12 sm:w-12 sm:p-3"
