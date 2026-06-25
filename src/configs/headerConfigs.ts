@@ -3,5 +3,6 @@ export const headerConfigs = {
   navLinks: [
     { href: '/', title: 'home' },
     { href: '/posts/about', title: 'about' },
+    { href: '/playground', title: 'playground' },
   ],
 };

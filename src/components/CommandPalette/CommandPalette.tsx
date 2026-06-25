@@ -8,7 +8,8 @@ import {
   MagnifyingGlassIcon,
   MoonIcon,
   SunIcon,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
+  Square3Stack3DIcon
 } from '@heroicons/react/24/outline';
 import {
   ActionId,
@@ -56,6 +57,17 @@ export default function CommandPalette({ children }: Props) {
       keywords: 'about profile aboutPage 關於',
       perform: () => router.push('/posts/about'),
       icon: <ExclamationCircleIcon className="h-6 w-6" />,
+      section: {
+        name: t('page'),
+        priority: Priority.HIGH,
+      },
+    },
+    {
+      id: 'playground',
+      name: t('playground'),
+      keywords: 'playground 遊樂場 test 測試',
+      perform: () => router.push('/playground'),
+      icon: <Square3Stack3DIcon className="h-6 w-6" />,
       section: {
         name: t('page'),
         priority: Priority.HIGH,
