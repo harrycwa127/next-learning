@@ -25,10 +25,18 @@ const CustomLink = ({ href, children, ...rest }: Props) => {
   }
 
   return (
-    <a target="_blank" rel="noopener noreferrer" href={href} {...rest}>
+    <a 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      href={href} 
+      {...rest} 
+      /* 💡 將 inline-flex items-center 改為 inline */
+      className='break-all inline text-blue-600 hover:underline'
+    >
       {children}
       {typeof children === 'string' && (
-        <ExternalLinkIcon className="ml-1 inline-block h-4 w-4" />
+        /* 💡 加上 align-middle 與 shrink-0，確保圖示與文字完美緊貼且置中 */
+        <ExternalLinkIcon className="ml-1 inline-block h-4 w-4 align-middle shrink-0" />
       )}
     </a>
   );
