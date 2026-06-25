@@ -42,7 +42,7 @@ export default function PostList({ posts = [] }: Props) {
                 <div className="space-y-3 xl:col-span-3">
                   <div className="flex items-center gap-2">
                     {tag && (
-                      <div className='mt-0.5'>
+                      <div className='md:mt-0.5 sm:mb-0.5'>
                         <Tag small>{t(tag)}</Tag>
                       </div>
                     )}

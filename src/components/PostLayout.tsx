@@ -55,8 +55,7 @@ export default function PostLayout({
               <div className="relative inline-block leading-none">
                 
                 {tag && (
-                  /* 💡 重點修改：將 left-full 改為 right-full，ml-3 改為 mr-3 */
-                  <div className="absolute right-full top-1/2 mr-3 -translate-y-[30%] whitespace-nowrap">
+                  <div className="block mb-2.5 sm:mb-0 sm:absolute sm:right-full sm:top-1/2 sm:mr-3 sm:-translate-y-[30%] whitespace-nowrap">
                     <Tag>{t(tag)}</Tag>
                   </div>
                 )}
