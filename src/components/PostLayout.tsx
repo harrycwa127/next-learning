@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next';
 import Comment from '@/components/Comment';
 import CustomLink from '@/components/CustomLink';
 import PageTitle from '@/components/PageTitle';
+import Tag from '@/components/Tag';
 import PostBody from '@/components/PostBody';
 import TableOfContents from '@/components/TableOfContents';
 import formatDate from '@/lib/formatDate';
@@ -11,6 +12,7 @@ import formatDate from '@/lib/formatDate';
 export interface PostForPostLayout {
   date: string;
   updateDate: string | null;
+  tag: string | null;
   title: string;
   body: { raw: string };
 }
@@ -36,6 +38,7 @@ export default function PostLayout({
   const {
     date,
     updateDate,
+    tag,
     title,
     body: { raw },
   } = post;
@@ -49,7 +52,16 @@ export default function PostLayout({
         <header className="py-6">
           <div className="space-y-1 text-center">
             <div className="mb-4">
-              <PageTitle>{title}</PageTitle>
+              <div className="relative inline-block leading-none">
+                
+                {tag && (
+                  /* 💡 重點修改：將 left-full 改為 right-full，ml-3 改為 mr-3 */
+                  <div className="absolute right-full top-1/2 mr-3 -translate-y-[30%] whitespace-nowrap">
+                    <Tag>{t(tag)}</Tag>
+                  </div>
+                )}
+                <PageTitle>{title}</PageTitle>
+              </div>
             </div>
 
             <dl className="flex flex-row items-center justify-center space-y-0">

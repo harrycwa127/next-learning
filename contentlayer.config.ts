@@ -30,6 +30,10 @@ export const Post = defineDocumentType(() => ({
     updateDate: {
       type: 'date',
     },
+    tag: {
+      type: 'enum',
+      options: ['climbing', 'technical', 'project', 'blog'],
+    },
     socialImage: {
       type: 'string',
     },

@@ -34,6 +34,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
     slug: post.slug,
     date: post.date,
     updateDate: post.updateDate || null,
+    tag: post.tag || null,
     title: post.title,
     description: post.description,
     path: post.path,

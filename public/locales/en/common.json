@@ -18,5 +18,9 @@
   "operation": "Operation",
   "toggle-language": "Toggle language",
   "english": "English",
-  "chinese": "中文"
+  "chinese": "中文",
+  "climbing": "Climbing",
+  "technical": "Technical",
+  "project": "Project",
+  "blog": "Blog"
 }

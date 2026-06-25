@@ -1,13 +1,15 @@
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
 
 import CustomLink from '@/components/CustomLink';
 import formatDate from '@/lib/formatDate';
 import { CalendarIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-
+import Tag from '@/components/Tag';
 export interface PostForPostList {
   slug: string;
   date: string;
   updateDate: string | null;
+  tag: string | null;
   title: string;
   description: string;
   path: string;
@@ -19,12 +21,13 @@ type Props = {
 
 export default function PostList({ posts = [] }: Props) {
   const { locale } = useRouter();
+  const { t } = useTranslation(['common']);
 
   return (
     <ul className="divide-y divide-gray-200 transition-colors dark:divide-gray-700">
       {!posts.length && 'No posts found.'}
       {posts.map((post) => {
-        const { slug, date, updateDate, title, description, path } = post;
+        const { slug, date, updateDate, tag, title, description, path } = post;
         return (
           <li key={slug} className="group transition-colors">
             <CustomLink href={path}>
@@ -37,15 +40,22 @@ export default function PostList({ posts = [] }: Props) {
                   </dd>
                 </dl>
                 <div className="space-y-3 xl:col-span-3">
-                  <div>
+                  <div className="flex items-center gap-2">
+                    {tag && (
+                      <div className='mt-0.5'>
+                        <Tag small>{t(tag)}</Tag>
+                      </div>
+                    )}
+                    
                     <h3 className="text-lg font-bold tracking-tight text-gray-900 transition-colors dark:text-gray-100 sm:text-xl md:text-2xl">
                       {title}
                     </h3>
                   </div>
-                  <div className="prose prose-sm max-w-none text-gray-500 transition-colors dark:text-gray-400 md:prose-base">
-                    {description}
-                  </div>
+                
+                <div className="prose prose-sm max-w-none text-gray-500 transition-colors dark:text-gray-400 md:prose-base">
+                  {description}
                 </div>
+              </div>
               </article>
             </CustomLink>
           </li>

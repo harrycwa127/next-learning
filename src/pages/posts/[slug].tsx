@@ -31,6 +31,7 @@ type PostForPostPage = PostForPostLayout & {
   description: string;
   date: string;
   updateDate: string | null;
+  tag: string | null;
   path: string;
   socialImage: string | null;
   body: {
@@ -94,6 +95,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
     title: postFull.title,
     date: postFull.date,
     updateDate: postFull.updateDate || '',
+    tag: postFull.tag || null,
     description: postFull.description,
     path: postFull.path,
     socialImage: postFull.socialImage || null,
