@@ -50,7 +50,16 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
         description={siteConfigs.description}
       />
         <div className="prose mt-12 w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:my-12 md:space-y-5">
-            <h2>On progress</h2>
+            <h2>On progress List</h2>
+            <ul>
+                <li>Post Language</li>
+                <li>Search by Post Tag</li>
+                <li>Simple Record store with database</li>
+                <ul>
+                    <li>e.g. Climbing Tracker Lite with Vercel KV</li>
+                </ul>
+                <li>AI chat (maybe)</li>
+            </ul>
         </div>
         <div className="mt-12 w-2/5 items-center md:w-1/4">
             <CustomImage src={playgroundImage} alt="Self Image" />
