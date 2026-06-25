@@ -53,7 +53,6 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
             <h2>On progress List</h2>
             <ul>
                 <li>Post Language</li>
-                <li>Search by Post Tag</li>
                 <li>Simple Record store with database</li>
                 <ul>
                     <li>e.g. Climbing Tracker Lite with Vercel KV</li>
