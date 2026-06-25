@@ -198,10 +198,6 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId
       );
-      // +1 removes the currentRootAction; e.g.
-      // if we are on the "Set theme" parent action,
-      // the UI should not display "Set theme… > Dark"
-      // but rather just "Dark"
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
 
@@ -216,31 +212,34 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
             : 'text-gray-600 dark:text-gray-300'
         } flex cursor-pointer items-center justify-between rounded-lg px-4 py-2`}
       >
-        <div className="flex items-center gap-2 text-base">
-          {action.icon && action.icon}
-          <div className="flex flex-col">
-            <div className="line-clamp-1">
+        <div className="flex items-center gap-2 text-base flex-1 min-w-0">
+          {action.icon && <div className="shrink-0">{action.icon}</div>}
+          <div className="flex flex-col flex-1 min-w-0">
+            <div className="flex items-center min-w-0">
               {ancestors.length > 0 &&
                 ancestors.map((ancestor) => (
                   <React.Fragment key={ancestor.id}>
-                    <span className="mr-3 opacity-70">{ancestor.name}</span>
-                    <span className="mr-3">›</span>
+                    <span className="mr-2 opacity-70 shrink-0">{ancestor.name}</span>
+                    <span className="mr-2 shrink-0">›</span>
                   </React.Fragment>
-                ))}
+                ))
+              }
               {action.data?.tag && (
-                <div className='inline-flex mr-1'>
+                <div className='inline-flex mr-2 shrink-0 whitespace-nowrap transform translate-y-[-0.5px]'>
                   <Tag small>{t(action.data?.tag)}</Tag>
                 </div>
               )}
-              <span>{action.name}</span>
+              <span className="truncate">{action.name}</span>
             </div>
             {action.subtitle && (
-              <span className="text-sm">{action.subtitle}</span>
+              <span className="text-sm truncate mt-0.5">{action.subtitle}</span>
             )}
           </div>
         </div>
+        
         {action.shortcut?.length ? (
-          <div aria-hidden className="grid grid-flow-col gap-2">
+          /* 🌟 核心修改 5：加上 shrink-0 ml-3 防止快捷鍵被超長標題往右擠壓變形 */
+          <div aria-hidden className="grid grid-flow-col gap-2 shrink-0 ml-3">
             {action.shortcut.map((sc) => (
               <kbd
                 key={sc}
