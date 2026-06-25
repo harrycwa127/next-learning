@@ -26,6 +26,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { useTheme } from 'next-themes';
 import React, { forwardRef, useMemo } from 'react';
+import Tag from '@/components/Tag';
 
 import { KBarSearch } from './KBarSearch';
 
@@ -172,6 +173,12 @@ interface ResultItemProps {
 }
 type Ref = HTMLDivElement;
 
+type ExtendedActionImpl = ActionImpl & {
+  data?: {
+    tag?: string;
+  };
+};
+
 // eslint-disable-next-line react/display-name
 const ResultItem = forwardRef<Ref, ResultItemProps>(
   (
@@ -180,7 +187,7 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
       active,
       currentRootActionId,
     }: {
-      action: ActionImpl;
+      action: ExtendedActionImpl;
       active: boolean;
       currentRootActionId: ActionId;
     },
@@ -197,6 +204,8 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
       // but rather just "Dark"
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
+
+    const { t } = useTranslation(['common']);
 
     return (
       <div
@@ -218,6 +227,11 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
                     <span className="mr-3">›</span>
                   </React.Fragment>
                 ))}
+              {action.data?.tag && (
+                <div className='inline-flex mr-1'>
+                  <Tag small>{t(action.data?.tag)}</Tag>
+                </div>
+              )}
               <span>{action.name}</span>
             </div>
             {action.subtitle && (
