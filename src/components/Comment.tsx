@@ -19,7 +19,7 @@ const Comment = () => {
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="top"
-        theme={theme === 'dark' ? 'transparent_dark' : 'light'}
+        theme={theme === 'dark' ? 'dark' : 'light'}
         loading="lazy"
         lang={locale}
       />
