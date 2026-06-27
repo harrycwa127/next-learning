@@ -11,6 +11,7 @@ const MobileNav = () => {
 
   useEffect(() => {
     document.body.style.overflowY = 'hidden';
+    setNavShow(false);
   }, []);
 
   const onToggleNav = () => {
