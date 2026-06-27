@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import CustomLink from '@/components/CustomLink';
 import { headerConfigs } from '@/configs/headerConfigs';
@@ -8,6 +8,10 @@ const MobileNav = () => {
   const { t } = useTranslation(['common']);
 
   const [navShow, setNavShow] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflowY = 'hidden';
+  }, []);
 
   const onToggleNav = () => {
     setNavShow((status) => {
@@ -52,7 +56,7 @@ const MobileNav = () => {
       </button>
 
       <div
-        className={`fixed top-16 right-0 h-screen w-full bg-gray-200/90 transition-all duration-300 ease-in-out dark:bg-gray-800/90 min-h-screen overflow-x-hidden ${
+        className={`fixed top-16 right-0 h-screen w-full bg-gray-200/90 transition-all duration-300 ease-in-out dark:bg-gray-800/90 ${
           navShow ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

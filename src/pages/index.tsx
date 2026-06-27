@@ -75,7 +75,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
           <p>{t('intro-3')}</p>
         </div>
 
-        <div className="mt-12 w-2/5 items-center md:w-1/4 sm:mt-15">
+        <div className="md:mt-12 sm:mt-15 w-2/5 items-center md:w-1/4">
           <CustomImage src={selfImage} alt="Self Image" />
         </div>
       </div>
