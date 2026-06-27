@@ -67,15 +67,16 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         description={siteConfigs.description}
       />
 
-      <div className="flex justify-between">
-        <div className="prose mt-12 w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:my-12 md:space-y-5">
+      <div className="flex justify-between items-center mt-12 md:my-12">
+        <div className="prose w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
           <h1 className="text-left">{t('intro-title')}</h1>
           <p>{t('intro-1')}</p>
           <p>{t('intro-2')}</p>
           <p>{t('intro-3')}</p>
         </div>
 
-        <div className="mt-12 w-2/5 items-center md:w-1/4">
+        {/* 右側圖片：移除 mt-12，讓圖片完全依據左側文字的總高度進行光學居中 */}
+        <div className="w-2/5 md:w-1/4">
           <CustomImage src={selfImage} alt="Self Image" />
         </div>
       </div>
