@@ -53,7 +53,7 @@ const MobileNav = () => {
 
       <div
         className={`fixed top-16 right-0 h-screen w-full bg-gray-200/90 transition-all duration-300 ease-in-out dark:bg-gray-800/90 ${
-          navShow ? 'translate-x-0' : 'translate-x-full'
+          navShow ? 'translate-x-0' : 'translate-x-full hidden'
         }`}
       >
         <nav className="mt-8 h-full w-full">
