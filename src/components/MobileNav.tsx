@@ -41,7 +41,7 @@ const MobileNav = () => {
           {navShow ? (
             <path
               fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
               clipRule="evenodd"
             />
           ) : (
@@ -55,24 +55,28 @@ const MobileNav = () => {
       </button>
 
       <div
-        className={`fixed top-16 right-0 h-screen w-full bg-gray-200/90 transition-all duration-300 ease-in-out dark:bg-gray-800/90 ${
-          navShow 
-            ? 'translate-x-0 visible' 
-            : 'translate-x-full invisible pointer-events-none'
+        className={`fixed top-16 left-0 h-screen w-full overflow-hidden z-30 transition-all ${
+          navShow ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
       >
-        <nav className="mt-8 h-full w-full">
-          {headerConfigs.navLinks.map((link) => (
-            <CustomLink
-              href={link.href}
-              key={link.title}
-              className="block px-12 py-4 text-2xl font-bold tracking-widest text-gray-900 transition-colors hover:bg-gray-300 dark:text-gray-100 dark:hover:bg-gray-700"
-              onClick={onToggleNav}
-            >
-              {t(link.title)}
-            </CustomLink>
-          ))}
-        </nav>
+        <div
+          className={`h-full w-full bg-gray-200/90 transition-transform duration-300 ease-in-out dark:bg-gray-800/90 transform ${
+            navShow ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <nav className="mt-8 h-full w-full">
+            {headerConfigs.navLinks.map((link) => (
+              <CustomLink
+                href={link.href}
+                key={link.title}
+                className="block px-12 py-4 text-2xl font-bold tracking-widest text-gray-900 transition-colors hover:bg-gray-300 dark:text-gray-100 dark:hover:bg-gray-700"
+                onClick={onToggleNav}
+              >
+                {t(link.title)}
+              </CustomLink>
+            ))}
+          </nav>
+        </div>
       </div>
     </div>
   );
