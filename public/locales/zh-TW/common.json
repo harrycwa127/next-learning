@@ -22,5 +22,8 @@
   "climbing": "攀石",
   "technical": "技術",
   "project": "專案",
-  "blog": "網誌"
+  "blog": "網誌",
+  "all-posts": "全部",
+  "select-tag": "選擇標籤",
+  "filter": "篩選"
 }

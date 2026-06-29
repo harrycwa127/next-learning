@@ -54,7 +54,7 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
             <ul>
                 <li>Post Language</li>
                 <li>Post Tag for Display and Search - Done</li>
-                <li>Post List filted by Tag</li>
+                <li>Post List filted by Tag - Done</li>
                 <li>Pin Post - Done</li>
                 <li>Simple Record store with database</li>
                 <ul>

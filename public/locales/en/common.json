@@ -22,5 +22,8 @@
   "climbing": "Climbing",
   "technical": "Technical",
   "project": "Project",
-  "blog": "Blog"
+  "blog": "Blog",
+  "all-posts": "All",
+  "select-tag": "SELECT TAG",
+  "filter": "Filter"
 }

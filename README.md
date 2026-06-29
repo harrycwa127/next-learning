@@ -18,7 +18,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - RSS Feed
 - Sitemap
 - Code syntax highlighting
-- Post Tag & Search by Tag
+- Post Tag (Search by Tag & Filter by Tag)
 - Pin Post
 
 ## Tech Stack
