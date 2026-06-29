@@ -35,23 +35,23 @@ export default function TagFilter({
       ref={containerRef}
       className="not-prose relative inline-block text-left"
     >
-      {/* 🌟 優化：手機版採用 text-xs 與較緊湊的 px-2.5，大螢幕自動回復標準大小 */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex select-none items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
+        className={`flex select-none items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98] sm:text-sm ${
           selectedTag
-            ? 'border-blue-500/30 bg-blue-50/70 text-blue-600 shadow-sm shadow-blue-500/10 dark:border-blue-400/20 dark:bg-blue-950/40 dark:text-blue-400'
-            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400'
+            ? 'border-blue-500/20 bg-blue-500/5 text-blue-600 shadow-sm shadow-blue-500/5 dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-400'
+            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200'
         }`}
         aria-label="Filter posts by tag"
       >
         <FunnelIcon
-          className={`h-3.5 w-3.5 transition-transform duration-200 sm:h-4 sm:w-4 ${
-            isOpen ? 'rotate-12' : ''
-          } ${selectedTag ? 'fill-current' : ''}`}
+          className={`h-3.5 w-3.5 shrink-0 transition-colors duration-150 sm:h-4 sm:w-4 ${
+            selectedTag ? 'fill-blue-500/10 dark:fill-blue-400/10' : ''
+          }`}
         />
-        <span>
+
+        <span className="max-w-[100px] truncate sm:max-w-none">
           {selectedTag ? `${t('filter')}: ${t(selectedTag)}` : t('Filter')}
         </span>
 
@@ -62,16 +62,16 @@ export default function TagFilter({
               onSelectTag(null);
               setIsOpen(false);
             }}
-            className="-mr-0.5 ml-1 rounded-md p-0.5 text-blue-400 transition-colors hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/60"
+            className="-mr-0.5 ml-0.5 rounded-md p-0.5 text-blue-400 transition-colors hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/50 dark:hover:text-blue-300"
           >
-            <XMarkIcon className="h-3 w-3" />
+            <XMarkIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </span>
         )}
       </button>
 
       {isOpen && tags.length > 0 && (
-        <div className="absolute right-0 z-30 mt-2 w-56 origin-top-right rounded-xl border border-gray-200/80 bg-white/95 p-3 shadow-xl backdrop-blur-sm transition-all dark:border-zinc-800 dark:bg-zinc-900/95 sm:w-72">
-          <div className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500 sm:text-xs">
+        <div className="animate-in fade-in slide-in-from-top-1 absolute right-0 z-30 mt-2 w-60 origin-top-right rounded-xl border border-gray-200/70 bg-white/95 p-3.5 shadow-xl shadow-zinc-200/40 backdrop-blur-md transition-all duration-150 dark:border-zinc-800/80 dark:bg-zinc-900/95 dark:shadow-none sm:w-64">
+          <div className="mb-2.5 select-none px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500 sm:text-xs">
             {t('select-tag', 'Select Tag')}
           </div>
 
@@ -81,10 +81,10 @@ export default function TagFilter({
                 onSelectTag(null);
                 setIsOpen(false);
               }}
-              className={`rounded-md px-2 py-0.5 text-[11px] font-medium transition-all sm:px-2.5 sm:py-1 sm:text-xs ${
+              className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-all ${
                 !selectedTag
-                  ? 'bg-gray-900 text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200/80 dark:bg-zinc-800/60 dark:text-zinc-400'
+                  ? 'border-zinc-950 bg-zinc-950 text-white shadow-sm dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900'
+                  : 'border-zinc-200/60 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-800/30 dark:text-zinc-400 dark:hover:bg-zinc-800'
               }`}
             >
               {t('all-posts', 'All')}
@@ -99,10 +99,10 @@ export default function TagFilter({
                     onSelectTag(isSelected ? null : tag);
                     setIsOpen(false);
                   }}
-                  className={`rounded-md px-2 py-0.5 text-[11px] font-medium transition-all sm:px-2.5 sm:py-1 sm:text-xs ${
+                  className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-all ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-sm dark:bg-blue-500'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200/80 dark:bg-zinc-800/60 dark:text-zinc-400'
+                      ? 'border-blue-600 bg-blue-600 text-white shadow-sm dark:border-blue-500 dark:bg-blue-500'
+                      : 'border-zinc-200/60 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-800/30 dark:text-zinc-400 dark:hover:bg-zinc-800'
                   }`}
                 >
                   {t(tag)}
