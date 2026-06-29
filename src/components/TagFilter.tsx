@@ -52,7 +52,7 @@ export default function TagFilter({
         />
 
         <span className="max-w-[100px] truncate sm:max-w-none">
-          {selectedTag ? `${t('filter')}: ${t(selectedTag)}` : t('Filter')}
+          {selectedTag ? `${t('filter')}: ${t(selectedTag)}` : t('filter')}
         </span>
 
         {selectedTag && (

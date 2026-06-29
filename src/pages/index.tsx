@@ -86,16 +86,31 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
         description={siteConfigs.description}
       />
 
-      <div className="mt-12 flex items-center justify-between md:my-12">
-        <div className="prose w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
-          <h1 className="text-left">{t('intro-title')}</h1>
-          <p className="mr-1">{t('intro-1')}</p>
-          <p className="mr-1">{t('intro-2')}</p>
-          <p className="mr-1">{t('intro-3')}</p>
+      <div className="mt-8 flex w-full flex-col-reverse items-center justify-between gap-8 md:my-16 md:flex-row md:items-center md:gap-12">
+        <div className="prose w-full max-w-none space-y-3 transition-colors dark:prose-dark md:prose-lg md:w-7/12">
+          <h1 className="!mb-4 !mt-0 text-left text-3xl font-extrabold tracking-tight text-gray-900 transition-colors dark:text-gray-100 sm:text-4xl md:text-5xl">
+            {t('intro-title')}
+          </h1>
+          <p className="leading-relaxed text-gray-600 transition-colors dark:text-zinc-400">
+            {t('intro-1')}
+          </p>
+          <p className="leading-relaxed text-gray-600 transition-colors dark:text-zinc-400">
+            {t('intro-2')}
+          </p>
+          <p className="leading-relaxed text-gray-600 transition-colors dark:text-zinc-400">
+            {t('intro-3')}
+          </p>
         </div>
 
-        <div className="w-2/5 md:w-1/4">
-          <CustomImage src={selfImage} alt="Self Image" />
+        <div className="group relative h-36 w-36 shrink-0 sm:h-48 sm:w-48 md:h-60 md:w-60">
+          <div className="h-full w-full overflow-hidden rounded-full shadow-md ring-4 ring-gray-100 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-xl dark:ring-zinc-800/80">
+            <CustomImage
+              src={selfImage}
+              alt="Self Image"
+              priority
+              className="h-full w-full object-cover"
+            />
+          </div>
         </div>
       </div>
 
