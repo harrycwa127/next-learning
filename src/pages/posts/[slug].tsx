@@ -96,6 +96,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
     date: postFull.date,
     updateDate: postFull.updateDate || '',
     tag: postFull.tag || null,
+    pin:  postFull.pin || false,
     description: postFull.description,
     path: postFull.path,
     socialImage: postFull.socialImage || null,

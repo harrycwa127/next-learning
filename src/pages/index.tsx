@@ -35,6 +35,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
     date: post.date,
     updateDate: post.updateDate || null,
     tag: post.tag || null,
+    pin: post.pin || false,
     title: post.title,
     description: post.description,
     path: post.path,
@@ -81,20 +82,24 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
       </div>
 
       <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
-        <div className="prose prose-lg mt-8 flex gap-4 dark:prose-dark">
-          <h2>{t('latest-posts')} </h2>
-          <div className="mt-3 inline-block align-middle text-base font-normal leading-7">
-            {t('press')} <code>Ctrl + K</code>
-            {' / '}
-            <div className="mb-1 inline-block align-middle">
-              <CommandSvg />
-            </div>{' '}
-            {t('to-search')}
-          </div>
+      <div className="prose prose-lg mt-8 flex items-baseline gap-4 dark:prose-dark">
+        <h2>{t('latest-posts')}</h2>
+        
+        <div className="not-prose inline-flex items-center gap-1.5 text-base font-normal text-gray-500 dark:text-gray-400">
+          <span>{t('press')}</span>
+          <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-sans font-medium text-gray-800 bg-gray-100 border border-gray-200 rounded-md shadow-sm dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700/80">
+            Ctrl + K
+          </kbd>
+          <span className="hidden sm:inline-flex text-gray-300 dark:text-zinc-700">/</span>
+          <kbd className="inline-flex items-center justify-center px-1.5 py-1 text-xs font-sans font-medium text-gray-800 bg-gray-100 border border-gray-200 rounded-md shadow-sm dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700/80">
+            <CommandSvg />
+          </kbd>
+          <span>{t('to-search')}</span>
         </div>
-
-        <PostList posts={posts} />
       </div>
+
+      <PostList posts={posts} />
+    </div>
     </LayoutPerPage>
   );
 };

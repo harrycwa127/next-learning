@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import { Pin } from 'lucide-react';
 
 import Comment from '@/components/Comment';
 import CustomLink from '@/components/CustomLink';
@@ -13,6 +14,7 @@ export interface PostForPostLayout {
   date: string;
   updateDate: string | null;
   tag: string | null;
+  pin: boolean | null;
   title: string;
   body: { raw: string };
 }
@@ -39,6 +41,7 @@ export default function PostLayout({
     date,
     updateDate,
     tag,
+    pin,
     title,
     body: { raw },
   } = post;
@@ -54,11 +57,19 @@ export default function PostLayout({
             <div className="mb-4">
               <div className="relative inline-block leading-none">
                 
-                {tag && (
-                  <div className="block mb-2.5 sm:mb-0 sm:absolute sm:right-full sm:top-1/2 sm:mr-3 sm:-translate-y-[30%] whitespace-nowrap">
-                    <Tag>{t(tag)}</Tag>
+                {(tag || pin) && (
+                  <div className="flex items-center gap-1.5 mb-2.5 sm:mb-0 sm:absolute sm:right-full sm:top-1/2 sm:mr-3 sm:-translate-y-[30%] whitespace-nowrap justify-center">
+                    {pin && (
+                      <Pin 
+                        size={18} // 配合大標題層級，圖示稍微放大至 18px
+                        strokeWidth={1.8} 
+                        className="text-amber-500 dark:text-amber-400/90 shrink-0 rotate-45 transform" 
+                      />
+                    )}
+                    {tag && <Tag>{t(tag)}</Tag>}
                   </div>
                 )}
+                
                 <PageTitle>{title}</PageTitle>
               </div>
             </div>
@@ -106,39 +117,42 @@ export default function PostLayout({
           </aside>
         </div>
 
-        <div
-          className="divide-y divide-gray-200 pb-8 transition-colors dark:divide-gray-700"
-          // style={{ gridTemplateRows: 'auto 1fr' }}
-        >
-          <Comment />
+        <div className="divide-y divide-gray-200 transition-colors dark:divide-gray-700">
+          <div className="py-6">
+            <Comment />
+          </div>
 
-          <footer>
-            <div className="flex flex-col gap-4 pt-4 text-base font-medium sm:flex-row sm:justify-between xl:gap-8 xl:pt-8">
+          {/* 🌟 優化：將上下一篇文章包裝為具備動態反饋的動畫小組件 */}
+          <footer className="pt-8 pb-12">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 text-base font-medium">
               {prevPost ? (
-                <div className="basis-6/12">
-                  <h2 className="mb-1 text-xs uppercase tracking-wide text-gray-500 transition-colors dark:text-gray-400">
+                <div className="flex flex-col items-start">
+                  <h2 className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
                     {t('previous-article')}
                   </h2>
                   <CustomLink
                     href={prevPost.path}
-                    className="text-primary-500 transition-colors hover:text-primary-600 dark:hover:text-primary-400"
+                    className="group inline-flex items-center text-primary-500 transition-colors hover:text-primary-600 dark:hover:text-primary-400 leading-relaxed"
                   >
-                    ← {prevPost.title}
+                    <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1.5">←</span>
+                    {prevPost.title}
                   </CustomLink>
                 </div>
               ) : (
                 <div />
               )}
+              
               {nextPost && (
-                <div className="basis-6/12">
-                  <h2 className="mb-1 text-left text-xs uppercase tracking-wide text-gray-500 transition-colors dark:text-gray-400 sm:text-right">
+                <div className="flex flex-col items-start sm:items-end">
+                  <h2 className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
                     {t('next-article')}
                   </h2>
                   <CustomLink
                     href={nextPost.path}
-                    className="block text-primary-500 transition-colors hover:text-primary-600 dark:hover:text-primary-400 sm:text-right"
+                    className="group inline-flex items-center text-primary-500 transition-colors hover:text-primary-600 dark:hover:text-primary-400 sm:justify-end text-left sm:text-right leading-relaxed"
                   >
-                    {nextPost.title} →
+                    {nextPost.title}
+                    <span className="inline-block transition-transform group-hover:translate-x-1 ml-1.5">→</span>
                   </CustomLink>
                 </div>
               )}

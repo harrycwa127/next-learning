@@ -54,7 +54,8 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
             <ul>
                 <li>Post Language</li>
                 <li>Post Tag for Display and Search - Done</li>
-                <li>Pin Post</li>
+                <li>Post List filted by Tag</li>
+                <li>Pin Post - Done</li>
                 <li>Simple Record store with database</li>
                 <ul>
                     <li>e.g. Climbing Tracker Lite with Vercel KV</li>

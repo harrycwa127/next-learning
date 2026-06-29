@@ -34,6 +34,10 @@ export const Post = defineDocumentType(() => ({
       type: 'enum',
       options: ['climbing', 'technical', 'project', 'blog'],
     },
+    pin: {
+      type: 'boolean',
+      default: false
+    },
     socialImage: {
       type: 'string',
     },
