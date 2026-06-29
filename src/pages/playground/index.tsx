@@ -49,10 +49,12 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
         authorName={siteConfigs.author}
         description={siteConfigs.description}
       />
-        <div className="prose mt-12 w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:my-12 md:space-y-5">
+        <div className="prose mt-12 w-3/5 space-y-2 transition-colors dark:prose-dark md:prose-lg md:my-12 md:space-y-5 shrink-0 whitespace-nowrap">
             <h2>On progress List</h2>
             <ul>
                 <li>Post Language</li>
+                <li>Post Tag for Display and Search - Done</li>
+                <li>Pin Post</li>
                 <li>Simple Record store with database</li>
                 <ul>
                     <li>e.g. Climbing Tracker Lite with Vercel KV</li>
