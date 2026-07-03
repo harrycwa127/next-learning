@@ -31,7 +31,7 @@ const CustomLink = ({ href, children, ...rest }: Props) => {
       href={href} 
       {...rest} 
       /* 💡 將 inline-flex items-center 改為 inline */
-      className='break-all inline text-blue-600 hover:underline'
+      className='break-all inline hover:underline'
     >
       {children}
       {typeof children === 'string' && (
