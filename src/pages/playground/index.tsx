@@ -61,7 +61,7 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
                 <ul>
                     <li>e.g. Climbing Tracker Lite with Vercel KV</li>
                 </ul>
-                <li>AI chat - Stopped, Gemini is not supported for the API used in Hong Kong, maybe try other AI later</li>
+                <li>AI chat - Done</li>
             </ul>
         </div>
         <div className="mt-12 w-2/5 items-center md:w-1/4">

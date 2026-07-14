@@ -54,7 +54,7 @@ export default function AIChatCompent() {
 
   return (
     <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>Gemini AI TypeScript 聊天室 (Gemini API Blocked HK)</h2>
+      <h2>Gemini AI TypeScript 聊天室</h2>
       
       {/* 歷史對話區 */}
       <div style={{ border: '1px solid #ccc', borderRadius: '8px', height: '400px', overflowY: 'auto', padding: '15px', marginBottom: '20px', background: '#f9f9f9' }}>
