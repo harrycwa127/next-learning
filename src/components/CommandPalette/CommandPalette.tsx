@@ -9,7 +9,8 @@ import {
   MoonIcon,
   SunIcon,
   ExclamationCircleIcon,
-  Square3Stack3DIcon
+  Square3Stack3DIcon,
+  ChatBubbleBottomCenterTextIcon,
 } from '@heroicons/react/24/outline';
 import {
   ActionId,
@@ -58,6 +59,17 @@ export default function CommandPalette({ children }: Props) {
       keywords: 'about profile aboutPage 關於',
       perform: () => router.push('/posts/about'),
       icon: <ExclamationCircleIcon className="h-6 w-6" />,
+      section: {
+        name: t('page'),
+        priority: Priority.HIGH,
+      },
+    },
+    {
+      id: 'aichat',
+      name: t('aichat'),
+      keywords: 'aichat AI chat 聊天室',
+      perform: () => router.push('/aichat'),
+      icon: <ChatBubbleBottomCenterTextIcon className="h-6 w-6" />,
       section: {
         name: t('page'),
         priority: Priority.HIGH,

@@ -3,6 +3,7 @@ export const headerConfigs = {
   navLinks: [
     { href: '/', title: 'home' },
     { href: '/posts/about', title: 'about' },
+    { href: '/aichat', title: 'aichat' },
     { href: '/playground', title: 'playground' },
   ],
 };
