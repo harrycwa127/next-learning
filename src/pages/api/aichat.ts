@@ -38,8 +38,19 @@ export default async function handler(
     const responseText = result.response.text();
 
     return res.status(200).json({ reply: responseText });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Gemini API Error:', error);
+
+    const isQuotaError = 
+      error?.status === 429 || 
+      error?.message?.includes('429') || 
+      error?.message?.includes('ResourceExhausted') || 
+      error?.message?.includes('quota');
+
+    if (isQuotaError) {
+      return res.status(429).json({ error: 'quota_exceeded' });
+    }
+
     return res.status(500).json({ error: 'Failed to fetch AI response' });
   }
 }

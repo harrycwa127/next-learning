@@ -5,6 +5,8 @@
   "chat_enter_question": "Enter your question...",
   "chat_send": "Send",
   "chat_you": "You",
-  "chat_ai": "AI Assistant"
-
+  "chat_ai": "AI Assistant",
+  "chat_error": "Failed to connect. Please try again later.",
+  "chat_response_unknown": "Unable to parse AI response.",
+  "chat_quota_error": "Quota exceeded. Please try again later."
 }

@@ -2,17 +2,19 @@
 
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'next-i18next';
-import ReactMarkdown from 'react-markdown'; // 匯入 Markdown 渲染器
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'model';
   text: string;
+  isError?: boolean; // 新增此屬性，用以判定是否為錯誤警告泡泡
 }
 
 export default function AIChatCompent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [quotaError, setQuotaError] = useState<boolean>(false); // 核心狀態：API 額度超限
 
   const { t } = useTranslation(['aichat']);
   
@@ -28,7 +30,7 @@ export default function AIChatCompent() {
 
   const sendMessage = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || quotaError) return;
 
     const userMessage = input;
     setInput('');
@@ -37,27 +39,40 @@ export default function AIChatCompent() {
     setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
 
     try {
-      // 確保連線至正確的 /api/aichat 端點
       const response = await fetch('/api/aichat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage }),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      const data = await response.json();
+
+      // 核心修改：判斷 HTTP 狀態碼 429 或特定的 quota_exceeded 錯誤
+      if (response.status === 429 || data.error === 'quota_exceeded') {
+        setQuotaError(true);
+        setMessages((prev) => [
+          ...prev, 
+          { 
+            role: 'model', 
+            text: t('chat_quota_error'), 
+            isError: true 
+          }
+        ]);
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Network response was not ok');
+      }
 
       if (data.reply) {
         setMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
       } else {
-        setMessages((prev) => [...prev, { role: 'model', text: '無法解析 AI 的回覆。' }]);
+        setMessages((prev) => [...prev, { role: 'model', text: t('chat_response_unknown') }]);
       }
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { role: 'model', text: '連線失敗，請稍後再試。' }]);
+      setMessages((prev) => [...prev, { role: 'model', text: t('chat_error'), isError: true }]);
     } finally {
       setLoading(false);
     }
@@ -66,11 +81,13 @@ export default function AIChatCompent() {
   return (
     <div className="mx-auto my-8 w-full max-w-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/50 shadow-xl dark:shadow-2xl dark:shadow-black/40 overflow-hidden flex flex-col h-[600px] transition-all duration-300">
       
+      {/* 頂部標頭 */}
       <div className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800/80 px-6 py-4 transition-colors duration-300">
         <h2 className="text-lg font-bold tracking-wide text-zinc-900 dark:text-zinc-100">{t('chat_title')}</h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{t('chat_description')}</p>
       </div>
       
+      {/* 歷史對話區 */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-zinc-50/50 dark:bg-zinc-950/60 transition-colors duration-300">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-600 space-y-2">
@@ -89,16 +106,27 @@ export default function AIChatCompent() {
                   {isUser ? t('chat_you') : t('chat_ai')}
                 </span>
                 
+                {/* 
+                  核心修改：
+                  - 判斷 msg.isError：若為錯誤，則套用醒目的橘紅色警示泡泡。
+                */}
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed font-sans ${
                     isUser
                       ? 'bg-blue-600 dark:bg-blue-500 text-white rounded-tr-none whitespace-pre-wrap'
-                      : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800/80 rounded-tl-none'
+                      : msg.isError
+                        ? 'bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-900/50 rounded-tl-none font-medium'
+                        : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800/80 rounded-tl-none'
                   }`}
                   style={{ wordBreak: 'break-word' }}
                 >
                   {isUser ? (
                     <p>{msg.text}</p>
+                  ) : msg.isError ? (
+                    <div className="flex items-start gap-2">
+                      <span className="text-base mt-0.5">⚠️</span>
+                      <p>{msg.text}</p>
+                    </div>
                   ) : (
                     <ReactMarkdown
                       components={{
@@ -151,6 +179,26 @@ export default function AIChatCompent() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* 
+        核心修改：輸入框上方的額度不足 Warning Banner
+      */}
+      {quotaError && (
+        <div className="bg-amber-50 dark:bg-amber-950/20 border-t border-amber-200 dark:border-amber-900/50 px-4 py-2.5 text-xs text-amber-800 dark:text-amber-400 flex items-center justify-between transition-all duration-300">
+          <div className="flex items-center gap-1.5">
+            <span>⚠️</span>
+            <span>{t('chat_quota_banner') || '偵測到 API 額度已達上限。請稍後再試或聯繫管理員。'}</span>
+          </div>
+          <button 
+            type="button"
+            onClick={() => setQuotaError(false)}
+            className="text-amber-600 dark:text-amber-500 hover:text-amber-800 dark:hover:text-amber-300 font-bold px-1.5 py-0.5 rounded"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 底部輸入表單 */}
       <form
         onSubmit={sendMessage}
         className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/90 p-4 flex gap-3 items-center transition-colors duration-300"
@@ -161,11 +209,11 @@ export default function AIChatCompent() {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('chat_enter_question')}
           className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 disabled:bg-zinc-50 dark:disabled:bg-zinc-900"
-          disabled={loading}
+          disabled={loading || quotaError} // 當額度不足時停用輸入
         />
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || quotaError} // 當額度不足時停用發送
           className="rounded-xl bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:opacity-50 shadow-md shadow-blue-100 dark:shadow-none"
         >
           {t('chat_send')}
