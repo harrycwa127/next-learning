@@ -49,9 +49,9 @@ export default async function handler(
         primaryError?.message?.includes('quota');
 
       if (isQuotaError) {
-        console.warn('主要模型 gemini-3.5-flash 額度用盡，正在自動切換至備用模型 gemini-3.1-pro...');
+        console.warn('主要模型 gemini-3.5-flash 額度用盡，正在自動切換至備用模型 gemini-2.5-pro...');
         
-        const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-3.1-pro', ...modelConfig });
+        const fallbackModel = genAI.getGenerativeModel({ model: 'gemini-2.5-pro', ...modelConfig });
         const fallbackResult = await fallbackModel.generateContent(message);
         const fallbackText = fallbackResult.response.text();
         
