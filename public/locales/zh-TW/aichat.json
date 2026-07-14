@@ -1,7 +1,9 @@
 {
   "chat_title": "Gemini AI 智能助手",
-  "chat_description": "隨時為您解答程式與開發問題",
+  "chat_description": "隨時為您解答問題",
   "start_chat": "開始與 Gemini AI 對話吧！輸入訊息並點擊發送。",
   "chat_enter_question": "輸入您的問題...",
-  "chat_send": "發送"
+  "chat_send": "發送",
+  "chat_you": "您",
+  "chat_ai": "AI 助手"
 }

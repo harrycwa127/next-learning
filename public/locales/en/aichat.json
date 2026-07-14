@@ -1,7 +1,10 @@
 {
   "chat_title": "Gemini AI Assistant",
-  "chat_description": "Ready to answer your coding and development questions anytime",
+  "chat_description": "Ready to answer your questions anytime",
   "start_chat": "Start chatting with Gemini AI! Enter a message and click send.",
   "chat_enter_question": "Enter your question...",
-  "chat_send": "Send"
+  "chat_send": "Send",
+  "chat_you": "You",
+  "chat_ai": "AI Assistant"
+
 }
