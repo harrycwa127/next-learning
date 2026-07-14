@@ -186,7 +186,7 @@ export default function AIChatCompent() {
         <div className="bg-amber-50 dark:bg-amber-950/20 border-t border-amber-200 dark:border-amber-900/50 px-4 py-2.5 text-xs text-amber-800 dark:text-amber-400 flex items-center justify-between transition-all duration-300">
           <div className="flex items-center gap-1.5">
             <span>⚠️</span>
-            <span>{t('chat_quota_banner') || '偵測到 API 額度已達上限。請稍後再試或聯繫管理員。'}</span>
+            <span>{t('chat_quota_banner')}</span>
           </div>
           <button 
             type="button"

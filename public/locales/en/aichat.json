@@ -8,5 +8,6 @@
   "chat_ai": "AI Assistant",
   "chat_error": "Failed to connect. Please try again later.",
   "chat_response_unknown": "Unable to parse AI response.",
-  "chat_quota_error": "Quota exceeded. Please try again later."
+  "chat_quota_error": "Quota exceeded. Please try again later.",
+  "chat_quota_banner": "Quota limit detected. Please try again later."
 }

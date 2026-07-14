@@ -8,5 +8,6 @@
   "chat_ai": "AI 助手",
   "chat_error": "連線失敗，請稍後再試。",
   "chat_response_unknown": "無法解析 AI 的回覆。",
-  "chat_quota_error": "額度已用完，請稍後再試。"
+  "chat_quota_error": "額度已用完，請稍後再試。",
+  "chat_quota_banner": "偵測到額度已達上限，請稍後再試。"
 }
