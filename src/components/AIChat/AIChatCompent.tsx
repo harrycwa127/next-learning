@@ -2,6 +2,7 @@
 
 import { useState, FormEvent, useEffect, useRef } from 'react';
 import { useTranslation } from 'next-i18next';
+import ReactMarkdown from 'react-markdown'; // 匯入 Markdown 渲染器
 
 interface Message {
   role: 'user' | 'model';
@@ -36,7 +37,8 @@ export default function AIChatCompent() {
     setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
 
     try {
-      const response = await fetch('/api/chat', {
+      // 確保連線至正確的 /api/aichat 端點
+      const response = await fetch('/api/aichat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage }),
@@ -88,14 +90,47 @@ export default function AIChatCompent() {
                 </span>
                 
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed whitespace-pre-wrap font-sans ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed font-sans ${
                     isUser
-                      ? 'bg-blue-600 dark:bg-blue-500 text-white rounded-tr-none'
+                      ? 'bg-blue-600 dark:bg-blue-500 text-white rounded-tr-none whitespace-pre-wrap'
                       : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800/80 rounded-tl-none'
                   }`}
                   style={{ wordBreak: 'break-word' }}
                 >
-                  {msg.text}
+                  {isUser ? (
+                    <p>{msg.text}</p>
+                  ) : (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+                        strong: ({ children }) => <strong className="font-bold text-zinc-950 dark:text-zinc-50">{children}</strong>,
+                        h1: ({ children }) => <h1 className="text-lg font-bold text-zinc-950 dark:text-zinc-50 mt-4 mb-2">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-base font-bold text-zinc-950 dark:text-zinc-50 mt-3 mb-2">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-sm font-bold text-zinc-950 dark:text-zinc-50 mt-2 mb-1">{children}</h3>,
+                        ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1">{children}</ol>,
+                        li: ({ children }) => <li className="text-zinc-700 dark:text-zinc-300">{children}</li>,
+                        hr: () => <hr className="my-4 border-zinc-200 dark:border-zinc-800" />,
+                        code({ className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          const isInline = !match && !String(children).includes('\n');
+                          return isInline ? (
+                            <code className="bg-zinc-100 dark:bg-zinc-800 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded font-mono text-xs" {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <pre className="bg-zinc-950 dark:bg-zinc-900 text-zinc-100 p-4 rounded-xl overflow-x-auto my-3 font-mono text-xs border border-zinc-200 dark:border-zinc-800/80 w-full">
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          );
+                        }
+                      }}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             );
