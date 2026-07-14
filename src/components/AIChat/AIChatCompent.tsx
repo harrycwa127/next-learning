@@ -7,14 +7,14 @@ import ReactMarkdown from 'react-markdown';
 interface Message {
   role: 'user' | 'model';
   text: string;
-  isError?: boolean; // 新增此屬性，用以判定是否為錯誤警告泡泡
+  isError?: boolean;
 }
 
 export default function AIChatCompent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [quotaError, setQuotaError] = useState<boolean>(false); // 核心狀態：API 額度超限
+  const [quotaError, setQuotaError] = useState<boolean>(false);
 
   const { t } = useTranslation(['aichat']);
   
@@ -47,7 +47,6 @@ export default function AIChatCompent() {
 
       const data = await response.json();
 
-      // 核心修改：判斷 HTTP 狀態碼 429 或特定的 quota_exceeded 錯誤
       if (response.status === 429 || data.error === 'quota_exceeded') {
         setQuotaError(true);
         setMessages((prev) => [
@@ -81,13 +80,11 @@ export default function AIChatCompent() {
   return (
     <div className="mx-auto my-8 w-full max-w-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/50 shadow-xl dark:shadow-2xl dark:shadow-black/40 overflow-hidden flex flex-col h-[600px] transition-all duration-300">
       
-      {/* 頂部標頭 */}
       <div className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800/80 px-6 py-4 transition-colors duration-300">
         <h2 className="text-lg font-bold tracking-wide text-zinc-900 dark:text-zinc-100">{t('chat_title')}</h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{t('chat_description')}</p>
       </div>
       
-      {/* 歷史對話區 */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-zinc-50/50 dark:bg-zinc-950/60 transition-colors duration-300">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-600 space-y-2">
@@ -106,16 +103,12 @@ export default function AIChatCompent() {
                   {isUser ? t('chat_you') : t('chat_ai')}
                 </span>
                 
-                {/* 
-                  核心修改：
-                  - 判斷 msg.isError：若為錯誤，則套用醒目的橘紅色警示泡泡。
-                */}
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed font-sans ${
                     isUser
                       ? 'bg-blue-600 dark:bg-blue-500 text-white rounded-tr-none whitespace-pre-wrap'
                       : msg.isError
-                        ? 'bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-900/50 rounded-tl-none font-medium'
+                        ? 'bg-red-50/50 dark:bg-red-950/10 text-red-800 dark:text-red-400 border border-red-200/60 dark:border-red-900/30 rounded-tl-none font-medium shadow-sm'
                         : 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-zinc-100 dark:border-zinc-800/80 rounded-tl-none'
                   }`}
                   style={{ wordBreak: 'break-word' }}
@@ -123,9 +116,9 @@ export default function AIChatCompent() {
                   {isUser ? (
                     <p>{msg.text}</p>
                   ) : msg.isError ? (
-                    <div className="flex items-start gap-2">
-                      <span className="text-base mt-0.5">⚠️</span>
-                      <p>{msg.text}</p>
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-sm leading-none mt-0.5">⚠️</span>
+                      <p className="leading-snug">{msg.text}</p>
                     </div>
                   ) : (
                     <ReactMarkdown
@@ -179,42 +172,42 @@ export default function AIChatCompent() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 
-        核心修改：輸入框上方的額度不足 Warning Banner
-      */}
       {quotaError && (
-        <div className="bg-amber-50 dark:bg-amber-950/20 border-t border-amber-200 dark:border-amber-900/50 px-4 py-2.5 text-xs text-amber-800 dark:text-amber-400 flex items-center justify-between transition-all duration-300">
-          <div className="flex items-center gap-1.5">
-            <span>⚠️</span>
-            <span>{t('chat_quota_banner')}</span>
+        <div className="bg-amber-50/90 dark:bg-amber-950/20 border-t border-amber-200/80 dark:border-amber-900/40 px-6 py-3 text-xs text-amber-800 dark:text-amber-400 flex items-center justify-between transition-all duration-300">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">⚠️</span>
+            <span className="font-medium">{t('chat_quota_banner') || '偵測到 API 額度已達上限。請稍後再試或聯繫管理員。'}</span>
           </div>
           <button 
             type="button"
             onClick={() => setQuotaError(false)}
-            className="text-amber-600 dark:text-amber-500 hover:text-amber-800 dark:hover:text-amber-300 font-bold px-1.5 py-0.5 rounded"
+            className="text-amber-600 dark:text-amber-500 hover:text-amber-800 dark:hover:text-amber-300 font-bold px-1.5 py-0.5 rounded transition-colors duration-150"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* 底部輸入表單 */}
       <form
         onSubmit={sendMessage}
-        className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/90 p-4 flex gap-3 items-center transition-colors duration-300"
+        className={`border-t bg-white dark:bg-zinc-900/90 p-4 flex gap-3 items-center transition-all duration-300 ${
+          quotaError 
+            ? 'border-amber-200/80 dark:border-amber-900/40' 
+            : 'border-zinc-200 dark:border-zinc-800/80'
+        }`}
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('chat_enter_question')}
-          className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 disabled:bg-zinc-50 dark:disabled:bg-zinc-900"
-          disabled={loading || quotaError} // 當額度不足時停用輸入
+          className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 disabled:bg-zinc-50/80 dark:disabled:bg-zinc-950/80 disabled:text-zinc-400 dark:disabled:text-zinc-500 disabled:cursor-not-allowed"
+          disabled={loading || quotaError}
         />
         <button
           type="submit"
-          disabled={loading || quotaError} // 當額度不足時停用發送
-          className="rounded-xl bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:opacity-50 shadow-md shadow-blue-100 dark:shadow-none"
+          disabled={loading || quotaError}
+          className="rounded-xl bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:bg-zinc-100 dark:disabled:bg-zinc-800/50 disabled:text-zinc-400 dark:disabled:text-zinc-500 disabled:cursor-not-allowed disabled:shadow-none shadow-md shadow-blue-100 dark:shadow-none"
         >
           {t('chat_send')}
         </button>
