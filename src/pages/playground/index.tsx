@@ -28,7 +28,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['indexPage', 'common'])),
+      ...(await serverSideTranslations(locale, ['common'])),
       commandPalettePosts,
     },
   };
