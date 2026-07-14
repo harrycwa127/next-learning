@@ -7,7 +7,8 @@
 import imageSize from 'image-size';
 import path from 'path';
 import { getPlaiceholder } from 'plaiceholder';
-import { Node, visit } from 'unist-util-visit';
+import { visit } from 'unist-util-visit';
+import { Node } from 'unist';
 import { promisify } from 'util';
 
 const sizeOf = promisify(imageSize);
@@ -70,7 +71,7 @@ export default function imageMetadata() {
   return async function transformer(tree: Node): Promise<Node> {
     const imgNodes: ImageNode[] = [];
 
-    visit(tree, 'element', (node) => {
+    visit(tree as any, 'element', (node) => {
       if (isImageNode(node) && filterImageNode(node)) {
         imgNodes.push(node);
       }

@@ -15,6 +15,7 @@ import { siteConfigs } from '@/configs/siteConfigs';
 import generateRSS from '@/lib/generateRSS';
 
 import playgroundImage from '../../../public/images/playground-image.png';
+import AIChatCompent from '@/components/AIChat/AIChatCompent';
 
 type Props = {
   commandPalettePosts: PostForCommandPalette[];
@@ -60,13 +61,15 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
                 <ul>
                     <li>e.g. Climbing Tracker Lite with Vercel KV</li>
                 </ul>
-                <li>AI chat (maybe)</li>
+                <li>AI chat - Stopped, Gemini is not supported for the API used in Hong Kong, maybe try other AI later</li>
             </ul>
         </div>
         <div className="mt-12 w-2/5 items-center md:w-1/4">
             <CustomImage src={playgroundImage} alt="Self Image" />
         </div>
-      
+        <div className="mt-12 w-full items-center">
+            <AIChatCompent />
+        </div>
     </LayoutPerPage>
   );
 };
