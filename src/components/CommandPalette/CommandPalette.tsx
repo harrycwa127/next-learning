@@ -250,7 +250,6 @@ const ResultItem = forwardRef<Ref, ResultItemProps>(
         </div>
         
         {action.shortcut?.length ? (
-          /* 🌟 核心修改 5：加上 shrink-0 ml-3 防止快捷鍵被超長標題往右擠壓變形 */
           <div aria-hidden className="grid grid-flow-col gap-2 shrink-0 ml-3">
             {action.shortcut.map((sc) => (
               <kbd

@@ -235,6 +235,7 @@ export default function AIChatCompent() {
           type="submit"
           disabled={loading || quotaError}
           className="rounded-xl bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:bg-zinc-100 dark:disabled:bg-zinc-800/50 disabled:text-zinc-400 dark:disabled:text-zinc-500 disabled:cursor-not-allowed disabled:shadow-none shadow-md shadow-blue-100 dark:shadow-none"
+          aria-label={t('chat_send') || '發送'}
         >
           {t('chat_send') || '發送'}
         </button>

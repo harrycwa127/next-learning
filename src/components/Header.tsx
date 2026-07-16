@@ -43,6 +43,7 @@ export default function Header() {
                   key={link.title}
                   href={link.href}
                   className="rounded p-3 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
+                  aria-label={link.title}
                 >
                   {t(link.title)}
                 </CustomLink>

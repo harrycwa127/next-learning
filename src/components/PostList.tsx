@@ -33,7 +33,7 @@ export default function PostList({ posts = [] }: Props) {
         const { slug, date, updateDate, tag, pin, title, description, path } = post;
         return (
           <li key={slug} className="group transition-colors">
-            <CustomLink href={path}>
+            <CustomLink href={path} aria-label={title}>
               <article className="space-y-2 rounded-xl p-4 -mx-4 transition-all group-hover:bg-gray-100/70 dark:group-hover:bg-gray-800/50 xl:grid xl:grid-cols-4 xl:items-center xl:space-y-0">
                 <dl>
                   <dt className="sr-only">Published on</dt>
