@@ -18,14 +18,21 @@ export default function AIChatCompent() {
 
   const { t } = useTranslation(['aichat']);
   
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0 || loading) {
+      scrollToBottom();
+    }
   }, [messages, loading]);
 
   const sendMessage = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -53,7 +60,7 @@ export default function AIChatCompent() {
           ...prev, 
           { 
             role: 'model', 
-            text: t('chat_quota_error'), 
+            text: t('chat_quota_error') || '額度已用完，請稍後再試。', 
             isError: true 
           }
         ]);
@@ -67,11 +74,24 @@ export default function AIChatCompent() {
       if (data.reply) {
         setMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
       } else {
-        setMessages((prev) => [...prev, { role: 'model', text: t('chat_response_unknown') }]);
+        setMessages((prev) => [
+          ...prev, 
+          { 
+            role: 'model', 
+            text: t('chat_response_unknown') || '無法解析 AI 的回覆。' 
+          }
+        ]);
       }
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { role: 'model', text: t('chat_error'), isError: true }]);
+      setMessages((prev) => [
+        ...prev, 
+        { 
+          role: 'model', 
+          text: t('chat_error') || '連線失敗，請稍後再試。', 
+          isError: true 
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -81,15 +101,22 @@ export default function AIChatCompent() {
     <div className="mx-auto my-8 w-full max-w-2xl rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/50 shadow-xl dark:shadow-2xl dark:shadow-black/40 overflow-hidden flex flex-col h-[600px] transition-all duration-300">
       
       <div className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800/80 px-6 py-4 transition-colors duration-300">
-        <h2 className="text-lg font-bold tracking-wide text-zinc-900 dark:text-zinc-100">{t('chat_title')}</h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{t('chat_description')}</p>
+        <h2 className="text-lg font-bold tracking-wide text-zinc-900 dark:text-zinc-100">
+          {t('chat_title') || 'Gemini AI 智能助手'}
+        </h2>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          {t('chat_description') || '隨時為您解答問題'}
+        </p>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-zinc-50/50 dark:bg-zinc-950/60 transition-colors duration-300">
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6 bg-zinc-50/50 dark:bg-zinc-950/60 transition-colors duration-300 scroll-smooth"
+      >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-600 space-y-2">
             <span className="text-4xl">💬</span>
-            <p className="text-sm">{t('start_chat')}</p>
+            <p className="text-sm">{t('start_chat') || '開始與 Gemini AI 對話吧！輸入訊息並點擊發送。'}</p>
           </div>
         ) : (
           messages.map((msg, index) => {
@@ -100,7 +127,7 @@ export default function AIChatCompent() {
                 className={`flex flex-col w-full ${isUser ? 'items-end' : 'items-start'}`}
               >
                 <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mb-1 px-1">
-                  {isUser ? t('chat_you') : t('chat_ai')}
+                  {isUser ? (t('chat_you') || '您') : (t('chat_ai') || 'AI 助手')}
                 </span>
                 
                 <div
@@ -160,7 +187,9 @@ export default function AIChatCompent() {
         
         {loading && (
           <div className="flex flex-col items-start">
-            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mb-1 px-1">{t('chat_ai')}</span>
+            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 mb-1 px-1">
+              {t('chat_ai') || 'AI 助手'}
+            </span>
             <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/85 rounded-2xl rounded-tl-none px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 shadow-sm flex items-center space-x-1.5">
               <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
               <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
@@ -168,15 +197,13 @@ export default function AIChatCompent() {
             </div>
           </div>
         )}
-        
-        <div ref={messagesEndRef} />
       </div>
 
       {quotaError && (
         <div className="bg-amber-50/90 dark:bg-amber-950/20 border-t border-amber-200/80 dark:border-amber-900/40 px-6 py-3 text-xs text-amber-800 dark:text-amber-400 flex items-center justify-between transition-all duration-300">
           <div className="flex items-center gap-2">
             <span className="text-sm">⚠️</span>
-            <span className="font-medium">{t('chat_quota_banner') || '偵測到 API 額度已達上限。請稍後再試或聯繫管理員。'}</span>
+            <span className="font-medium">{t('chat_quota_banner') || '偵測到額度已達上限，請稍後再試。'}</span>
           </div>
           <button 
             type="button"
@@ -200,7 +227,7 @@ export default function AIChatCompent() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={t('chat_enter_question')}
+          placeholder={t('chat_enter_question') || '輸入您的問題...'}
           className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 disabled:bg-zinc-50/80 dark:disabled:bg-zinc-950/80 disabled:text-zinc-400 dark:disabled:text-zinc-500 disabled:cursor-not-allowed"
           disabled={loading || quotaError}
         />
@@ -209,7 +236,7 @@ export default function AIChatCompent() {
           disabled={loading || quotaError}
           className="rounded-xl bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:bg-zinc-100 dark:disabled:bg-zinc-800/50 disabled:text-zinc-400 dark:disabled:text-zinc-500 disabled:cursor-not-allowed disabled:shadow-none shadow-md shadow-blue-100 dark:shadow-none"
         >
-          {t('chat_send')}
+          {t('chat_send') || '發送'}
         </button>
       </form>
     </div>
