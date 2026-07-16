@@ -25,7 +25,6 @@ export default async function handler(
       "偏好使用簡潔有力的繁體中文回覆，回應必須遵守以下原則： 1）先思考再動手：明確假設，不確定就問，不隱藏困惑。" +
       "請始終使用清晰的段落來組織你的答案，並在適當的地方使用程式碼區塊。" +
       "保持鼓勵、耐心和技術嚴謹的語氣。",
-    tools: [{ googleSearchRetrieval: {} }] 
   };
 
   try {
