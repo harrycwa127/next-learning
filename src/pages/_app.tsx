@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
 import { DefaultSeo } from 'next-seo';
 import { ThemeProvider } from 'next-themes';
+import { TagsProvider } from '@/contexts/TagsContext';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/next';
@@ -34,11 +35,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <ThemeProvider attribute="class">
-        <CommandPalette>
-          <DefaultSeo
-            titleTemplate={`%s | ${siteConfigs.titleShort}`}
-            defaultTitle={siteConfigs.title}
+      <TagsProvider>
+        <ThemeProvider attribute="class">
+          <CommandPalette>
+            <DefaultSeo
+              titleTemplate={`%s | ${siteConfigs.titleShort}`}
+              defaultTitle={siteConfigs.title}
             description={siteConfigs.description}
             canonical={siteConfigs.fqdn}
             openGraph={{
@@ -82,13 +84,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             ]}
           />
 
-          <LayoutWrapper>
-            <Component {...pageProps} />
-          </LayoutWrapper>
-        </CommandPalette>
-      </ThemeProvider>
-      <Analytics />
-      <SpeedInsights />
+            <LayoutWrapper>
+              <Component {...pageProps} />
+            </LayoutWrapper>
+          </CommandPalette>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
+      </TagsProvider>
     </>
   );
 }

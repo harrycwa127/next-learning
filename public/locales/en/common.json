@@ -22,5 +22,8 @@
   "chinese": "中文",
   "all-posts": "All",
   "select-tag": "SELECT TAG",
-  "filter": "Filter"
+  "filter": "Filter",
+  "loading": "Loading...",
+  "error": "Error",
+  "no-tags": "No tags"
 }

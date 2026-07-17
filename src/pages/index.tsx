@@ -14,13 +14,13 @@ import CommandSvg from '@/components/CommandSvg';
 import CustomImage from '@/components/CustomImage';
 import LayoutPerPage from '@/components/LayoutPerPage';
 import PostList, { PostForPostList } from '@/components/PostList';
-import { Tag } from '@/components/TagDisplay';
 import TagFilter from '@/components/TagFilter';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import generateRSS from '@/lib/generateRSS';
 
 import selfImage from '../../public/images/self-image.png';
+import { useTags } from '@/contexts/TagsContext';
 
 type PostForIndexPage = PostForPostList;
 
@@ -60,34 +60,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   const [filteredPost, setFilteredPost] = useState(posts);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // const allTags = Array.from(
-  //   new Set(posts.map((post) => post.tag).filter(Boolean))
-  // ) as string[];
-
-  useEffect(() => {
-    async function fetchTags() {
-      try {
-        const response = await fetch('/api/tags');
-        if (!response.ok) throw new Error('無法取得標籤資料');
-        const data = await response.json();
-
-        setAllTags(data.map((tag: any) => ({
-          value: tag.pb_tag_id,
-          eng_name: tag.pb_tag_eng_name,
-          chi_name: tag.pb_tag_chi_name,
-        })));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '發生未知錯誤');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchTags();
-  }, []);
+  const { allTags, loading, error } = useTags();
 
   useEffect(() => {
     if (selectedTag) {
