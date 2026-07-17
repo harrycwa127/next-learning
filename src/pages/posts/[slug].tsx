@@ -21,10 +21,8 @@ import { allRedirects } from '@/lib/getAllRedirects';
 import { getPostOGImage } from '@/lib/getPostOGImage';
 import mdxComponents from '@/lib/mdxComponents';
 import { unifyPath } from '@/lib/unifyPath';
-import { useEffect, useState } from 'react';
-import { Tag } from '@/components/TagDisplay';
 import { useTags } from '@/contexts/TagsContext';
-import { useTranslation } from 'next-i18next/dist/types/appWithTranslation';
+import { useTranslation } from 'next-i18next';
 
 interface Params extends ParsedUrlQuery {
   slug: string;

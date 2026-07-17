@@ -14,7 +14,7 @@ export const useCommandPalettePostActions = (
   { posts = [], tags = [] }: Props
 ): void => {
   const router = useRouter();
-  const { i18n, t } = useTranslation(['common']);
+  const { t } = useTranslation(['common']);
 
   useRegisterActions(
     posts.map((post) => {
