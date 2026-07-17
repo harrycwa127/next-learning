@@ -56,3 +56,28 @@ Start local server for development:
 ```bash
 pnpm dev
 ```
+
+## Enviroment Variable (.env.local)
+
+- Gemini API Key:
+GEMINI_API_KEY
+
+- Info for connect db (can get in vercel):
+DATABASE_URL
+
+DATABASE_URL_UNPOOLED
+
+PGHOST
+PGHOST_UNPOOLED
+PGUSER
+PGDATABASE
+PGPASSWORD
+
+POSTGRES_URL
+POSTGRES_URL_NON_POOLING
+POSTGRES_USER
+POSTGRES_HOST
+POSTGRES_PASSWORD
+POSTGRES_DATABASE
+POSTGRES_URL_NO_SSL
+POSTGRES_PRISMA_URL
