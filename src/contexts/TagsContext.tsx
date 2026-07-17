@@ -29,14 +29,7 @@ export function TagsProvider({ children }: { children: ReactNode }) {
       }
       const data = await response.json();
 
-      // 4. 在這裡將資料庫欄位精確對應為前端的 Tag 格式
-      const mappedTags: Tag[] = data.map((tag: any) => ({
-        value: tag.pb_tag_id,
-        eng_name: tag.pb_tag_eng_name,
-        chi_name: tag.pb_tag_chi_name,
-      }));
-
-      setAllTags(mappedTags);
+      setAllTags(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '發生未知錯誤');
     } finally {

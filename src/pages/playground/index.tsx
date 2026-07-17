@@ -65,7 +65,8 @@ const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
                 <li>Pin Post - Done</li>
                 <li>Simple Record store with database</li>
                 <ul>
-                    <li>e.g. Climbing Tracker Lite with Vercel KV</li>
+                    <li>Store and Manage Post Tag - Done</li>
+                    <li>Store and Manage Post (server store markdown - next-mdx-remote - MDXRemote with same mdxComponents )</li>
                 </ul>
                 <li>AI chat - Done</li>
             </ul>
