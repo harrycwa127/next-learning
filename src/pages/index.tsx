@@ -72,9 +72,9 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (loading) return <div className="text-gray-500 text-sm animate-pulse">標籤載入中...</div>;
-  if (error) return <div className="text-red-500 text-sm">錯誤: {error}</div>;
-  if (allTags.length === 0) return <div className="text-gray-400 text-sm">暫無標籤</div>;
+  if (loading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (error) return <div className="text-red-500 text-sm">{t('error')}: {error}</div>;
+  if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
 
   return (
     <LayoutPerPage>

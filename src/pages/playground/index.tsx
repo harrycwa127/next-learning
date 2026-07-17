@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
-// import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ArticleJsonLd } from 'next-seo';
 
@@ -15,6 +15,7 @@ import { siteConfigs } from '@/configs/siteConfigs';
 import generateRSS from '@/lib/generateRSS';
 
 import playgroundImage from '../../../public/images/playground-image.png';
+import { useTags } from '@/contexts/TagsContext';
 
 type Props = {
   commandPalettePosts: PostForCommandPalette[];
@@ -35,8 +36,15 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 };
 
 const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
+  const { allTags, loading, error } = useTags();
+  const { t } = useTranslation(['common']);
+  
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  useCommandPalettePostActions(commandPalettePosts);
+  if (loading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (error) return <div className="text-red-500 text-sm">{t('error')}: {error}</div>;
+  if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
+
   return (
     <LayoutPerPage>
       <ArticleJsonLd
