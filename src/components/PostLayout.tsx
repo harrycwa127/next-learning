@@ -5,7 +5,7 @@ import { Pin } from 'lucide-react';
 import Comment from '@/components/Comment';
 import CustomLink from '@/components/CustomLink';
 import PageTitle from '@/components/PageTitle';
-import Tag from '@/components/Tag';
+import TagDisplay, {Tag} from '@/components/TagDisplay';
 import PostBody from '@/components/PostBody';
 import TableOfContents from '@/components/TableOfContents';
 import formatDate from '@/lib/formatDate';
@@ -29,6 +29,7 @@ type Props = {
   nextPost: RelatedPostForPostLayout;
   prevPost: RelatedPostForPostLayout;
   children: React.ReactNode;
+  tags: Tag[];
 };
 
 export default function PostLayout({
@@ -36,6 +37,7 @@ export default function PostLayout({
   nextPost,
   prevPost,
   children,
+  tags
 }: Props) {
   const {
     date,
@@ -47,7 +49,9 @@ export default function PostLayout({
   } = post;
 
   const { locale } = useRouter();
-  const { t } = useTranslation(['common']);
+  const { i18n, t } = useTranslation(['common']);
+
+  const tagInfo = tag ? tags.find((t) => t.value === tag) : null;
 
   return (
     <article>
@@ -57,16 +61,16 @@ export default function PostLayout({
             <div className="mb-4">
               <div className="relative inline-block leading-none">
                 
-                {(tag || pin) && (
+                {(tagInfo || pin) && (
                   <div className="flex items-center gap-1.5 mb-2.5 sm:mb-0 sm:absolute sm:right-full sm:top-1/2 sm:mr-3 sm:-translate-y-[30%] whitespace-nowrap justify-center">
                     {pin && (
                       <Pin 
-                        size={18} // 配合大標題層級，圖示稍微放大至 18px
+                        size={18}
                         strokeWidth={1.8} 
                         className="text-amber-500 dark:text-amber-400/90 shrink-0 rotate-45 transform" 
                       />
                     )}
-                    {tag && <Tag>{t(tag)}</Tag>}
+                    {tagInfo && <TagDisplay>{i18n.language === 'zh-TW' ? tagInfo.chi_name : tagInfo.eng_name}</TagDisplay>}
                   </div>
                 )}
                 

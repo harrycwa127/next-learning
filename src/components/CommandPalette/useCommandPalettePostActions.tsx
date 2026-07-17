@@ -1,27 +1,40 @@
 import { useRegisterActions } from 'kbar';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+import { Tag } from '@/components/TagDisplay';
 
 import { PostForCommandPalette } from './getCommandPalettePosts';
 
+type Props = {
+  posts: PostForCommandPalette[];
+  tags: Tag[];
+};
+
 export const useCommandPalettePostActions = (
-  posts: PostForCommandPalette[]
+  { posts = [], tags = [] }: Props
 ): void => {
   const router = useRouter();
   const { i18n, t } = useTranslation(['common']);
 
   useRegisterActions(
-    posts.map((post) => ({
-      id: post.slug,
-      name: post.title,
-      keywords: 'post posts' + (post.tag ? ' ' + post.tag + ' ' + i18n.languages.map(lng => i18n.t(post.tag!, { lng })).join(' ') : ''),
-      perform: () => router.push(post.path),
-      section: t('search-posts'),
-      parent: 'search-posts',
-      data: {
-        tag: post.tag || null, 
-      },
-    })),
+    posts.map((post) => {
+      const tag = tags.find((tag) => tag.value === post.tag);
+      const tagKeywords = tag 
+        ? ` ${tag.eng_name} ${tag.chi_name}` 
+        : '';
+
+      return {
+        id: post.slug,
+        name: post.title,
+        keywords: 'post posts' + tagKeywords,
+        perform: () => router.push(post.path),
+        section: t('search-posts'),
+        parent: 'search-posts',
+        data: {
+          tag: post.tag || null, 
+        },
+      };
+    }),
     []
   );
 };

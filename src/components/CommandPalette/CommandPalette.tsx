@@ -27,7 +27,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { useTheme } from 'next-themes';
 import React, { forwardRef, useMemo } from 'react';
-import Tag from '@/components/Tag';
+import Tag from '@/components/TagDisplay';
 
 import { KBarSearch } from './KBarSearch';
 

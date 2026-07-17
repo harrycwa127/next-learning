@@ -61,7 +61,7 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       rehypeCodeTitles,
-      [rehypePrism, { ignoreMissing: true }],
+      [rehypePrism as unknown as any, { ignoreMissing: true }],
       imageMetadata,
       remarkGfm
     ],

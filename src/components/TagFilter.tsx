@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Tag } from '@/components/TagDisplay';
 
 interface TagFilterProps {
-  tags: string[];
+  tags: Tag[];
   selectedTag: string | null;
   onSelectTag: (tag: string | null) => void;
 }
@@ -13,7 +14,7 @@ export default function TagFilter({
   selectedTag,
   onSelectTag,
 }: TagFilterProps) {
-  const { t } = useTranslation(['common']);
+  const { i18n, t } = useTranslation(['common']);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -91,12 +92,13 @@ export default function TagFilter({
             </button>
 
             {tags.map((tag) => {
-              const isSelected = selectedTag === tag;
+              const isSelected = selectedTag === tag.value;
+              console.log(tag);
               return (
                 <button
-                  key={tag}
+                  key={tag.value}
                   onClick={() => {
-                    onSelectTag(isSelected ? null : tag);
+                    onSelectTag(isSelected ? null : tag.value);
                     setIsOpen(false);
                   }}
                   className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-all ${
@@ -105,7 +107,7 @@ export default function TagFilter({
                       : 'border-zinc-200/60 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-800/30 dark:text-zinc-400 dark:hover:bg-zinc-800'
                   }`}
                 >
-                  {t(tag)}
+                  {i18n.language === 'zh-TW' ? tag.chi_name : tag.eng_name}
                 </button>
               );
             })}

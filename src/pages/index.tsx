@@ -14,6 +14,7 @@ import CommandSvg from '@/components/CommandSvg';
 import CustomImage from '@/components/CustomImage';
 import LayoutPerPage from '@/components/LayoutPerPage';
 import PostList, { PostForPostList } from '@/components/PostList';
+import { Tag } from '@/components/TagDisplay';
 import TagFilter from '@/components/TagFilter';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
@@ -59,10 +60,34 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   const [filteredPost, setFilteredPost] = useState(posts);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const allTags = Array.from(
-    new Set(posts.map((post) => post.tag).filter(Boolean))
-  ) as string[];
+  // const allTags = Array.from(
+  //   new Set(posts.map((post) => post.tag).filter(Boolean))
+  // ) as string[];
+
+  useEffect(() => {
+    async function fetchTags() {
+      try {
+        const response = await fetch('/api/tags');
+        if (!response.ok) throw new Error('無法取得標籤資料');
+        const data = await response.json();
+
+        setAllTags(data.map((tag: any) => ({
+          value: tag.pb_tag_id,
+          eng_name: tag.pb_tag_eng_name,
+          chi_name: tag.pb_tag_chi_name,
+        })));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '發生未知錯誤');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTags();
+  }, []);
 
   useEffect(() => {
     if (selectedTag) {
@@ -72,7 +97,11 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
     }
   }, [selectedTag, posts]);
 
-  useCommandPalettePostActions(commandPalettePosts);
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
+
+  if (loading) return <div className="text-gray-500 text-sm animate-pulse">標籤載入中...</div>;
+  if (error) return <div className="text-red-500 text-sm">錯誤: {error}</div>;
+  if (allTags.length === 0) return <div className="text-gray-400 text-sm">暫無標籤</div>;
 
   return (
     <LayoutPerPage>
@@ -143,7 +172,7 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
           </div>
         </div>
 
-        <PostList posts={filteredPost} />
+        <PostList posts={filteredPost} tags={allTags} />
       </div>
     </LayoutPerPage>
   );

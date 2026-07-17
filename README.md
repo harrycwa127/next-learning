@@ -18,7 +18,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - RSS Feed
 - Sitemap
 - Code syntax highlighting
-- Post Tag (Search & Filter by Tag)
+- Post Tag (Search & Filter by Tag, Tag Managed in NEON DB)
 - Pin Post
 - AI Chat (Gemini API 3.5 Flash / 2.5 Pro)
 

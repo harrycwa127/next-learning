@@ -5,7 +5,8 @@ import CustomLink from '@/components/CustomLink';
 import formatDate from '@/lib/formatDate';
 import { CalendarIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Pin } from 'lucide-react';
-import Tag from '@/components/Tag';
+import TagDisplay, { Tag } from '@/components/TagDisplay';
+
 
 export interface PostForPostList {
   slug: string;
@@ -20,17 +21,19 @@ export interface PostForPostList {
 
 type Props = {
   posts: PostForPostList[];
+  tags: Tag[];
 };
 
-export default function PostList({ posts = [] }: Props) {
+export default function PostList({ posts = [], tags = [] }: Props) {
   const { locale } = useRouter();
-  const { t } = useTranslation(['common']);
+  const { i18n, t } = useTranslation(['common']);
 
   return (
     <ul className="divide-y divide-gray-200 transition-colors dark:divide-gray-700">
       {!posts.length && 'No posts found.'}
       {posts.map((post) => {
         const { slug, date, updateDate, tag, pin, title, description, path } = post;
+        const tagInfo = tag ? tags.find((t) => t.value === tag) : null;
         return (
           <li key={slug} className="group transition-colors">
             <CustomLink href={path} aria-label={title}>
@@ -56,7 +59,7 @@ export default function PostList({ posts = [] }: Props) {
                       />
                     )}
 
-                    {tag && <Tag small>{t(tag)}</Tag>}
+                    {tagInfo && <TagDisplay small>{i18n.language === 'zh-TW' ? tagInfo.chi_name : tagInfo.eng_name}</TagDisplay>}
                     
                     <h3 className="text-lg font-bold tracking-tight text-gray-900 transition-colors dark:text-gray-100 sm:text-xl md:text-2xl truncate group-hover:text-primary-500 dark:group-hover:text-primary-400">
                       {title}

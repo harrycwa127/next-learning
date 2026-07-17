@@ -3,7 +3,7 @@ type Props = {
   small?: boolean;
 };
 
-export default function Tag({ children, small }: Props) {
+export default function TagDisplay({ children, small }: Props) {
   return (
     <span
       className={`inline-flex items-center rounded-md font-medium border border-gray-200 bg-gray-50/50 text-gray-600 leading-none dark:border-zinc-700 dark:bg-zinc-800/30 dark:text-zinc-400 shrink-0 ${
@@ -15,4 +15,10 @@ export default function Tag({ children, small }: Props) {
       {children}
     </span>
   );
+}
+
+export interface Tag {
+  value: string;
+  eng_name: string;
+  chi_name: string;
 }
