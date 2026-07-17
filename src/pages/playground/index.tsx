@@ -16,6 +16,7 @@ import generateRSS from '@/lib/generateRSS';
 
 import playgroundImage from '../../../public/images/playground-image.png';
 import { useTags } from '@/contexts/TagsContext';
+import { usePosts } from '@/contexts/PostsListContext';
 
 type Props = {
   commandPalettePosts: PostForCommandPalette[];
@@ -36,13 +37,13 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 };
 
 const Playground: NextPage<Props> = ({ commandPalettePosts }) => {
-  const { allTags, loading, error } = useTags();
+  const { allTags, tagLoading, tagError } = useTags();
   const { t } = useTranslation(['common']);
   
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (loading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (error) return <div className="text-red-500 text-sm">{t('error')}: {error}</div>;
+  if (tagLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (tagError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}</div>;
   if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
 
   return (

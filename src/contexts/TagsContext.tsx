@@ -6,8 +6,8 @@ import { Tag } from '@/components/TagDisplay';
 // 2. 定義 Context 共享狀態的介面
 interface TagsContextType {
   allTags: Tag[];
-  loading: boolean;
-  error: string | null;
+  tagLoading: boolean;
+  tagError: string | null;
   refreshTags: () => Promise<void>; // 提供手動重新整理資料的函式
 }
 
@@ -15,8 +15,8 @@ const TagsContext = createContext<TagsContextType | undefined>(undefined);
 
 export function TagsProvider({ children }: { children: ReactNode }) {
   const [allTags, setAllTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tagLoading, setLoading] = useState<boolean>(true);
+  const [tagError, setError] = useState<string | null>(null);
 
   // 3. 封裝 API 請求與資料結構轉換邏輯
   const fetchTags = async () => {
@@ -43,7 +43,7 @@ export function TagsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <TagsContext.Provider value={{ allTags, loading, error, refreshTags: fetchTags }}>
+    <TagsContext.Provider value={{ allTags, tagLoading, tagError, refreshTags: fetchTags }}>
       {children}
     </TagsContext.Provider>
   );

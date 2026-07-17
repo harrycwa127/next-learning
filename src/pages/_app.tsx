@@ -1,7 +1,12 @@
+//@ts-ignore
 import '@/styles/globals.css';
+//@ts-ignore
 import '@/styles/prism-dracula.css';
+//@ts-ignore
 import '@/styles/prism-plus.css';
+//@ts-ignore
 import 'nprogress/nprogress.css';
+//@ts-ignore
 import '@/styles/nprogress-custom.scss';
 
 import type { AppProps } from 'next/app';
@@ -10,6 +15,7 @@ import { appWithTranslation } from 'next-i18next';
 import { DefaultSeo } from 'next-seo';
 import { ThemeProvider } from 'next-themes';
 import { TagsProvider } from '@/contexts/TagsContext';
+import { PostsListProvider } from '@/contexts/PostsListContext';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/next';
@@ -36,61 +42,63 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <TagsProvider>
-        <ThemeProvider attribute="class">
-          <CommandPalette>
-            <DefaultSeo
-              titleTemplate={`%s | ${siteConfigs.titleShort}`}
-              defaultTitle={siteConfigs.title}
-            description={siteConfigs.description}
-            canonical={siteConfigs.fqdn}
-            openGraph={{
-              title: siteConfigs.title,
-              description: siteConfigs.description,
-              url: siteConfigs.fqdn,
-              images: [
+        <PostsListProvider>
+          <ThemeProvider attribute="class">
+            <CommandPalette>
+              <DefaultSeo
+                titleTemplate={`%s | ${siteConfigs.titleShort}`}
+                defaultTitle={siteConfigs.title}
+              description={siteConfigs.description}
+              canonical={siteConfigs.fqdn}
+              openGraph={{
+                title: siteConfigs.title,
+                description: siteConfigs.description,
+                url: siteConfigs.fqdn,
+                images: [
+                  {
+                    url: siteConfigs.bannerUrl,
+                  },
+                ],
+                site_name: siteConfigs.title,
+                type: 'website',
+              }}
+              // twitter={{
+              //   handle: siteConfigs.twitterID,
+              //   site: siteConfigs.twitterID,
+              //   cardType: 'summary_large_image',
+              // }}
+              additionalMetaTags={[
                 {
-                  url: siteConfigs.bannerUrl,
+                  name: 'viewport',
+                  content: 'width=device-width, initial-scale=1',
                 },
-              ],
-              site_name: siteConfigs.title,
-              type: 'website',
-            }}
-            // twitter={{
-            //   handle: siteConfigs.twitterID,
-            //   site: siteConfigs.twitterID,
-            //   cardType: 'summary_large_image',
-            // }}
-            additionalMetaTags={[
-              {
-                name: 'viewport',
-                content: 'width=device-width, initial-scale=1',
-              },
-            ]}
-            additionalLinkTags={[
-              {
-                rel: 'icon',
-                href: siteConfigs.logoPath,
-              },
-              {
-                rel: 'alternate',
-                type: 'application/rss+xml',
-                href: '/feed.xml',
-              },
-              {
-                rel: 'alternate',
-                type: 'application/atom+xml',
-                href: '/atom.xml',
-              },
-            ]}
-          />
+              ]}
+              additionalLinkTags={[
+                {
+                  rel: 'icon',
+                  href: siteConfigs.logoPath,
+                },
+                {
+                  rel: 'alternate',
+                  type: 'application/rss+xml',
+                  href: '/feed.xml',
+                },
+                {
+                  rel: 'alternate',
+                  type: 'application/atom+xml',
+                  href: '/atom.xml',
+                },
+              ]}
+            />
 
-            <LayoutWrapper>
-              <Component {...pageProps} />
-            </LayoutWrapper>
-          </CommandPalette>
-        </ThemeProvider>
-        <Analytics />
-        <SpeedInsights />
+              <LayoutWrapper>
+                <Component {...pageProps} />
+              </LayoutWrapper>
+            </CommandPalette>
+          </ThemeProvider>
+          <Analytics />
+          <SpeedInsights />
+        </PostsListProvider>
       </TagsProvider>
     </>
   );

@@ -13,6 +13,8 @@ import { siteConfigs } from '@/configs/siteConfigs';
 import generateRSS from '@/lib/generateRSS';
 
 import AIChatCompent from '@/components/AIChat/AIChatCompent';
+import { useTags } from '@/contexts/TagsContext';
+import { useTranslation } from 'next-i18next';
 
 type Props = {
   commandPalettePosts: PostForCommandPalette[];
@@ -33,8 +35,13 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
 };
 
 const AIChat: NextPage<Props> = ({ commandPalettePosts }) => {
+  const { allTags, tagLoading, tagError } = useTags();
+  const { t } = useTranslation(['common']);
 
-  useCommandPalettePostActions(commandPalettePosts);
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
+  if (tagLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (tagError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}</div>;
+  if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
   return (
     <LayoutPerPage>
       <ArticleJsonLd

@@ -25,8 +25,9 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
         p.pb_slug,
         p.pb_title,
         p.pb_desc,
-        p.pb_date,
-        p.pb_update_date,
+        TO_CHAR(p.pb_date, 'YYYY-MM-DD') as pb_date,
+        TO_CHAR(p.pb_update_date, 'YYYY-MM-DD') as pb_update_date,
+        p.pb_is_pin,
         p.pb_tag_id,
       FROM pb_blog_post p
       WHERE p.pb_slug = ${slug}
@@ -37,7 +38,7 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
       date: row.pb_date.toString(),
       updateDate: row.pb_update_date? row.pb_update_date.toString() : null,
       tag: row.pb_tag_id ? row.pb_tag_id.toString() : null,
-      pin: row.pb_pin ? Boolean(row.pb_pin) : null,
+      pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : null,
       title: row.pb_title.toString(),
       description: row.pb_desc.toString(),
       path: `/posts/${row.pb_slug.toString()}`,

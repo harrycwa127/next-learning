@@ -21,6 +21,7 @@ import generateRSS from '@/lib/generateRSS';
 
 import selfImage from '../../public/images/self-image.png';
 import { useTags } from '@/contexts/TagsContext';
+import { usePosts } from '@/contexts/PostsListContext';
 
 type PostForIndexPage = PostForPostList;
 
@@ -60,7 +61,9 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   const [filteredPost, setFilteredPost] = useState(posts);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const { allTags, loading, error } = useTags();
+  const { allTags, tagLoading, tagError } = useTags();
+  const { dbPostsList, postLoading, postError } = usePosts();
+  console.log(dbPostsList);
 
   useEffect(() => {
     if (selectedTag) {
@@ -72,8 +75,8 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (loading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (error) return <div className="text-red-500 text-sm">{t('error')}: {error}</div>;
+  if (tagLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (tagError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}</div>;
   if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
 
   return (

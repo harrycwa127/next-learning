@@ -22,6 +22,7 @@ import { getPostOGImage } from '@/lib/getPostOGImage';
 import mdxComponents from '@/lib/mdxComponents';
 import { unifyPath } from '@/lib/unifyPath';
 import { useTags } from '@/contexts/TagsContext';
+import { usePosts } from '@/contexts/PostsListContext';
 import { useTranslation } from 'next-i18next';
 
 interface Params extends ParsedUrlQuery {
@@ -130,7 +131,7 @@ const PostPage: NextPage<Props> = ({
   nextPost,
   commandPalettePosts,
 }) => {
-  const { allTags, loading, error } = useTags();
+  const { allTags, tagLoading, tagError } = useTags();
   const { t } = useTranslation(['common']);
 
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
@@ -148,8 +149,8 @@ const PostPage: NextPage<Props> = ({
 
   const MDXContent = useMDXComponent(code);
 
-  if (loading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (error) return <div className="text-red-500 text-sm">{t('error')}: {error}</div>;
+  if (tagLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (tagError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}</div>;
   if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
 
   return (
