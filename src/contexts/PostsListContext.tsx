@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { PostForPostList } from '@/components/PostList';
+import { allPosts } from 'contentlayer/generated';
+import { compareDesc } from 'date-fns';
 
 // 2. 定義 Context 共享狀態的介面
 interface PostsListContextType {
@@ -26,9 +28,29 @@ export function PostsListProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         throw new Error('無法取得文章資料');
       }
-      const data = await response.json();
+      const data: PostForPostList[] = await response.json();
 
-      setDbPostsList(data);
+      const postMapToList = allPosts.map((post) => ({
+        slug: post.slug,
+        date: post.date,
+        updateDate: post.updateDate || null,
+        tag: post.tag || null,
+        pin: post.pin || null,
+        title: post.title,
+        description: post.description,
+        path: post.path,
+      })) as PostForPostList[];
+
+      const allPostsNewToOld = 
+        Array.prototype.concat(data || [], postMapToList || [])
+        .sort((a, b) => {
+            if (a.pin && !b.pin) return -1;
+            if (!a.pin && b.pin) return 1;
+        
+            return compareDesc(new Date(a.date), new Date(b.date));
+          }) || [];
+
+      setDbPostsList(allPostsNewToOld);
     } catch (err) {
       setPostError(err instanceof Error ? err.message : '發生未知錯誤');
     } finally {

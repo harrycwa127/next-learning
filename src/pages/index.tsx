@@ -23,10 +23,10 @@ import selfImage from '../../public/images/self-image.png';
 import { useTags } from '@/contexts/TagsContext';
 import { usePosts } from '@/contexts/PostsListContext';
 
-type PostForIndexPage = PostForPostList;
+// type PostForIndexPage = PostForPostList;
 
 type Props = {
-  posts: PostForIndexPage[];
+  // posts: PostForIndexPage[];
   commandPalettePosts: PostForCommandPalette[];
 };
 
@@ -34,44 +34,44 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   const locale = context.locale!;
   const commandPalettePosts = getCommandPalettePosts();
 
-  const posts = allPostsNewToOld.map((post) => ({
-    slug: post.slug,
-    date: post.date,
-    updateDate: post.updateDate || null,
-    tag: post.tag || null,
-    pin: post.pin || null,
-    title: post.title,
-    description: post.description,
-    path: post.path,
-  })) as PostForIndexPage[];
+  // const posts = allPostsNewToOld.map((post) => ({
+  //   slug: post.slug,
+  //   date: post.date,
+  //   updateDate: post.updateDate || null,
+  //   tag: post.tag || null,
+  //   pin: post.pin || null,
+  //   title: post.title,
+  //   description: post.description,
+  //   path: post.path,
+  // })) as PostForIndexPage[];
 
   generateRSS();
 
   return {
     props: {
       ...(await serverSideTranslations(locale, ['indexPage', 'common'])),
-      posts,
+      // posts,
       commandPalettePosts,
     },
   };
 };
 
-const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
+// const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
+const Home: NextPage<Props> = ({ commandPalettePosts }) => {
   const { t } = useTranslation(['indexPage', 'common']);
 
-  const [filteredPost, setFilteredPost] = useState(posts);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const { allTags, tagLoading, tagError } = useTags();
   const { dbPostsList, postLoading, postError } = usePosts();
-  console.log(dbPostsList);
+  const [filteredPost, setFilteredPost] = useState(dbPostsList);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedTag) {
-      setFilteredPost(posts.filter((post) => post.tag === selectedTag));
+      setFilteredPost(dbPostsList.filter((post) => post.tag === selectedTag));
     } else {
-      setFilteredPost(posts);
+      setFilteredPost(dbPostsList);
     }
-  }, [selectedTag, posts]);
+  }, [selectedTag, dbPostsList]);
 
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
