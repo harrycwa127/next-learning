@@ -5,15 +5,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ArticleJsonLd } from 'next-seo';
 import { useState, useEffect } from 'react';
 
-import {
-  getCommandPalettePosts,
-  PostForCommandPalette,
-} from '@/components/CommandPalette/getCommandPalettePosts';
+import { getCommandPalettePosts } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 import CommandSvg from '@/components/CommandSvg';
 import CustomImage from '@/components/CustomImage';
 import LayoutPerPage from '@/components/LayoutPerPage';
-import PostList, { PostForPostList } from '@/components/PostList';
+import PostList from '@/components/PostList';
 import TagFilter from '@/components/TagFilter';
 import { siteConfigs } from '@/configs/siteConfigs';
 import generateRSS from '@/lib/generateRSS';
@@ -21,6 +18,8 @@ import generateRSS from '@/lib/generateRSS';
 import selfImage from '../../public/images/self-image.png';
 import { useTags } from '@/contexts/TagsContext';
 import { usePosts } from '@/contexts/PostsListContext';
+import ErrorDialog from '@/components/dialog/ErrorDialog';
+import LoadingSpinner from '@/components/dialog/LoadingSpinner';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const locale = context.locale!;
@@ -41,6 +40,13 @@ const Home: NextPage = () => {
   const { dbPostsList, postLoading, postError } = usePosts();
   const [filteredPost, setFilteredPost] = useState(dbPostsList);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+
+  useEffect(() => {
+    if (tagError || postError) {
+      setShowErrorDialog(true);
+    }
+  }, [tagError, postError]);
 
   useEffect(() => {
     if (selectedTag) {
@@ -53,9 +59,12 @@ const Home: NextPage = () => {
   const commandPalettePosts = getCommandPalettePosts(dbPostsList);
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (tagLoading || postLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (tagError || postError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}{tagError? ',' : ''}{postError}</div>;
-  if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
+  if (tagLoading || postLoading)
+    return (
+      <LoadingSpinner label={t('loading') || 'Loading...'} />
+    );
+  if (allTags.length === 0)
+    return <div className="text-sm text-gray-400">{t('no-tags')}</div>;
 
   return (
     <LayoutPerPage>
@@ -128,6 +137,15 @@ const Home: NextPage = () => {
 
         <PostList posts={filteredPost} tags={allTags} />
       </div>
+
+      <ErrorDialog
+        isOpen={showErrorDialog}
+        onClose={() => setShowErrorDialog(false)}
+        errors={[
+          { name: 'Tags', message: tagError },
+          { name: 'Posts', message: postError },
+        ]}
+      />
     </LayoutPerPage>
   );
 };

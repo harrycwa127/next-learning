@@ -25,5 +25,7 @@
   "filter": "篩選",
   "loading": "載入中...",
   "error": "錯誤",
-  "no-tags": "暫無標籤"
+  "no-tags": "暫無標籤",
+  "close": "關閉",
+  "back-to-home": "返回首頁"
 }

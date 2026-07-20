@@ -25,5 +25,7 @@
   "filter": "Filter",
   "loading": "Loading...",
   "error": "Error",
-  "no-tags": "No tags"
+  "no-tags": "No tags",
+  "close": "Close",
+  "back-to-home": "Back to Home"
 }

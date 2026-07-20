@@ -10,7 +10,10 @@ import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { getCommandPalettePosts } from '@/components/CommandPalette/getCommandPalettePosts';
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 import LayoutPerPage from '@/components/LayoutPerPage';
-import PostLayout, { PostForPostLayout, RelatedPostForPostLayout } from '@/components/PostLayout';
+import PostLayout, {
+  PostForPostLayout,
+  RelatedPostForPostLayout,
+} from '@/components/PostLayout';
 import { LOCALES } from '@/configs/i18nConfigs';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPosts } from '@/lib/contentLayerAdapter';
@@ -22,13 +25,15 @@ import { useTags } from '@/contexts/TagsContext';
 import { useTranslation } from 'next-i18next';
 import { usePosts } from '@/contexts/PostsListContext';
 import { useEffect, useState } from 'react';
+import ErrorDialog from '@/components/dialog/ErrorDialog';
+import LoadingSpinner from '@/components/dialog/LoadingSpinner';
 
 interface Params extends ParsedUrlQuery {
   slug: string;
 }
 
 export type PostForPostPage = PostForPostLayout & {
-  slug: string; 
+  slug: string;
   title: string;
   description: string;
   date: string;
@@ -58,7 +63,9 @@ export const getStaticPaths: GetStaticPaths = () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<Props, Params> = async (context) => {
+export const getStaticProps: GetStaticProps<Props, Params> = async (
+  context
+) => {
   const { slug } = context.params!;
   const locale = context.locale!;
 
@@ -106,11 +113,11 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (context) => 
           WHERE pb_slug = ${slug}
           LIMIT 1
         `;
-        
+
         if (dbResult && dbResult.length > 0) {
           const row = dbResult[0];
           const rawContent = row.pb_content ? row.pb_content.toString() : '';
-          
+
           // 核心優化：在伺服器端直接將線上 Markdown/MDX 原始字串進行高效編譯
           const mdxSource = rawContent ? await serialize(rawContent) : null;
 
@@ -118,13 +125,19 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (context) => 
             slug: row.pb_slug.toString(),
             title: row.pb_title.toString(),
             description: row.pb_desc.toString(),
-            date: row.pb_date instanceof Date ? row.pb_date.toISOString() : String(row.pb_date),
-            updateDate: row.pb_update_date instanceof Date 
-              ? row.pb_update_date.toISOString() 
-              : (row.pb_update_date ? String(row.pb_update_date) : null),
+            date:
+              row.pb_date instanceof Date
+                ? row.pb_date.toISOString()
+                : String(row.pb_date),
+            updateDate:
+              row.pb_update_date instanceof Date
+                ? row.pb_update_date.toISOString()
+                : row.pb_update_date
+                ? String(row.pb_update_date)
+                : null,
             tag: row.pb_tag_id ? row.pb_tag_id.toString() : null,
             pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : false,
-            path: `/posts/${row.pb_slug.toString()}`, 
+            path: `/posts/${row.pb_slug.toString()}`,
             socialImage: null,
             body: {
               code: '',
@@ -134,7 +147,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (context) => 
           };
         }
       } catch (e) {
-        console.error("Failed to fetch single DB post in getStaticProps:", e);
+        console.error('Failed to fetch single DB post in getStaticProps:', e);
       }
     }
   }
@@ -160,6 +173,13 @@ const PostPage: NextPage<Props> = ({ post }) => {
   const [mounted, setMounted] = useState(false);
   const [prevPost, setPrevPost] = useState<RelatedPostForPostLayout>(null);
   const [nextPost, setNextPost] = useState<RelatedPostForPostLayout>(null);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+
+  useEffect(() => {
+    if (tagError || postError) {
+      setShowErrorDialog(true);
+    }
+  }, [tagError, postError]);
 
   useEffect(() => {
     setMounted(true);
@@ -170,17 +190,21 @@ const PostPage: NextPage<Props> = ({ post }) => {
       const postIndex = dbPostsList.findIndex((p) => p.slug === post.slug);
       if (postIndex !== -1) {
         const prevFull = dbPostsList[postIndex + 1] || null;
-        setPrevPost(prevFull ? { title: prevFull.title, path: prevFull.path } : null);
-        
+        setPrevPost(
+          prevFull ? { title: prevFull.title, path: prevFull.path } : null
+        );
+
         const nextFull = dbPostsList[postIndex - 1] || null;
-        setNextPost(nextFull ? { title: nextFull.title, path: nextFull.path } : null);
+        setNextPost(
+          nextFull ? { title: nextFull.title, path: nextFull.path } : null
+        );
       }
     }
   }, [dbPostsList, post.slug]);
 
   const commandPalettePosts = getCommandPalettePosts(dbPostsList);
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
-  
+
   const {
     description,
     title,
@@ -190,15 +214,18 @@ const PostPage: NextPage<Props> = ({ post }) => {
     socialImage,
     body: { code, raw, mdxSource },
   } = post;
-  
+
   const url = siteConfigs.fqdn + path;
   const ogImage = getPostOGImage(socialImage);
 
   const MDXContent = code ? useMDXComponent(code) : null;
 
-  if (tagLoading || postLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (tagError || postError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}{tagError? ',' : ''}{postError}</div>;
-  if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
+  if (tagLoading || postLoading)
+    return (
+      <LoadingSpinner label={t('loading') || 'Loading...'} />
+    );
+  if (allTags.length === 0)
+    return <div className="text-sm text-gray-400">{t('no-tags')}</div>;
 
   return (
     <LayoutPerPage>
@@ -230,21 +257,36 @@ const PostPage: NextPage<Props> = ({ post }) => {
       />
 
       {mounted ? (
-        <PostLayout post={post} prevPost={prevPost} nextPost={nextPost} tags={allTags}>
-          {code && MDXContent ? (
-            <MDXContent components={mdxComponents} />
-          ) : mdxSource ? (
-            <div className="prose dark:prose-invert max-w-none">
-              <MDXRemote {...mdxSource} components={mdxComponents} />
-            </div>
-          ) : (
-            <article className="prose dark:prose-invert max-w-none whitespace-pre-wrap">
-              {raw}
-            </article>
-          )}
-        </PostLayout>
+        <>
+          <PostLayout
+            post={post}
+            prevPost={prevPost}
+            nextPost={nextPost}
+            tags={allTags}
+          >
+            {code && MDXContent ? (
+              <MDXContent components={mdxComponents} />
+            ) : mdxSource ? (
+              <div className="prose max-w-none dark:prose-invert">
+                <MDXRemote {...mdxSource} components={mdxComponents} />
+              </div>
+            ) : (
+              <article className="prose max-w-none whitespace-pre-wrap dark:prose-invert">
+                {raw}
+              </article>
+            )}
+          </PostLayout>
+          <ErrorDialog
+            isOpen={showErrorDialog}
+            onClose={() => setShowErrorDialog(false)}
+            errors={[
+              { name: 'Tags', message: tagError },
+              { name: 'Posts', message: postError },
+            ]}
+          />
+        </>
       ) : (
-        <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>
+        <LoadingSpinner label={t('loading') || 'Loading...'} />
       )}
     </LayoutPerPage>
   );
