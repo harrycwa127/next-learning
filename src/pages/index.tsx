@@ -59,12 +59,12 @@ const Home: NextPage = () => {
   const commandPalettePosts = getCommandPalettePosts(dbPostsList);
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (tagLoading || postLoading)
+  if (tagLoading || postLoading){
     return (
       <LoadingSpinner label={t('loading') || 'Loading...'} />
     );
-  if (allTags.length === 0)
-    return <div className="text-sm text-gray-400">{t('no-tags')}</div>;
+  }
+
 
   return (
     <LayoutPerPage>
@@ -127,11 +127,13 @@ const Home: NextPage = () => {
           </div>
 
           <div className="shrink-0">
-            <TagFilter
-              tags={allTags}
-              selectedTag={selectedTag}
-              onSelectTag={setSelectedTag}
-            />
+            {allTags.length > 0 && (
+              <TagFilter
+                tags={allTags}
+                selectedTag={selectedTag}
+                onSelectTag={setSelectedTag}
+              />
+            )}
           </div>
         </div>
 

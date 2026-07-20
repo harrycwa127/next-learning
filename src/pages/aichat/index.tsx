@@ -44,11 +44,8 @@ const AIChat: NextPage = () => {
   const commandPalettePosts = getCommandPalettePosts(dbPostsList);
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
   if (tagLoading || postLoading)
-    return (
-      <LoadingSpinner label={t('loading') || 'Loading...'} />
-    );
-  if (allTags.length === 0)
-    return <div className="text-sm text-gray-400">{t('no-tags')}</div>;
+    return <LoadingSpinner label={t('loading') || 'Loading...'} />;
+
   return (
     <LayoutPerPage>
       <ArticleJsonLd

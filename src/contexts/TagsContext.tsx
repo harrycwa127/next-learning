@@ -1,9 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Tag } from '@/components/TagDisplay';  
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import { Tag } from '@/components/TagDisplay';
 
-// 2. 定義 Context 共享狀態的介面
 interface TagsContextType {
   allTags: Tag[];
   tagLoading: boolean;
@@ -18,7 +23,6 @@ export function TagsProvider({ children }: { children: ReactNode }) {
   const [tagLoading, setLoading] = useState<boolean>(true);
   const [tagError, setError] = useState<string | null>(null);
 
-  // 3. 封裝 API 請求與資料結構轉換邏輯
   const fetchTags = async () => {
     setLoading(true);
     setError(null);
@@ -37,13 +41,14 @@ export function TagsProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 首次掛載時自動執行一次
   useEffect(() => {
     fetchTags();
   }, []);
 
   return (
-    <TagsContext.Provider value={{ allTags, tagLoading, tagError, refreshTags: fetchTags }}>
+    <TagsContext.Provider
+      value={{ allTags, tagLoading, tagError, refreshTags: fetchTags }}
+    >
       {children}
     </TagsContext.Provider>
   );
