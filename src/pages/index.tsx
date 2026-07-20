@@ -16,48 +16,25 @@ import LayoutPerPage from '@/components/LayoutPerPage';
 import PostList, { PostForPostList } from '@/components/PostList';
 import TagFilter from '@/components/TagFilter';
 import { siteConfigs } from '@/configs/siteConfigs';
-import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import generateRSS from '@/lib/generateRSS';
 
 import selfImage from '../../public/images/self-image.png';
 import { useTags } from '@/contexts/TagsContext';
 import { usePosts } from '@/contexts/PostsListContext';
 
-// type PostForIndexPage = PostForPostList;
-
-type Props = {
-  // posts: PostForIndexPage[];
-  commandPalettePosts: PostForCommandPalette[];
-};
-
-export const getStaticProps: GetStaticProps<Props> = async (context) => {
+export const getStaticProps: GetStaticProps = async (context) => {
   const locale = context.locale!;
-  const commandPalettePosts = getCommandPalettePosts();
-
-  // const posts = allPostsNewToOld.map((post) => ({
-  //   slug: post.slug,
-  //   date: post.date,
-  //   updateDate: post.updateDate || null,
-  //   tag: post.tag || null,
-  //   pin: post.pin || null,
-  //   title: post.title,
-  //   description: post.description,
-  //   path: post.path,
-  // })) as PostForIndexPage[];
 
   generateRSS();
 
   return {
     props: {
       ...(await serverSideTranslations(locale, ['indexPage', 'common'])),
-      // posts,
-      commandPalettePosts,
     },
   };
 };
 
-// const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
-const Home: NextPage<Props> = ({ commandPalettePosts }) => {
+const Home: NextPage = () => {
   const { t } = useTranslation(['indexPage', 'common']);
 
   const { allTags, tagLoading, tagError } = useTags();
@@ -73,6 +50,7 @@ const Home: NextPage<Props> = ({ commandPalettePosts }) => {
     }
   }, [selectedTag, dbPostsList]);
 
+  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
   if (tagLoading || postLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;

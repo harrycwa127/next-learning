@@ -10,7 +10,7 @@ interface PostsListContextType {
   dbPostsList: PostForPostList[];
   postLoading: boolean;
   postError: string | null;
-  refreshTags: () => Promise<void>; // 提供手動重新整理資料的函式
+  refreshPosts: () => Promise<void>; // 提供手動重新整理資料的函式
 }
 
 const PostsListContext = createContext<PostsListContextType | undefined>(undefined);
@@ -20,7 +20,7 @@ export function PostsListProvider({ children }: { children: ReactNode }) {
   const [postLoading, setPostLoading] = useState<boolean>(true);
   const [postError, setPostError] = useState<string | null>(null);
 
-  const fetchTags = async () => {
+  const fetchPosts = async () => {
     setPostLoading(true);
     setPostError(null);
     try {
@@ -35,20 +35,19 @@ export function PostsListProvider({ children }: { children: ReactNode }) {
         date: post.date,
         updateDate: post.updateDate || null,
         tag: post.tag || null,
-        pin: post.pin || null,
+        pin: post.pin || false,
         title: post.title,
         description: post.description,
         path: post.path,
       })) as PostForPostList[];
 
       const allPostsNewToOld = 
-        Array.prototype.concat(data || [], postMapToList || [])
-        .sort((a, b) => {
-            if (a.pin && !b.pin) return -1;
-            if (!a.pin && b.pin) return 1;
-        
-            return compareDesc(new Date(a.date), new Date(b.date));
-          }) || [];
+        [...data, ...postMapToList].sort((a, b) => {
+          if (a.pin && !b.pin) return -1;
+          if (!a.pin && b.pin) return 1;
+      
+          return compareDesc(new Date(a.date), new Date(b.date));
+        }) || [];
 
       setDbPostsList(allPostsNewToOld);
     } catch (err) {
@@ -59,11 +58,11 @@ export function PostsListProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchTags();
+    fetchPosts();
   }, []);
 
   return (
-    <PostsListContext.Provider value={{ dbPostsList, postLoading, postError, refreshTags: fetchTags }}>
+    <PostsListContext.Provider value={{ dbPostsList, postLoading, postError, refreshPosts: fetchPosts }}>
       {children}
     </PostsListContext.Provider>
   );

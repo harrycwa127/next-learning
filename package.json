@@ -29,6 +29,7 @@
     "next": "16.1.4",
     "next-contentlayer": "^0.2.7",
     "next-i18next": "^12.1.0",
+    "next-mdx-remote": "^6.0.0",
     "next-seo": "^5.5.0",
     "next-themes": "^0.2.0",
     "nprogress": "^0.2.0",

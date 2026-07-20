@@ -1,4 +1,4 @@
-import { allPostsNewToOld } from '@/lib/contentLayerAdapter';
+import { PostForPostList } from '@/components/PostList';
 
 export type PostForCommandPalette = {
   slug: string;
@@ -7,8 +7,8 @@ export type PostForCommandPalette = {
   path: string;
 };
 
-export const getCommandPalettePosts = (): PostForCommandPalette[] => {
-  const commandPalettePosts = allPostsNewToOld.map((post) => ({
+export const getCommandPalettePosts = (posts: PostForPostList[]): PostForCommandPalette[] => {
+  const commandPalettePosts = posts.map((post) => ({
     slug: post.slug,
     tag: post.tag || null,
     title: post.title,

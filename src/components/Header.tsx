@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'; // 核心導入
 import { useTranslation } from 'next-i18next';
 
 import CommandPaletteToggle from '@/components/CommandPaletteToggle';
@@ -13,6 +14,11 @@ import CustomImage from './CustomImage';
 
 export default function Header() {
   const { t } = useTranslation(['common']);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 pt-3 pb-1 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
@@ -36,24 +42,30 @@ export default function Header() {
             </CustomLink>
           </div>
 
-          <div className="flex items-center text-base leading-5 sm:gap-1">
-            <div className="hidden gap-1 sm:flex">
-              {headerConfigs.navLinks.map((link) => (
-                <CustomLink
-                  key={link.title}
-                  href={link.href}
-                  className="rounded p-3 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
-                  aria-label={link.title}
-                >
-                  {t(link.title)}
-                </CustomLink>
-              ))}
-            </div>
+          <div className="flex items-center text-base leading-5 sm:gap-1 min-h-[48px]">
+            {mounted ? (
+              <>
+                <div className="hidden gap-1 sm:flex">
+                  {headerConfigs.navLinks.map((link) => (
+                    <CustomLink
+                      key={link.title}
+                      href={link.href}
+                      className="rounded p-3 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
+                      aria-label={link.title}
+                    >
+                      {t(link.title)}
+                    </CustomLink>
+                  ))}
+                </div>
 
-            <LanguageSwitch />
-            <ThemeSwitch />
-            <CommandPaletteToggle />
-            <MobileNav />
+                <LanguageSwitch />
+                <ThemeSwitch />
+                <CommandPaletteToggle />
+                <MobileNav />
+              </>
+            ) : (
+              <div className="w-32 sm:w-64" />
+            )}
           </div>
         </div>
       </SectionContainer>

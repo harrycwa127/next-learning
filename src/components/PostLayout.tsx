@@ -49,7 +49,7 @@ export default function PostLayout({
   } = post;
 
   const { locale } = useRouter();
-  const { i18n, t } = useTranslation(['common']);
+  const { t } = useTranslation(['common']);
 
   const tagInfo = tag ? tags.find((t) => t.value === tag) : null;
 
@@ -70,7 +70,7 @@ export default function PostLayout({
                         className="text-amber-500 dark:text-amber-400/90 shrink-0 rotate-45 transform" 
                       />
                     )}
-                    {tagInfo && <TagDisplay>{i18n.language === 'zh-TW' ? tagInfo.chi_name : tagInfo.eng_name}</TagDisplay>}
+                    {tagInfo && <TagDisplay>{locale === 'zh-TW' ? tagInfo.chi_name : tagInfo.eng_name}</TagDisplay>}
                   </div>
                 )}
                 

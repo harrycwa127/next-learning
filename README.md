@@ -9,6 +9,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 ## Features
 
 - Writing with local Markdown / MDX files
+- Get Markdown / MDX files from DB (NEON DB and translate to html)
 - Blazing fast performance
 - SEO friendly
 - Dark Mode
@@ -27,8 +28,10 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - [Next.js](https://nextjs.org/): React meta framework
 - [Contentlayer](https://github.com/contentlayerdev/contentlayer): MDX processor
 - [Tailwind CSS](https://tailwindcss.com/): CSS framework
+- [neondatabase](https://github.com/neondatabase/serverless): connect to NEON DB
 - [next-i18next](https://github.com/i18next/next-i18next): localization
 - [next-seo](https://github.com/garmeeh/next-seo#news-article): SEO meta tags
+- [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote): translate MDX to html
 - [kbar](https://github.com/timc1/kbar): command palette
 - [giscus](https://github.com/giscus/giscus): comment system
 - [nprogress](https://github.com/rstacruz/nprogress): page transition progress bar

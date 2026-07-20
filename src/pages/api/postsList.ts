@@ -33,13 +33,13 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
 
     const posts: PostForPostList[] = (data as any[]).map((row: any) => ({
       slug: row.pb_slug.toString(),
-      date: row.pb_date.toString(),
-      updateDate: row.pb_update_date? row.pb_update_date.toString() : null,
+      date: new Date(row.pb_date).toISOString(),
+      updateDate: row.pb_update_date? new Date(row.pb_update_date).toISOString() : null,
       tag: row.pb_tag_id ? row.pb_tag_id.toString() : null,
       pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : false,
       title: row.pb_title.toString(),
       description: row.pb_desc.toString(),
-      path: `/post?slug=${row.pb_slug.toString()}`,
+      path: `/posts/${row.pb_slug.toString()}`,
     }));
 
     return res.status(200).json(posts);
