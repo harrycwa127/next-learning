@@ -28,6 +28,7 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
         p.pb_is_pin,
         p.pb_tag_id
       FROM pb_blog_post p
+      WHERE pb_is_shown = true
       ORDER BY p.pb_date DESC;
     `;
 

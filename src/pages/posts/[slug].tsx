@@ -110,7 +110,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
                  TO_CHAR(pb_date, 'YYYY-MM-DD') as pb_date, 
                  TO_CHAR(pb_update_date, 'YYYY-MM-DD') as pb_update_date 
           FROM pb_blog_post
-          WHERE pb_slug = ${slug}
+          WHERE pb_slug = ${slug} and pb_is_shown = true
           LIMIT 1
         `;
 
