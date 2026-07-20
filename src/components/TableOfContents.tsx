@@ -86,7 +86,7 @@ const TableOfContents = ({ source }: Props) => {
   return (
     <div className="mt-10">
       <p className="mb-5 text-lg font-semibold text-gray-900 transition-colors dark:text-gray-100">
-        {t('table-of-contents').toUpperCase()}
+        {t('table-of-contents')}
       </p>
       <div className="flex flex-col items-start justify-start">
         {headings.map((heading, index) => {
