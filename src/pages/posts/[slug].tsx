@@ -161,7 +161,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
       ...(await serverSideTranslations(locale, ['common'])),
       post,
     },
-    revalidate: 60,
+    revalidate: 300,
   };
 };
 
