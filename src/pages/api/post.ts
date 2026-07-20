@@ -1,12 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PostForPostList } from '@/components/PostList';
+import { PostForPostPage } from '@/pages/posts/[slug]';
 
 interface ErrorResponse {
   error: string;
 }
 
-export default async function GET(req: NextApiRequest, res: NextApiResponse<PostForPostList[] | ErrorResponse>) {
+export default async function GET(req: NextApiRequest, res: NextApiResponse<PostForPostPage[] | ErrorResponse>) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
@@ -29,19 +29,21 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
         TO_CHAR(p.pb_update_date, 'YYYY-MM-DD') as pb_update_date,
         p.pb_is_pin,
         p.pb_tag_id,
+        p.pb_content
       FROM pb_blog_post p
       WHERE p.pb_slug = ${slug}
     `;
 
-    const posts: PostForPostList[] = (data as any[]).map((row: any) => ({
-      slug: row.pb_slug.toString(),
+    const posts: PostForPostPage[] = (data as any[]).map((row: any) => ({
+      title: row.pb_title.toString(),
       date: row.pb_date.toString(),
       updateDate: row.pb_update_date? row.pb_update_date.toString() : null,
       tag: row.pb_tag_id ? row.pb_tag_id.toString() : null,
-      pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : null,
-      title: row.pb_title.toString(),
+      pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : false,
       description: row.pb_desc.toString(),
-      path: `/posts/${row.pb_slug.toString()}`,
+      path: `/post?slug=${row.pb_slug.toString()}`,
+      socialImage: null,
+      body: { code: '', raw: row.pb_content.toString() },
     }));
 
     return res.status(200).json(posts);

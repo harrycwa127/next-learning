@@ -36,10 +36,10 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse<Post
       date: row.pb_date.toString(),
       updateDate: row.pb_update_date? row.pb_update_date.toString() : null,
       tag: row.pb_tag_id ? row.pb_tag_id.toString() : null,
-      pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : null,
+      pin: row.pb_is_pin ? Boolean(row.pb_is_pin) : false,
       title: row.pb_title.toString(),
       description: row.pb_desc.toString(),
-      path: `/posts/${row.pb_slug.toString()}`,
+      path: `/post?slug=${row.pb_slug.toString()}`,
     }));
 
     return res.status(200).json(posts);

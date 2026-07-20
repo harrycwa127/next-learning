@@ -22,14 +22,13 @@ import { getPostOGImage } from '@/lib/getPostOGImage';
 import mdxComponents from '@/lib/mdxComponents';
 import { unifyPath } from '@/lib/unifyPath';
 import { useTags } from '@/contexts/TagsContext';
-import { usePosts } from '@/contexts/PostsListContext';
 import { useTranslation } from 'next-i18next';
 
 interface Params extends ParsedUrlQuery {
   slug: string;
 }
 
-type PostForPostPage = PostForPostLayout & {
+export type PostForPostPage = PostForPostLayout & {
   title: string;
   description: string;
   date: string;

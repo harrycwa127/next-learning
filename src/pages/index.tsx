@@ -75,8 +75,8 @@ const Home: NextPage<Props> = ({ posts, commandPalettePosts }) => {
 
   useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
 
-  if (tagLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
-  if (tagError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}</div>;
+  if (tagLoading || postLoading) return <div className="text-gray-500 text-sm animate-pulse">{t('loading')}</div>;
+  if (tagError || postError) return <div className="text-red-500 text-sm">{t('error')}: {tagError}{tagError? ',' : ''}{postError}</div>;
   if (allTags.length === 0) return <div className="text-gray-400 text-sm">{t('no-tags')}</div>;
 
   return (
