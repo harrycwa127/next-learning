@@ -69,12 +69,12 @@ const Playground: NextPage = () => {
           <li>Post Tag for Display and Search - Done</li>
           <li>Post List filted by Tag - Done</li>
           <li>Pin Post - Done</li>
-          <li>Simple Record store with database</li>
+          <li>Simple Record store with database - Done</li>
           <ul>
             <li>Store and Manage Post Tag - Done</li>
             <li>
               Store and Manage Post (server store markdown - next-mdx-remote -
-              MDXRemote with same mdxComponents )
+              MDXRemote with same mdxComponents) - Done
             </li>
           </ul>
           <li>AI chat - Done</li>
