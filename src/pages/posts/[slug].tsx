@@ -175,6 +175,9 @@ const PostPage: NextPage<Props> = ({ post }) => {
   const [nextPost, setNextPost] = useState<RelatedPostForPostLayout>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
 
+  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
+
   useEffect(() => {
     if (tagError || postError) {
       setShowErrorDialog(true);
@@ -202,9 +205,6 @@ const PostPage: NextPage<Props> = ({ post }) => {
     }
   }, [dbPostsList, post.slug]);
 
-  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
-  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
-
   const {
     description,
     title,
@@ -220,10 +220,11 @@ const PostPage: NextPage<Props> = ({ post }) => {
 
   const MDXContent = code ? useMDXComponent(code) : null;
 
-  if (tagLoading || postLoading)
+  if (tagLoading || postLoading){
     return (
       <LoadingSpinner label={t('loading') || 'Loading...'} />
     );
+  }
 
   return (
     <LayoutPerPage>

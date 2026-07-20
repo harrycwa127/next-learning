@@ -42,6 +42,9 @@ const Home: NextPage = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
 
+  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
+
   useEffect(() => {
     if (tagError || postError) {
       setShowErrorDialog(true);
@@ -55,16 +58,12 @@ const Home: NextPage = () => {
       setFilteredPost(dbPostsList);
     }
   }, [selectedTag, dbPostsList]);
-
-  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
-  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
-
+  
   if (tagLoading || postLoading){
     return (
       <LoadingSpinner label={t('loading') || 'Loading...'} />
     );
   }
-
 
   return (
     <LayoutPerPage>

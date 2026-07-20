@@ -39,17 +39,18 @@ const Playground: NextPage = () => {
   const { t } = useTranslation(['common']);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
 
+  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
+  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
+
   useEffect(() => {
     if (tagError || postError) {
       setShowErrorDialog(true);
     }
   }, [tagError, postError]);
 
-  const commandPalettePosts = getCommandPalettePosts(dbPostsList);
-  useCommandPalettePostActions({ posts: commandPalettePosts, tags: allTags });
-
-  if (tagLoading || postLoading)
+  if (tagLoading || postLoading){
     return <LoadingSpinner label={t('loading') || 'Loading...'} />;
+  }
 
   return (
     <LayoutPerPage>
