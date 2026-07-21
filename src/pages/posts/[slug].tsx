@@ -268,11 +268,11 @@ const PostPage: NextPage<Props> = ({ post }) => {
                 <MDXContent components={mdxComponents} />
               </div>
             ) : mdxSource ? (
-              <div className="prose dark:prose-invert max-w-none prose-p:text-gray-700 dark:prose-p:text-gray-300">
+              <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
                 <MDXRemote {...mdxSource} components={mdxComponents} />
               </div>
             ) : (
-              <article className="prose max-w-none whitespace-pre-wrap dark:prose-invert">
+              <article className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
                 {raw}
               </article>
             )}
