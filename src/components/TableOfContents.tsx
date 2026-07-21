@@ -1,11 +1,8 @@
-// ref: https://github.com/ekomenyong/kommy-mdx/blob/main/src/components/TOC.tsx
-
 import clsx from 'clsx';
 import GithubSlugger from 'github-slugger';
 import { useTranslation } from 'next-i18next';
 import { useEffect, useRef, useState } from 'react';
 
-// eslint-disable-next-line no-unused-vars
 type UseIntersectionObserverType = (setActiveId: (id: string) => void) => void;
 
 const useIntersectionObserver: UseIntersectionObserverType = (setActiveId) => {
@@ -14,10 +11,13 @@ const useIntersectionObserver: UseIntersectionObserverType = (setActiveId) => {
   }>({});
 
   useEffect(() => {
+    const headingElements = Array.from(
+      document.querySelectorAll('article h2, article h3')
+    );
+
     const callback = (headings: IntersectionObserverEntry[]) => {
       headingElementsRef.current = headings.reduce((map, headingElement) => {
         map[headingElement.target.id] = headingElement;
-
         return map;
       }, headingElementsRef.current);
 
@@ -46,10 +46,6 @@ const useIntersectionObserver: UseIntersectionObserverType = (setActiveId) => {
       rootMargin: '0px 0px -70% 0px',
     });
 
-    const headingElements = Array.from(
-      document.querySelectorAll('article h2,h3')
-    );
-
     headingElements.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
@@ -67,10 +63,10 @@ const TableOfContents = ({ source }: Props) => {
     .split('\n')
     .filter((line) => line.match(/^###?\s/));
 
+  const slugger = new GithubSlugger();
   const headings = headingLines.map((raw) => {
     const text = raw.replace(/^###*\s/, '');
     const level = raw.slice(0, 3) === '###' ? 3 : 2;
-    const slugger = new GithubSlugger();
 
     return {
       text,
@@ -90,13 +86,15 @@ const TableOfContents = ({ source }: Props) => {
       </p>
       <div className="flex flex-col items-start justify-start">
         {headings.map((heading, index) => {
+          const isActive = heading.id === activeId;
+
           return (
             <button
               key={index}
               type="button"
               className={clsx(
-                heading.id === activeId
-                  ? 'font-medium text-primary-500 hover:text-primary-600 dark:hover:text-primary-400'
+                isActive
+                  ? 'font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300'
                   : 'font-normal text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200',
                 heading.level === 3 && 'pl-4',
                 'mb-3 text-left text-sm transition-colors hover:underline'
