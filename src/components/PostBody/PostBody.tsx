@@ -10,7 +10,7 @@ export default function PostBody({ children }: Props) {
   return (
     <div
       className={clsx(
-        'prose mx-auto transition-colors dark:prose-dark',
+        'prose mx-auto transition-colors dark:prose-dark postBody',
         styles.postBody
       )}
     >

@@ -1,83 +1,96 @@
 import clsx from 'clsx';
 import GithubSlugger from 'github-slugger';
 import { useTranslation } from 'next-i18next';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-type UseIntersectionObserverType = (setActiveId: (id: string) => void) => void;
-
-const useIntersectionObserver: UseIntersectionObserverType = (setActiveId) => {
-  const headingElementsRef = useRef<{
-    [key: string]: IntersectionObserverEntry;
-  }>({});
-
-  useEffect(() => {
-    const headingElements = Array.from(
-      document.querySelectorAll('article h2, article h3')
-    );
-
-    const callback = (headings: IntersectionObserverEntry[]) => {
-      headingElementsRef.current = headings.reduce((map, headingElement) => {
-        map[headingElement.target.id] = headingElement;
-        return map;
-      }, headingElementsRef.current);
-
-      const visibleHeadings: IntersectionObserverEntry[] = [];
-
-      Object.keys(headingElementsRef.current).forEach((key) => {
-        const headingElement = headingElementsRef.current[key];
-        if (headingElement.isIntersecting) visibleHeadings.push(headingElement);
-      });
-
-      const getIndexFromId = (id: string) =>
-        headingElements.findIndex((heading) => heading.id === id);
-
-      if (visibleHeadings.length === 1) {
-        setActiveId(visibleHeadings[0].target.id);
-      } else if (visibleHeadings.length > 1) {
-        const sortedVisibleHeadings = visibleHeadings.sort(
-          (a, b) => getIndexFromId(b.target.id) - getIndexFromId(a.target.id)
-        );
-
-        setActiveId(sortedVisibleHeadings[0].target.id);
-      }
-    };
-
-    const observer = new IntersectionObserver(callback, {
-      rootMargin: '0px 0px -70% 0px',
-    });
-
-    headingElements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, [setActiveId]);
-};
+interface HeadingItem {
+  id: string;
+  text: string;
+  level: number;
+}
 
 type Props = {
-  source: string;
+  source?: string;
 };
 
 const TableOfContents = ({ source }: Props) => {
   const { t } = useTranslation(['common']);
+  const [headings, setHeadings] = useState<HeadingItem[]>([]);
+  const [activeId, setActiveId] = useState<string>('');
 
-  const headingLines = source
-    .split('\n')
-    .filter((line) => line.match(/^###?\s/));
+  useEffect(() => {
+    const slugger = new GithubSlugger();
 
-  const slugger = new GithubSlugger();
-  const headings = headingLines.map((raw) => {
-    const text = raw.replace(/^###*\s/, '');
-    const level = raw.slice(0, 3) === '###' ? 3 : 2;
+    const updateHeadingsAndObserver = () => {
+      const headingNodes = Array.from(
+        document.querySelectorAll<HTMLElement>('article .postBody h2, article .postBody h3')
+      );
 
-    return {
-      text,
-      level,
-      id: slugger.slug(text),
+      if (headingNodes.length === 0) return { items: [], nodes: [] };
+
+      const items: HeadingItem[] = headingNodes.map((node) => {
+        const rawText = node.textContent?.trim() || '';
+        const text = rawText.replace(/#+\s*$/, '').trim();
+
+        if (!node.id) {
+          node.id = slugger.slug(text);
+        }
+
+        return {
+          id: node.id,
+          text,
+          level: node.tagName === 'H3' ? 3 : 2,
+        };
+      });
+
+      setHeadings(items);
+      return { items, nodes: headingNodes };
     };
-  });
 
-  const [activeId, setActiveId] = useState<string>();
+    let observer: IntersectionObserver | null = null;
 
-  useIntersectionObserver(setActiveId);
+    const bindObserver = (nodes: HTMLElement[]) => {
+      if (observer) observer.disconnect();
+      if (nodes.length === 0) return;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+          if (visibleEntries.length > 0) {
+            setActiveId(visibleEntries[0].target.id);
+          }
+        },
+        {
+          rootMargin: '-80px 0px -60% 0px',
+          threshold: 0.1,
+        }
+      );
+
+      nodes.forEach((node) => observer?.observe(node));
+    };
+
+    const { nodes } = updateHeadingsAndObserver();
+    bindObserver(nodes);
+
+    const articleEl = document.querySelector('article');
+    const mutationObserver = new MutationObserver(() => {
+      const { nodes: updatedNodes } = updateHeadingsAndObserver();
+      bindObserver(updatedNodes);
+    });
+
+    if (articleEl) {
+      mutationObserver.observe(articleEl, { childList: true, subtree: true });
+    }
+
+    return () => {
+      if (observer) observer.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [source]);
+
+  if (headings.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mt-10">
@@ -85,27 +98,29 @@ const TableOfContents = ({ source }: Props) => {
         {t('table-of-contents')}
       </p>
       <div className="flex flex-col items-start justify-start">
-        {headings.map((heading, index) => {
+        {headings.map((heading) => {
           const isActive = heading.id === activeId;
 
           return (
             <button
-              key={index}
+              key={heading.id}
               type="button"
               className={clsx(
                 isActive
                   ? 'font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300'
-                  : 'font-normal text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200',
+                  : 'font-normal text-gray-700 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-200',
                 heading.level === 3 && 'pl-4',
                 'mb-3 text-left text-sm transition-colors hover:underline'
               )}
               onClick={(e) => {
                 e.preventDefault();
-                document.querySelector(`#${heading.id}`)?.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
-                  inline: 'nearest',
-                });
+                const target = document.getElementById(heading.id);
+                if (target) {
+                  target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                }
               }}
             >
               {heading.text}

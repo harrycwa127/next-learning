@@ -264,7 +264,7 @@ const PostPage: NextPage<Props> = ({ post }) => {
             tags={allTags}
           >
             {code && MDXContent ? (
-              <div className="prose dark:prose-invert max-w-none prose-p:text-gray-700 dark:prose-p:text-gray-300">
+              <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
                 <MDXContent components={mdxComponents} />
               </div>
             ) : mdxSource ? (
