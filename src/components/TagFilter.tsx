@@ -93,7 +93,6 @@ export default function TagFilter({
 
             {tags.map((tag) => {
               const isSelected = selectedTag === tag.value;
-              console.log(tag);
               return (
                 <button
                   key={tag.value}
