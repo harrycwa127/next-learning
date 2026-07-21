@@ -24,12 +24,17 @@ import LoadingSpinner from '@/components/dialog/LoadingSpinner';
 export const getStaticProps: GetStaticProps = async (context) => {
   const locale = context.locale!;
 
-  generateRSS();
+  try {
+    await generateRSS();
+  } catch (error) {
+    console.error('Failed to generate RSS on index page:', error);
+  }
 
   return {
     props: {
       ...(await serverSideTranslations(locale, ['indexPage', 'common'])),
     },
+    revalidate: 300,
   };
 };
 

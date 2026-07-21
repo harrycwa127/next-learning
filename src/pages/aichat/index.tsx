@@ -7,7 +7,6 @@ import { getCommandPalettePosts } from '@/components/CommandPalette/getCommandPa
 import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 import LayoutPerPage from '@/components/LayoutPerPage';
 import { siteConfigs } from '@/configs/siteConfigs';
-import generateRSS from '@/lib/generateRSS';
 
 import AIChatCompent from '@/components/AIChat/AIChatCompent';
 import { useTags } from '@/contexts/TagsContext';
@@ -19,8 +18,6 @@ import LoadingSpinner from '@/components/dialog/LoadingSpinner';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const locale = context.locale!;
-
-  generateRSS();
 
   return {
     props: {

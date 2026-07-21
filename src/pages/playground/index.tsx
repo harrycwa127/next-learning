@@ -12,7 +12,6 @@ import { useCommandPalettePostActions } from '@/components/CommandPalette/useCom
 import CustomImage from '@/components/CustomImage';
 import LayoutPerPage from '@/components/LayoutPerPage';
 import { siteConfigs } from '@/configs/siteConfigs';
-import generateRSS from '@/lib/generateRSS';
 
 import playgroundImage from '../../../public/images/playground-image.png';
 import { useTags } from '@/contexts/TagsContext';
@@ -23,8 +22,6 @@ import LoadingSpinner from '@/components/dialog/LoadingSpinner';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const locale = context.locale!;
-
-  generateRSS();
 
   return {
     props: {

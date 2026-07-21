@@ -1,16 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { PostForPostList } from '@/components/PostList';
-import { allPosts } from 'contentlayer/generated';
-import { compareDesc } from 'date-fns';
 
-// 2. 定義 Context 共享狀態的介面
+// 1. 定義 Context 共享狀態的介面
 interface PostsListContextType {
   dbPostsList: PostForPostList[];
   postLoading: boolean;
   postError: string | null;
-  refreshPosts: () => Promise<void>; // 提供手動重新整理資料的函式
+  refreshPosts: () => Promise<void>;
 }
 
 const PostsListContext = createContext<PostsListContextType | undefined>(undefined);
@@ -24,32 +22,13 @@ export function PostsListProvider({ children }: { children: ReactNode }) {
     setPostLoading(true);
     setPostError(null);
     try {
-      const response = await fetch('/api/postsList');
+      const response = await fetch('/api/postList');
       if (!response.ok) {
         throw new Error('無法取得文章資料');
       }
       const data: PostForPostList[] = await response.json();
 
-      const postMapToList = allPosts.map((post) => ({
-        slug: post.slug,
-        date: post.date,
-        updateDate: post.updateDate || null,
-        tag: post.tag || null,
-        pin: post.pin || false,
-        title: post.title,
-        description: post.description,
-        path: post.path,
-      })) as PostForPostList[];
-
-      const allPostsNewToOld = 
-        [...data, ...postMapToList].sort((a, b) => {
-          if (a.pin && !b.pin) return -1;
-          if (!a.pin && b.pin) return 1;
-      
-          return compareDesc(new Date(a.date), new Date(b.date));
-        }) || [];
-
-      setDbPostsList(allPostsNewToOld);
+      setDbPostsList(data);
     } catch (err) {
       setPostError(err instanceof Error ? err.message : '發生未知錯誤');
     } finally {

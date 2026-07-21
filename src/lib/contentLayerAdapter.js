@@ -1,4 +1,4 @@
-import { allPosts, Post } from 'contentlayer/generated';
+import { allPosts as originalAllPosts, Post } from 'contentlayer/generated';
 import {
   defineDocumentType,
   defineNestedType,
@@ -6,10 +6,12 @@ import {
 } from 'contentlayer/source-files';
 import { compareDesc } from 'date-fns';
 
+const allPosts = originalAllPosts?.filter((post) => post.isShown == true);
+
 export { allPosts, defineDocumentType, defineNestedType, makeSource, Post };
 
 export const allPostsNewToOld =
-  allPosts?.sort((a, b) => {
+  allPosts?.filter((post) => post.isShown == true)?.sort((a, b) => {
     if (a.pin && !b.pin) return -1;
     if (!a.pin && b.pin) return 1;
 

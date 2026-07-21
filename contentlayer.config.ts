@@ -38,6 +38,10 @@ export const Post = defineDocumentType(() => ({
       type: 'boolean',
       default: false
     },
+    isShown: {
+      type: 'boolean',
+      default: true
+    },
     socialImage: {
       type: 'string',
     },
