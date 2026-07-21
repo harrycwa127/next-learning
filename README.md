@@ -16,7 +16,7 @@ This project is reference to the [Modern Next.js Blog 系列](https://ithelp.ith
 - Command Palette
 - Comment system
 - Page transition progress bar
-- RSS Feed
+- RSS Feed for both local Markdown and DB post (dynamic)
 - Sitemap
 - Code syntax highlighting
 - Post Tag (Search & Filter by Tag, Tag Managed in NEON DB)
